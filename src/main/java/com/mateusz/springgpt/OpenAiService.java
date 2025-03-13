@@ -26,7 +26,7 @@ public class OpenAiService {
         return response.getResult().getOutput().getText();
     }
 
-    public String checkApiConnection() {
+    public ResponseEntity<String> checkApiConnection() {
         String url = "https://api.openai.com/v1/models";
 
         HttpHeaders headers = new HttpHeaders();
@@ -34,8 +34,6 @@ public class OpenAiService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> requestBody = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, requestBody, String.class);
-
-        return response.toString();
+        return restTemplate.exchange(url, HttpMethod.GET, requestBody, String.class);
     }
 }
