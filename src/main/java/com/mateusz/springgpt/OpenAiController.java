@@ -19,4 +19,9 @@ public class OpenAiController {
     public String testConnection() {
         return openAiService.sendPrompt("?");
     }
+
+    @GetMapping("/testconnection")
+    public String checkApiConnection() {
+        return openAiService.checkApiConnection();
+    }
 }
