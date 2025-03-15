@@ -16,13 +16,8 @@ public class OpenAiController {
         return openAiService.sendPrompt(userPrompt);
     }
 
-    @GetMapping("/test")
-    public String testConnection() {
-        return openAiService.sendPrompt("?");
-    }
-
-    @GetMapping("/testconnection")
-    public ResponseEntity<String> checkApiConnection() {
-        return openAiService.checkApiConnection();
+    @GetMapping("/models")
+    public ResponseEntity<String> listModels() {
+        return openAiService.listModels();
     }
 }

@@ -26,7 +26,7 @@ public class OpenAiService {
         return response.getResult().getOutput().getText();
     }
 
-    public ResponseEntity<String> checkApiConnection() {
+    public ResponseEntity<String> listModels() {
         String url = "https://api.openai.com/v1/models";
 
         HttpHeaders headers = new HttpHeaders();
