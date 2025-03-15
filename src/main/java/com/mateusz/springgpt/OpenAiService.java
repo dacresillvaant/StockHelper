@@ -1,5 +1,7 @@
 package com.mateusz.springgpt;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatModel;
@@ -9,6 +11,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 public class OpenAiService {
 
@@ -20,10 +23,12 @@ public class OpenAiService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public String sendPrompt(String userPrompt) {
+    public AssistantMessage sendPrompt(String userPrompt) {
         Prompt prompt = new Prompt(userPrompt);
         ChatResponse response = chatModel.call(prompt);
-        return response.getResult().getOutput().getText();
+        log.info("Total tokens used for prompt \"{}\" is: {}", userPrompt, response.getMetadata().getUsage().getTotalTokens());
+        log.info("Remaining tokens: {}", response.getMetadata().getRateLimit().getTokensRemaining());
+        return response.getResult().getOutput();
     }
 
     public ResponseEntity<String> listModels() {

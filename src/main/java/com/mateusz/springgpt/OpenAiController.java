@@ -1,5 +1,6 @@
 package com.mateusz.springgpt;
 
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ public class OpenAiController {
     private OpenAiService openAiService;
 
     @PostMapping("/chat")
-    public String chat(@RequestBody String userPrompt) {
+    public AssistantMessage chat(@RequestBody String userPrompt) {
         return openAiService.sendPrompt(userPrompt);
     }
 
