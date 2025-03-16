@@ -26,8 +26,10 @@ public class OpenAiService {
     public AssistantMessage sendPrompt(String userPrompt) {
         Prompt prompt = new Prompt(userPrompt);
         ChatResponse response = chatModel.call(prompt);
+
         log.info("Total tokens used for prompt \"{}\" is: {}", userPrompt, response.getMetadata().getUsage().getTotalTokens());
         log.info("Remaining tokens: {}", response.getMetadata().getRateLimit().getTokensRemaining());
+
         return response.getResult().getOutput();
     }
 

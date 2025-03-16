@@ -20,6 +20,7 @@
 		<java.version>17</java.version>
 		<spring-ai.version>1.0.0-M6</spring-ai.version>
 		<lombok-version>1.18.36</lombok-version>
+		<playwright-version>1.50.0</playwright-version>
 	</properties>
 
 	<dependencies>
@@ -45,6 +46,14 @@
 			<version>${lombok-version}</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.microsoft.playwright/playwright -->
+		<dependency>
+			<groupId>com.microsoft.playwright</groupId>
+			<artifactId>playwright</artifactId>
+			<version>${playwright-version}</version>
+		</dependency>
+
 
 	</dependencies>
 
