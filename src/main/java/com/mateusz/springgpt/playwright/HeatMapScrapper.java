@@ -1,11 +1,15 @@
 package com.mateusz.springgpt.playwright;
 
 import com.microsoft.playwright.Page;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HeatMapScrapper {
 
     private static final String URL = "https://finviz.com/map.ashx?t=sec";
 
+    @Scheduled(cron = "0 */5 * * * *")
     public void scrapHeatMap() {
         PlaywrightHandler playwrightHandler = new PlaywrightHandler();
         Page page = playwrightHandler.createPage();
