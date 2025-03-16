@@ -14,6 +14,7 @@ public class HeatMapScrapper {
 
     @Value("${playwright.headless}")
     private boolean headless;
+
     private final PlaywrightHandler playwrightHandler;
 
     @Autowired
@@ -21,10 +22,10 @@ public class HeatMapScrapper {
         this.playwrightHandler = playwrightHandler;
     }
 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "${scheduler.heatmap}")
     public void scrapHeatMap() {
         Browser browser = playwrightHandler.createBrowser(headless);
-        Page page = playwrightHandler.createPage(browser);
+        Page page = playwrightHandler.createPage(browser, true);
 
         playwrightHandler.navigate(page, URL);
         playwrightHandler.click(page, "button:has-text('DISAGREE')");

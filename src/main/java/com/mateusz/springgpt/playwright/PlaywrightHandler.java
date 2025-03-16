@@ -2,16 +2,17 @@ package com.mateusz.springgpt.playwright;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.WaitForSelectorState;
-import lombok.Getter;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
-@Getter
 @Component
 public class PlaywrightHandler {
 
@@ -25,12 +26,24 @@ public class PlaywrightHandler {
 
     public Browser createBrowser(boolean headless) {
         log.info("Launching new browser instance...");
-        return playwright.chromium()
-                .launch(new BrowserType.LaunchOptions().setHeadless(headless));
+        return playwright.chromium().launch(new BrowserType.LaunchOptions()
+                .setHeadless(headless)
+                .setArgs(List.of("--disable-blink-features=AutomationControlled",
+                        "--disable-features=IsolateOrigins,site-per-process")));
     }
 
-    public Page createPage(Browser browser) {
-        return browser.newContext(new Browser.NewContextOptions().setViewportSize(resolution[0], resolution[1])).newPage();
+    public Page createPage(Browser browser, boolean mockHuman) {
+        if (mockHuman) {
+            return browser.newContext(new Browser.NewContextOptions()
+                    .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
+                    .setExtraHTTPHeaders((Map.of(
+                            "Accept-Language", "en-US,en;q=0.9",
+                            "Referer", "https://google.com"
+                    )))
+                    .setViewportSize(resolution[0], resolution[1])).newPage();
+        } else {
+            return browser.newContext(new Browser.NewContextOptions().setViewportSize(resolution[0], resolution[1])).newPage();
+        }
     }
 
     public void navigate(Page page, String URL) {
@@ -45,7 +58,6 @@ public class PlaywrightHandler {
 
     public void click(Page page, String cssSelector) {
         Locator locator = page.locator(cssSelector);
-        screenshot(page, "debug");
         locator.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
 
         try {
@@ -58,7 +70,7 @@ public class PlaywrightHandler {
 
     public void screenshot(Page page, String namePrefix) {
         String filePath = "target/screenshots/";
-        String timestamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(new Date());
+        String timestamp = new SimpleDateFormat("_yyyy-MM-dd HH-mm-ss").format(new Date());
         String fileExtension = ".png";
 
         log.info("Making a screenshot of: {}, on {} to -> {}", page.url(), timestamp, filePath);
@@ -74,6 +86,7 @@ public class PlaywrightHandler {
         }
     }
 
+    @PreDestroy
     public void closePlaywright() {
         if (playwright != null) {
             log.info("Closing Playwright...");
