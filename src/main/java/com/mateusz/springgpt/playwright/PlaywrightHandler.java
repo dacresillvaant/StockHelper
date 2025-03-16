@@ -4,6 +4,7 @@ import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -11,27 +12,40 @@ import java.util.Date;
 
 @Slf4j
 @Getter
+@Component
 public class PlaywrightHandler {
 
     private final Playwright playwright;
-    private final Browser browser;
     private static final int[] resolution = {1920, 1080};
 
     public PlaywrightHandler() {
-        log.info("Setting up Playwright...");
+        log.info("Initializing Playwright...");
         this.playwright = Playwright.create();
-
-        log.info("Setting up browser...");
-        this.browser = playwright.chromium()
-                .launch(new BrowserType.LaunchOptions().setHeadless(false));
     }
 
-    public Page createPage() {
+    public Browser createBrowser(boolean headless) {
+        log.info("Launching new browser instance...");
+        return playwright.chromium()
+                .launch(new BrowserType.LaunchOptions().setHeadless(headless));
+    }
+
+    public Page createPage(Browser browser) {
         return browser.newContext(new Browser.NewContextOptions().setViewportSize(resolution[0], resolution[1])).newPage();
+    }
+
+    public void navigate(Page page, String URL) {
+        try {
+            log.info("Navigating to: {}", URL);
+            page.navigate(URL);
+            log.info("Navigation finished.");
+        } catch (Exception e) {
+            throw new PlaywrightException("Failed to navigate to: " + URL + e);
+        }
     }
 
     public void click(Page page, String cssSelector) {
         Locator locator = page.locator(cssSelector);
+        screenshot(page, "debug");
         locator.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
 
         try {
@@ -53,22 +67,17 @@ public class PlaywrightHandler {
                 .setFullPage(true));
     }
 
-    public void closeBrowserAndPlaywright() {
-        try {
-            log.info("Closing browser context...");
-            browser.contexts().forEach(BrowserContext::close);
-
+    public void closeBrowser(Browser browser) {
+        if (browser != null) {
             log.info("Closing browser...");
             browser.close();
-        } catch (Exception e) {
-            throw new PlaywrightException("Failed to close the browser: " + e);
         }
+    }
 
-        try {
+    public void closePlaywright() {
+        if (playwright != null) {
             log.info("Closing Playwright...");
             playwright.close();
-        } catch (Exception e) {
-            throw new PlaywrightException("Failed to close the playwright:" + e);
         }
     }
 }
