@@ -21,6 +21,7 @@
 		<spring-ai.version>1.0.0-M6</spring-ai.version>
 		<lombok-version>1.18.36</lombok-version>
 		<playwright-version>1.50.0</playwright-version>
+		<postgresql-version>42.7.5</postgresql-version>
 	</properties>
 
 	<dependencies>
@@ -58,6 +59,13 @@
 			<groupId>com.microsoft.playwright</groupId>
 			<artifactId>playwright</artifactId>
 			<version>${playwright-version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql-version}</version>
 		</dependency>
 	</dependencies>
 
