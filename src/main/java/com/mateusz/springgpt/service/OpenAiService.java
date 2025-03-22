@@ -1,4 +1,4 @@
-package com.mateusz.springgpt;
+package com.mateusz.springgpt.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.AssistantMessage;

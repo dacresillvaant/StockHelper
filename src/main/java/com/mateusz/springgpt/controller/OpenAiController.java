@@ -1,5 +1,6 @@
-package com.mateusz.springgpt;
+package com.mateusz.springgpt.controller;
 
+import com.mateusz.springgpt.service.OpenAiService;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
