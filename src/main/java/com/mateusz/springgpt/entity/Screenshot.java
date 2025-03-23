@@ -23,5 +23,5 @@ public class Screenshot {
     private String source;
 
     @Column(columnDefinition = "TEXT")
-    private String base64Image;
+    private String base64;
 }

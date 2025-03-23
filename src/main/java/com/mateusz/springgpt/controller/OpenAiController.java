@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/openai")
 public class OpenAiController {
 
+    private final OpenAiService openAiService;
+
     @Autowired
-    private OpenAiService openAiService;
+    public OpenAiController (OpenAiService openAiService) {
+        this.openAiService = openAiService;
+    }
 
     @PostMapping("/chat")
     public AssistantMessage chat(@RequestBody String userPrompt) {

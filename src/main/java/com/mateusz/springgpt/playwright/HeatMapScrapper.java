@@ -48,7 +48,7 @@ public class HeatMapScrapper {
         Screenshot screenshot = Screenshot.builder()
                 .createdDate(LocalDateTime.now())
                 .source(page.url())
-                .base64Image(screenshotInBase64)
+                .base64(screenshotInBase64)
                 .build();
 
         screenshotRepository.save(screenshot);
