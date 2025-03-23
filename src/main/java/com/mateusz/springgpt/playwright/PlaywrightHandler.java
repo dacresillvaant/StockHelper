@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ public class PlaywrightHandler {
         log.info("Initializing Playwright...");
         this.playwright = Playwright.create();
     }
+
 
     public Browser createBrowser(boolean headless) {
         log.info("Launching new browser instance...");
@@ -68,15 +70,17 @@ public class PlaywrightHandler {
         }
     }
 
-    public void screenshot(Page page, String namePrefix) {
+    public String screenshot(Page page, String namePrefix) {
         String filePath = "target/screenshots/";
-        String timestamp = new SimpleDateFormat("_yyyy-MM-dd HH-mm-ss").format(new Date());
+        String timestamp = new SimpleDateFormat("_yyyy-MM-dd HH-mm").format(new Date());
         String fileExtension = ".png";
 
         log.info("Making a screenshot of: {}, on {} to -> {}", page.url(), timestamp, filePath);
-        page.screenshot(new Page.ScreenshotOptions()
+        byte[] screenshot = page.screenshot(new Page.ScreenshotOptions()
                 .setPath(Path.of(filePath + namePrefix + timestamp + fileExtension))
                 .setFullPage(true));
+
+        return Base64.getEncoder().encodeToString(screenshot);
     }
 
     public void closeBrowser(Browser browser) {

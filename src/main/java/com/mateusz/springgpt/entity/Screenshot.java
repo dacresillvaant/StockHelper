@@ -18,11 +18,10 @@ public class Screenshot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime timestamp;
+    private LocalDateTime createdDate;
 
     private String source;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String base64Image;
 }
