@@ -79,7 +79,6 @@
 			<groupId>com.mailgun</groupId>
 			<artifactId>mailgun-java</artifactId>
 			<version>${mailgun-version}</version>
-			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
