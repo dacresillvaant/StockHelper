@@ -15,8 +15,12 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class OpenAiService {
 
+    private final OpenAiChatModel chatModel;
+
     @Autowired
-    private OpenAiChatModel chatModel;
+    public OpenAiService(OpenAiChatModel chatModel) {
+        this.chatModel = chatModel;
+    }
 
     @Value("${spring.ai.openai.api-key}")
     private String openAiApiKey;

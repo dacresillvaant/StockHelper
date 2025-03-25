@@ -22,6 +22,7 @@
 		<lombok-version>1.18.36</lombok-version>
 		<playwright-version>1.50.0</playwright-version>
 		<postgresql-version>42.7.5</postgresql-version>
+		<mailgun-version>1.1.5</mailgun-version>
 	</properties>
 
 	<dependencies>
@@ -41,14 +42,14 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-openai-spring-boot-starter</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
@@ -71,6 +72,14 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql-version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.mailgun/mailgun-java -->
+		<dependency>
+			<groupId>com.mailgun</groupId>
+			<artifactId>mailgun-java</artifactId>
+			<version>${mailgun-version}</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
