@@ -5,6 +5,7 @@ import com.mailgun.model.message.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +25,7 @@ public class MailgunEmailService {
         this.mailgunMessagesApi = mailgunMessagesApi;
     }
 
+    @Async
     public void sendEmail(String to, String subject, String text) {
         Message message = Message.builder()
                 .from(mailgunFrom)

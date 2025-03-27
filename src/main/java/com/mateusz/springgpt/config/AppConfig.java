@@ -12,8 +12,11 @@ public class AppConfig {
     @Value("${mailgun.api-key}")
     private String mailgunApiKey;
 
+    @Value("${mailgun.eu-base-url}")
+    private String euBaseUrl;
+
     @Bean
     public MailgunMessagesApi mailgunMessagesApi() {
-        return MailgunClient.config(mailgunApiKey).createApi(MailgunMessagesApi.class);
+        return MailgunClient.config(euBaseUrl, mailgunApiKey).createAsyncApi(MailgunMessagesApi.class);
     }
 }

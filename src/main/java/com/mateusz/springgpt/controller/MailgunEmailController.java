@@ -20,7 +20,6 @@ public class MailgunEmailController {
         this.mailgunEmailService = mailgunEmailService;
     }
 
-    @Async
     @PostMapping("/send")
     public void sendEmail(@RequestBody EmailRequest emailRequest) {
         mailgunEmailService.sendEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
