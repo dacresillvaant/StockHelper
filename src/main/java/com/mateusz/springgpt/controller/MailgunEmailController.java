@@ -1,9 +1,8 @@
 package com.mateusz.springgpt.controller;
 
+import com.mateusz.springgpt.controller.dto.EmailRequest;
 import com.mateusz.springgpt.service.MailgunEmailService;
-import com.mateusz.springgpt.service.dto.EmailRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

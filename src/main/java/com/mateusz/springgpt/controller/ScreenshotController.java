@@ -1,5 +1,6 @@
 package com.mateusz.springgpt.controller;
 
+import com.mateusz.springgpt.controller.dto.ImageAnalyzeResponse;
 import com.mateusz.springgpt.entity.HeatmapEntity;
 import com.mateusz.springgpt.repository.HeatmapRepository;
 import com.mateusz.springgpt.service.HeatmapAnalysisService;
@@ -34,13 +35,13 @@ public class ScreenshotController {
     }
 
     @GetMapping("/{id}/analyze")
-    public ResponseEntity<BigDecimal> analyzeScreenshot(@PathVariable Long id) {
+    public ResponseEntity<ImageAnalyzeResponse> analyzeScreenshot(@PathVariable Long id) {
         BigDecimal ratio = heatmapAnalysisService.analyzeHeatmap(id);
 
         if (ratio == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(ratio);
+        return ResponseEntity.ok(new ImageAnalyzeResponse(id, ratio));
     }
 }
