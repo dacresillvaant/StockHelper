@@ -2,6 +2,7 @@ package com.mateusz.springgpt.logic;
 
 import com.mateusz.springgpt.entity.HeatmapEntity;
 import com.mateusz.springgpt.repository.HeatmapRepository;
+import com.mateusz.springgpt.service.tools.ImageAnalyzer;
 import com.mateusz.springgpt.service.tools.PlaywrightHandler;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Page;
@@ -39,7 +40,9 @@ public class HeatMapScrapper {
         playwrightHandler.navigate(page, URL);
         playwrightHandler.click(page, "button:has-text('DISAGREE')");
         playwrightHandler.click(page, "button:has(div:has-text('Fullscreen'))");
-        String base64screenshot = playwrightHandler.screenshot(page, "heatMap");
+
+        byte[] screenshot = playwrightHandler.screenshotSelectedPart(page, "heatMap", "canvas.chart.initialized");
+        String base64screenshot = ImageAnalyzer.byteToBase64(screenshot);
         saveHeatmapToDatabase(page, base64screenshot);
 
         playwrightHandler.closeBrowser(browser);

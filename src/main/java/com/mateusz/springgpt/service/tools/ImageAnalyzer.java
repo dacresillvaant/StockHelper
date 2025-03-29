@@ -12,6 +12,10 @@ public class ImageAnalyzer {
         throw new IllegalStateException("Utility class");
     }
 
+    public static String byteToBase64(byte[] image) {
+        return Base64.getEncoder().encodeToString(image);
+    }
+
     public static Mat base64ToMat(String base64) {
         byte[] decodeBytes = Base64.getDecoder().decode(base64);
         return opencv_imgcodecs.imdecode(new Mat(decodeBytes), opencv_imgcodecs.IMREAD_COLOR);
