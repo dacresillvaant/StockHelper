@@ -6,13 +6,13 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "screenshots")
+@Table(name = "heatmap")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Screenshot {
+public class Heatmap {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

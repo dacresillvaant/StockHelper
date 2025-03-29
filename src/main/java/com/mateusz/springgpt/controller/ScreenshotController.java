@@ -1,6 +1,6 @@
 package com.mateusz.springgpt.controller;
 
-import com.mateusz.springgpt.entity.Screenshot;
+import com.mateusz.springgpt.entity.Heatmap;
 import com.mateusz.springgpt.repository.ScreenshotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,8 @@ public class ScreenshotController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Screenshot> getScreenshotById(@PathVariable Long id) {
-        Optional<Screenshot> screenshot = screenshotRepository.findById(id);
+    public ResponseEntity<Heatmap> getScreenshotById(@PathVariable Long id) {
+        Optional<Heatmap> screenshot = screenshotRepository.findById(id);
 
         return screenshot.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }

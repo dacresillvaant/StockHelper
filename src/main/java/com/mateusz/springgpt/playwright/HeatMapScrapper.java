@@ -1,6 +1,6 @@
 package com.mateusz.springgpt.playwright;
 
-import com.mateusz.springgpt.entity.Screenshot;
+import com.mateusz.springgpt.entity.Heatmap;
 import com.mateusz.springgpt.repository.ScreenshotRepository;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Page;
@@ -39,19 +39,19 @@ public class HeatMapScrapper {
         playwrightHandler.click(page, "button:has-text('DISAGREE')");
         playwrightHandler.click(page, "button:has(div:has-text('Fullscreen'))");
         String base64screenshot = playwrightHandler.screenshot(page, "heatMap");
-        saveScreenshotToDatabase(page, base64screenshot);
+        saveHeatmapToDatabase(page, base64screenshot);
 
         playwrightHandler.closeBrowser(browser);
     }
 
-    private void saveScreenshotToDatabase(Page page, String screenshotInBase64) {
-        Screenshot screenshot = Screenshot.builder()
+    private void saveHeatmapToDatabase(Page page, String screenshotInBase64) {
+        Heatmap heatmap = Heatmap.builder()
                 .createdDate(LocalDateTime.now())
                 .source(page.url())
                 .base64(screenshotInBase64)
                 .build();
 
-        screenshotRepository.save(screenshot);
+        screenshotRepository.save(heatmap);
         log.info("Screenshot was successfully saved in the database.");
     }
 }
