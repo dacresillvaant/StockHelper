@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @RestController
@@ -33,8 +34,8 @@ public class ScreenshotController {
     }
 
     @GetMapping("/{id}/analyze")
-    public ResponseEntity<Double> analyzeScreenshot(@PathVariable Long id) {
-        Double ratio = heatmapAnalysisService.analyzeHeatmap(id);
+    public ResponseEntity<BigDecimal> analyzeScreenshot(@PathVariable Long id) {
+        BigDecimal ratio = heatmapAnalysisService.analyzeHeatmap(id);
 
         if (ratio == null) {
             return ResponseEntity.notFound().build();

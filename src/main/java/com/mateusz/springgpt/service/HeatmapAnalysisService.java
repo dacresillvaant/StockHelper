@@ -8,6 +8,7 @@ import org.bytedeco.opencv.opencv_core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -21,7 +22,7 @@ public class HeatmapAnalysisService {
         this.heatmapRepository = heatmapRepository;
     }
 
-    public Double analyzeHeatmap(Long id) {
+    public BigDecimal analyzeHeatmap(Long id) {
         Optional<HeatmapEntity> heatmap = heatmapRepository.findById(id);
 
         if (heatmap.isEmpty()) {

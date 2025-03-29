@@ -4,6 +4,8 @@ import org.bytedeco.javacpp.indexer.UByteIndexer;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.Mat;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Base64;
 
 public class ImageAnalyzer {
@@ -31,7 +33,7 @@ public class ImageAnalyzer {
      * 1 -> green channel
      * 2 -> red channel
      */
-    public static double greenRedRatio(Mat image) {
+    public static BigDecimal greenRedRatio(Mat image) {
         UByteIndexer indexer = image.createIndexer();
 
         int greenPixelsCount = 0;
@@ -54,9 +56,10 @@ public class ImageAnalyzer {
         indexer.close();
 
         if (redPixelsCount + greenPixelsCount == 0) {
-            return 0;
+            return BigDecimal.ZERO;
         } else {
-            return (double) greenPixelsCount / (greenPixelsCount + redPixelsCount);
+            BigDecimal totalPixels = BigDecimal.valueOf(greenPixelsCount).add(BigDecimal.valueOf(redPixelsCount));
+            return BigDecimal.valueOf(greenPixelsCount).divide(totalPixels, 2, RoundingMode.HALF_UP);
         }
     }
 }
