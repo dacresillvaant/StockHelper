@@ -1,7 +1,8 @@
 package com.mateusz.springgpt.controller;
 
-import com.mateusz.springgpt.entity.Heatmap;
-import com.mateusz.springgpt.repository.ScreenshotRepository;
+import com.mateusz.springgpt.entity.HeatmapEntity;
+import com.mateusz.springgpt.repository.HeatmapRepository;
+import com.mateusz.springgpt.service.HeatmapAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,17 +16,30 @@ import java.util.Optional;
 @RequestMapping("/api/screenshot")
 public class ScreenshotController {
 
-    private final ScreenshotRepository screenshotRepository;
+    private final HeatmapRepository heatmapRepository;
+    private final HeatmapAnalysisService heatmapAnalysisService;
 
     @Autowired
-    public ScreenshotController(ScreenshotRepository screenshotRepository) {
-        this.screenshotRepository = screenshotRepository;
+    public ScreenshotController(HeatmapRepository heatmapRepository, HeatmapAnalysisService heatmapAnalysisService) {
+        this.heatmapRepository = heatmapRepository;
+        this.heatmapAnalysisService = heatmapAnalysisService;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Heatmap> getScreenshotById(@PathVariable Long id) {
-        Optional<Heatmap> screenshot = screenshotRepository.findById(id);
+    public ResponseEntity<HeatmapEntity> getHeatmapById(@PathVariable Long id) {
+        Optional<HeatmapEntity> heatmap = heatmapRepository.findById(id);
 
-        return screenshot.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return heatmap.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/analyze")
+    public ResponseEntity<Double> analyzeScreenshot(@PathVariable Long id) {
+        Double ratio = heatmapAnalysisService.analyzeHeatmap(id);
+
+        if (ratio == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(ratio);
     }
 }

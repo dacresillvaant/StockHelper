@@ -1,4 +1,4 @@
-package com.mateusz.springgpt.playwright;
+package com.mateusz.springgpt.service.tools;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.WaitForSelectorState;

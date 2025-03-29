@@ -4,4 +4,5 @@
 22.03.2025 - Added database\
 22.03.2025 - Screenshots from heatmap are saved to database as base64\
 25.03.2025 - Successfully integration with mailgun Sandbox API\
-27.03.2025 - Successfully integration with mailgun PROD API
+27.03.2025 - Successfully integration with mailgun PROD API\
+29.03.2025 - Added functionality to analyze green/red pixels ratio of an image

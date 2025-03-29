@@ -1,7 +1,8 @@
-package com.mateusz.springgpt.playwright;
+package com.mateusz.springgpt.logic;
 
-import com.mateusz.springgpt.entity.Heatmap;
-import com.mateusz.springgpt.repository.ScreenshotRepository;
+import com.mateusz.springgpt.entity.HeatmapEntity;
+import com.mateusz.springgpt.repository.HeatmapRepository;
+import com.mateusz.springgpt.service.tools.PlaywrightHandler;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -22,12 +23,12 @@ public class HeatMapScrapper {
     private boolean headless;
 
     private final PlaywrightHandler playwrightHandler;
-    private final ScreenshotRepository screenshotRepository;
+    private final HeatmapRepository heatmapRepository;
 
     @Autowired
-    public HeatMapScrapper(PlaywrightHandler playwrightHandler, ScreenshotRepository screenshotRepository) {
+    public HeatMapScrapper(PlaywrightHandler playwrightHandler, HeatmapRepository heatmapRepository) {
         this.playwrightHandler = playwrightHandler;
-        this.screenshotRepository = screenshotRepository;
+        this.heatmapRepository = heatmapRepository;
     }
 
     @Scheduled(cron = "${scheduler.heatmap}")
@@ -45,13 +46,13 @@ public class HeatMapScrapper {
     }
 
     private void saveHeatmapToDatabase(Page page, String screenshotInBase64) {
-        Heatmap heatmap = Heatmap.builder()
+        HeatmapEntity heatmapEntity = HeatmapEntity.builder()
                 .createdDate(LocalDateTime.now())
                 .source(page.url())
                 .base64(screenshotInBase64)
                 .build();
 
-        screenshotRepository.save(heatmap);
+        heatmapRepository.save(heatmapEntity);
         log.info("Screenshot was successfully saved in the database.");
     }
 }

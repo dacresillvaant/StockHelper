@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Heatmap {
+public class HeatmapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

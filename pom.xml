@@ -23,6 +23,7 @@
 		<playwright-version>1.50.0</playwright-version>
 		<postgresql-version>42.7.5</postgresql-version>
 		<mailgun-version>1.1.5</mailgun-version>
+		<javacv-version>1.5.11</javacv-version>
 	</properties>
 
 	<dependencies>
@@ -79,6 +80,13 @@
 			<groupId>com.mailgun</groupId>
 			<artifactId>mailgun-java</artifactId>
 			<version>${mailgun-version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.bytedeco/javacv-platform -->
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv-platform</artifactId>
+			<version>${javacv-version}</version>
 		</dependency>
 	</dependencies>
 
