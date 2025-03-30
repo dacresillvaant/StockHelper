@@ -24,4 +24,8 @@ public class HeatmapEntity {
 
     @Column(columnDefinition = "TEXT")
     private String base64;
+
+    private double ratio;
+
+    private String modelVersion;
 }

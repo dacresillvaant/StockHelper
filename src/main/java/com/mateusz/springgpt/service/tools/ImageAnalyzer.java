@@ -10,12 +10,18 @@ import java.util.Base64;
 
 public class ImageAnalyzer {
 
+    public static final String IMAGE_ANALYZER_VERSION = "1.0";
+
     private ImageAnalyzer() {
         throw new IllegalStateException("Utility class");
     }
 
     public static String byteToBase64(byte[] image) {
         return Base64.getEncoder().encodeToString(image);
+    }
+
+    public static Mat byteToMat(byte[] imageBytes) {
+        return opencv_imgcodecs.imdecode(new Mat(imageBytes), opencv_imgcodecs.IMREAD_COLOR);
     }
 
     public static Mat base64ToMat(String base64) {
