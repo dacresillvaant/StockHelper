@@ -23,15 +23,19 @@ spring:
 playwright:
   headless: true
 
-logging:
-  level:
-    org.hibernate.orm.jdbc.bind: off
-
 mailgun:
   eu-base-url: https://api.eu.mailgun.net/
   api-key: ${MAILGUN_API_KEY}
   from: ${MAILGUN_FROM}
   domain: ${MAILGUN_DOMAIN}
 
+alphavantage:
+  url: https://www.alphavantage.co/query
+  api-key: ${ALPHAVANTAGE_API_KEY}
+
 scheduler:
   heatmap: "0 */5 * * * *"
+
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: off
