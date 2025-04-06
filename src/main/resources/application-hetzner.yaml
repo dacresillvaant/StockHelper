@@ -11,9 +11,9 @@ spring:
       api-key: ${OPEN_AI_API_KEY}
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/spring_ai
+    url: jdbc:postgresql://${HETZNER_DATABASE_URL}/spring_ai
     username: postgres
-    password: postgres
+    password: ${HETZNER_DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
