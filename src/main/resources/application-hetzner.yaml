@@ -37,7 +37,7 @@ alphavantage:
   api-key: ${ALPHAVANTAGE_API_KEY}
 
 scheduler:
-  heatmap: "0 */5 * * * *"
+  heatmap: "0 */30 * * * *"
 
 logging:
   level:

@@ -12,7 +12,7 @@
 
 	<groupId>com.mateusz</groupId>
 	<artifactId>springgpt</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>SpringGPT</name>
 	<description>Project used to analyze various stock data</description>
 
