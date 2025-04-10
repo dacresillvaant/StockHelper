@@ -93,10 +93,6 @@
 					<groupId>org.bytedeco</groupId>
 					<artifactId>ffmpeg</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>org.bytedeco</groupId>
-					<artifactId>openblas</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 	</dependencies>
