@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +96,7 @@ public class PlaywrightHandler {
 
     public void closeBrowser(Browser browser) {
         if (browser != null) {
+            browser.contexts().forEach(c -> {c.close(); log.debug("Browser context closed");});
             log.info("Closing browser...");
             browser.close();
         }

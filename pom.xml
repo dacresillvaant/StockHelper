@@ -11,9 +11,9 @@
 	</parent>
 
 	<groupId>com.mateusz</groupId>
-	<artifactId>springgpt</artifactId>
+	<artifactId>springai</artifactId>
 	<version>1.0</version>
-	<name>SpringGPT</name>
+	<name>SpringAI</name>
 	<description>Project used to analyze various stock data</description>
 
 	<properties>
@@ -83,10 +83,21 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.bytedeco/javacv-platform -->
+		<!-- Use maven to create .jar with dependencies for linux only - -Djavacpp.platform=linux-x86_64 clean package -f pom.xml -->
 		<dependency>
 			<groupId>org.bytedeco</groupId>
 			<artifactId>javacv-platform</artifactId>
 			<version>${javacv-version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bytedeco</groupId>
+					<artifactId>ffmpeg</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bytedeco</groupId>
+					<artifactId>openblas</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
@@ -103,6 +114,7 @@
 	</dependencyManagement>
 
 	<build>
+		<finalName>springai</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
