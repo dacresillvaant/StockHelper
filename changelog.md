@@ -11,4 +11,5 @@
 06.04.2025 - Manually deployed and run app on Hetzner VM\
 10.04.2025 - Reduced .jar size\
 10.04.2025 - Adds log to file with retention functionality\
-15.04.2025 - Adds incoming requests logging
+15.04.2025 - Adds incoming requests logging\
+19.04.2025 - Successful integration with Twelvedata API

@@ -36,6 +36,10 @@ alphavantage:
   url: https://www.alphavantage.co/query
   api-key: ${ALPHAVANTAGE_API_KEY}
 
+twelvedata:
+  url: https://api.twelvedata.com/
+  api-key: ${TWELVEDATA_API_KEY}
+
 scheduler:
   heatmap: "0 */30 * * * *"
 
