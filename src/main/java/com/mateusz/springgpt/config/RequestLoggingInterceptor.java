@@ -16,12 +16,22 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
             String ipAddress = request.getRemoteAddr();
             String method = request.getMethod();
             String uri = request.getRequestURI();
+            String userAgent = request.getHeader("User-Agent");
 
-            log.info("Incoming request from IP: {}, - Method: {}, - URI: {}", ipAddress, method, uri);
+            log.info("Incoming request from IP: {}, - Method: {}, - URI: {}, - User-Agent: {}", ipAddress, method, uri, userAgent);
 
         } catch (Exception e) {
             log.warn("Failed to log request info: ", e);
         }
         return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        String ipAddress = request.getRemoteAddr();
+        int status = response.getStatus();
+        String uri = request.getRequestURI();
+
+        log.trace("Completed response to IP: {}, URI: {}, Status: {}", ipAddress, uri, status);
     }
 }
