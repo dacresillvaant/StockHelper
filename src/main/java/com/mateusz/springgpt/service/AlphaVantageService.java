@@ -1,5 +1,6 @@
 package com.mateusz.springgpt.service;
 
+import com.mateusz.springgpt.config.WebClientLoggingUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +22,10 @@ public class AlphaVantageService {
     public AlphaVantageService(@Value("${alphavantage.url}") String baseUrl) {
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl)
-                .filter(((request, next) -> {
-                    log.info("Sending request to Alpha Vantage: {}", request.url());
-                    return next.exchange(request);
-                }))
+                .filters(exchangeFilterFunctions -> {
+                    exchangeFilterFunctions.add(WebClientLoggingUtil.logRequest());
+                    exchangeFilterFunctions.add(WebClientLoggingUtil.logResponse());
+                })
                 .build();
     }
 

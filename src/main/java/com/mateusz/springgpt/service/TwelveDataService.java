@@ -1,12 +1,11 @@
 package com.mateusz.springgpt.service;
 
+import com.mateusz.springgpt.config.WebClientLoggingUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -26,45 +25,15 @@ public class TwelveDataService {
                 .baseUrl(baseUrl)
                 .defaultHeader("Authorization", "apikey " + apiKey)
                 .filters(exchangeFilterFunctions -> {
-                    exchangeFilterFunctions.add(logRequest());
-                    exchangeFilterFunctions.add(logResponse());
+                    exchangeFilterFunctions.add(WebClientLoggingUtil.logRequest());
+                    exchangeFilterFunctions.add(WebClientLoggingUtil.logResponse());
                 })
                 .build();
     }
 
-    private ExchangeFilterFunction logRequest() {
-        return ExchangeFilterFunction.ofRequestProcessor(request -> {
-            log.info("Request: {} {}", request.method(), request.url());
-
-            return Mono.just(request);
-        });
-    }
-
-    private ExchangeFilterFunction logResponse() {
-        return ExchangeFilterFunction.ofResponseProcessor(response ->
-                response.bodyToMono(String.class)
-                        .defaultIfEmpty("")
-                        .flatMap(body -> {
-                            log.info("""
-                                    Response from: {} {}
-                                    Status: {}
-                                    Response body: {}
-                                    """, response.request().getMethod(), response.request().getURI(), response.statusCode(), body);
-
-                            // Rebuild the client response so it can be consumed again downstream
-                            ClientResponse newResponse = ClientResponse.create(response.statusCode())
-                                    .headers(headers -> headers.addAll(response.headers().asHttpHeaders()))
-                                    .body(body)
-                                    .build();
-
-                            return Mono.just(newResponse);
-                        })
-        );
-    }
-
     public Mono<ResponseEntity<String>> getUsage() {
         return webClient.get().uri(uriBuilder -> uriBuilder
-                        .path("api_usage/")
+                        .path("api_usage")
                         .build())
                 .retrieve().toEntity(String.class);
     }
