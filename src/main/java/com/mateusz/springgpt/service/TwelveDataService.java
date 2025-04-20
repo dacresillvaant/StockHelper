@@ -32,8 +32,16 @@ public class TwelveDataService {
 
     public Mono<ResponseEntity<String>> getUsage() {
         return webClient.get().uri(uriBuilder -> uriBuilder
-                        .path("api_usage")
+                        .path("api_usage/")
                         .build())
+                .retrieve().toEntity(String.class);
+    }
+
+    public Mono<ResponseEntity<String>> getExchangeRate(String symbol) {
+        return webClient.get().uri(uriBuilder -> uriBuilder
+                .path("exchange_rate")
+                .queryParam("symbol", symbol)
+                .build())
                 .retrieve().toEntity(String.class);
     }
 }
