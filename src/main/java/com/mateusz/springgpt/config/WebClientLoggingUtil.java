@@ -8,8 +8,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class WebClientLoggingUtil {
 
-    private WebClientLoggingUtil() {
-    }
+    private WebClientLoggingUtil() {}
 
     public static ExchangeFilterFunction logRequest() {
         return ExchangeFilterFunction.ofRequestProcessor(request -> {

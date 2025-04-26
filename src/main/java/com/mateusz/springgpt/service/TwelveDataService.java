@@ -1,6 +1,7 @@
 package com.mateusz.springgpt.service;
 
 import com.mateusz.springgpt.config.WebClientLoggingUtil;
+import com.mateusz.springgpt.controller.dto.CurrencyRateResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,11 +39,11 @@ public class TwelveDataService {
                 .retrieve().toEntity(String.class);
     }
 
-    public Mono<ResponseEntity<String>> getExchangeRate(String symbol) {
+    public Mono<ResponseEntity<CurrencyRateResponse>> getExchangeRate(String symbol) {
         return webClient.get().uri(uriBuilder -> uriBuilder
                         .path("exchange_rate")
                         .queryParam("symbol", symbol)
                         .build())
-                .retrieve().toEntity(String.class);
+                .retrieve().toEntity(CurrencyRateResponse.class);
     }
 }
