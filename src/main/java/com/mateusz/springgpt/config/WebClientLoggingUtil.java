@@ -29,7 +29,7 @@ public class WebClientLoggingUtil {
                                     Response body: {}
                                     """, response.request().getMethod(), response.request().getURI(), response.statusCode(), body);
 
-                            // Rebuild the client response so it can be consumed again downstream
+                            // Rebuild the client response, so it can be consumed again downstream
                             ClientResponse newResponse = ClientResponse.create(response.statusCode())
                                     .headers(headers -> headers.addAll(response.headers().asHttpHeaders()))
                                     .body(body)
