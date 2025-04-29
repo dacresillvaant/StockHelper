@@ -12,4 +12,5 @@
 10.04.2025 - Reduced .jar size\
 10.04.2025 - Adds log to file with retention functionality\
 15.04.2025 - Adds incoming requests logging\
-19.04.2025 - Successful integration with Twelvedata API
+19.04.2025 - Successful integration with Twelvedata API\
+29.04.2025 - Added job which checks currency rate twice a day, saves it to the database and sends email notification

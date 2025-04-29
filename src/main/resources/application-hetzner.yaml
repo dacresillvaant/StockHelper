@@ -31,6 +31,7 @@ mailgun:
   api-key: ${MAILGUN_API_KEY}
   from: ${MAILGUN_FROM}
   domain: ${MAILGUN_DOMAIN}
+  default-receiver: ${DEFAULT_MAIL_RECEIVER}
 
 alphavantage:
   url: https://www.alphavantage.co/query
@@ -42,6 +43,7 @@ twelvedata:
 
 scheduler:
   heatmap: "0 */30 * * * *"
+  usdpln: "0 0 8,16 * * *"
 
 logging:
   level:
