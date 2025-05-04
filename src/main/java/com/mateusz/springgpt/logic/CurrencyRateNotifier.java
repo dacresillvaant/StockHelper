@@ -1,6 +1,6 @@
 package com.mateusz.springgpt.logic;
 
-import com.mateusz.springgpt.controller.dto.CurrencyRateResponse;
+import com.mateusz.springgpt.controller.dto.CurrencyRateDto;
 import com.mateusz.springgpt.entity.CurrencyRateEntity;
 import com.mateusz.springgpt.repository.CurrencyRateRepository;
 import com.mateusz.springgpt.service.MailgunEmailService;
@@ -36,7 +36,7 @@ public class CurrencyRateNotifier {
         this.mailgunEmailService = mailgunEmailService;
     }
 
-    private void saveRateToDatabase(CurrencyRateResponse currencyRateResponse) {
+    private void saveRateToDatabase(CurrencyRateDto currencyRateResponse) {
         CurrencyRateEntity currencyRateEntity = CurrencyRateEntity.builder()
                 .createdDate(LocalDateTime.now())
                 .ratioDate(LocalDateTime.now())
@@ -48,7 +48,7 @@ public class CurrencyRateNotifier {
         log.info("Currency rate of {} has been saved to the database.", currencyRateEntity.getSymbol());
     }
 
-    private void sendRateEmail(CurrencyRateResponse currencyRateResponse) {
+    private void sendRateEmail(CurrencyRateDto currencyRateResponse) {
         long timestamp = currencyRateResponse.getTimestamp();
         String formattedTimestamp = Instant.ofEpochSecond(timestamp)
                 .atZone(ZoneId.systemDefault())
@@ -62,7 +62,7 @@ public class CurrencyRateNotifier {
     }
 
     private void processCurrencyRate(String symbol) {
-        CurrencyRateResponse currencyRateResponse = twelveDataService
+        CurrencyRateDto currencyRateResponse = twelveDataService
                 .getExchangeRate(symbol)
                 .map(ResponseEntity::getBody)
                 .block();

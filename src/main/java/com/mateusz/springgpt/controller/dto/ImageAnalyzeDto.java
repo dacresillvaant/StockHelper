@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CurrencyRateResponse {
-    private String symbol;
-    private BigDecimal rate;
-    private Long timestamp;
+public class ImageAnalyzeDto {
+    private Long imageId;
+    private BigDecimal ratio;
 }

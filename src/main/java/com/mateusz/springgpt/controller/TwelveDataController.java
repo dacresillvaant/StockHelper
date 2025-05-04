@@ -1,6 +1,6 @@
 package com.mateusz.springgpt.controller;
 
-import com.mateusz.springgpt.controller.dto.CurrencyRateResponse;
+import com.mateusz.springgpt.controller.dto.CurrencyRateDto;
 import com.mateusz.springgpt.service.TwelveDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class TwelveDataController {
     }
 
     @GetMapping("/exchange_rate/")
-    public Mono<ResponseEntity<CurrencyRateResponse>> getExchangeRate(@RequestParam String symbol) {
+    public Mono<ResponseEntity<CurrencyRateDto>> getExchangeRate(@RequestParam String symbol) {
         return twelveDataService.getExchangeRate(symbol);
     }
 }
