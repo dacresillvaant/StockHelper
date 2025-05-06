@@ -16,9 +16,10 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
             String ipAddress = request.getRemoteAddr();
             String method = request.getMethod();
             String uri = request.getRequestURI();
+            String param = request.getQueryString();
             String userAgent = request.getHeader("User-Agent");
 
-            log.info("Incoming request from IP: {}, - Method: {}, - URI: {}, - User-Agent: {}", ipAddress, method, uri, userAgent);
+            log.info("Incoming request from IP: {}, - Method: {}, - URI: {} - User-Agent: {}", ipAddress, method, uri.concat(param), userAgent);
 
         } catch (Exception e) {
             log.warn("Failed to log request info: ", e);
@@ -32,6 +33,6 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         int status = response.getStatus();
         String uri = request.getRequestURI();
 
-        log.trace("Completed response to IP: {}, URI: {}, Status: {}", ipAddress, uri, status);
+        log.trace("Completed response to IP: {}, URI: {} Status: {}", ipAddress, uri, status);
     }
 }
