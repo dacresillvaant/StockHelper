@@ -36,7 +36,8 @@ public class TwelveDataController {
     }
 
     @GetMapping("/exchange_rate_database/")
-    public BigDecimal getExchangeRateFromDatabase(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime ratioDate) {
-        return twelveDataService.getExchangeRateFromDatabase(ratioDate);
+    public BigDecimal getExchangeRateFromDatabase(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime ratioDate,
+                                                  @RequestParam String symbol) {
+        return twelveDataService.getExchangeRateFromDatabase(ratioDate, symbol);
     }
 }

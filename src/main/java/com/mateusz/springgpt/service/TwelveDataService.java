@@ -54,9 +54,9 @@ public class TwelveDataService {
                 .retrieve().toEntity(CurrencyRateDto.class);
     }
 
-    public BigDecimal getExchangeRateFromDatabase(LocalDateTime  ratioDate) {
+    public BigDecimal getExchangeRateFromDatabase(LocalDateTime  ratioDate, String symbol) {
         LocalDateTime start = ratioDate.minusMinutes(1);
         LocalDateTime end = start.plusMinutes(2);
-        return currencyRateRepository.findRateByRatioDateBetween(start, end);
+        return currencyRateRepository.findRateByRatioDateBetween(start, end, symbol);
     }
 }

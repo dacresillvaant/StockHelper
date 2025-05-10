@@ -15,6 +15,8 @@ public interface CurrencyRateRepository extends JpaRepository<CurrencyRateEntity
     @Query("""
     select cr.rate from CurrencyRateEntity cr 
     where cr.ratioDate >= :start and cr.ratioDate < :end
+    and cr.symbol = :symbol
     """)
-    BigDecimal findRateByRatioDateBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    BigDecimal findRateByRatioDateBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
+                                          @Param("symbol")String symbol);
 }
