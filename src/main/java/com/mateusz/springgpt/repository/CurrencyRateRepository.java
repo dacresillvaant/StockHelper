@@ -13,9 +13,8 @@ import java.time.LocalDateTime;
 public interface CurrencyRateRepository extends JpaRepository<CurrencyRateEntity, Long> {
 
     @Query("""
-    select new com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto(
-    cr.symbol, cr.rate, cr.ratioDate
-    ) from CurrencyRateEntity cr 
+    select new com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto(cr.symbol, cr.rate, cr.ratioDate)
+    from CurrencyRateEntity cr 
     where cr.ratioDate >= :start and cr.ratioDate < :end
     and cr.symbol = :symbol
     """)
