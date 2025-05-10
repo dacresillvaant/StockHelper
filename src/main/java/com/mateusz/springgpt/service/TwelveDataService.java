@@ -1,7 +1,8 @@
 package com.mateusz.springgpt.service;
 
 import com.mateusz.springgpt.config.WebClientLoggingUtil;
-import com.mateusz.springgpt.controller.dto.CurrencyRateDto;
+import com.mateusz.springgpt.controller.dto.CurrencyRateExternalDto;
+import com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto;
 import com.mateusz.springgpt.repository.CurrencyRateRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -46,17 +46,17 @@ public class TwelveDataService {
                 .retrieve().toEntity(String.class);
     }
 
-    public Mono<ResponseEntity<CurrencyRateDto>> getExchangeRate(String symbol) {
+    public Mono<ResponseEntity<CurrencyRateExternalDto>> getExchangeRate(String symbol) {
         return webClient.get().uri(uriBuilder -> uriBuilder
                         .path("exchange_rate")
                         .queryParam("symbol", symbol)
                         .build())
-                .retrieve().toEntity(CurrencyRateDto.class);
+                .retrieve().toEntity(CurrencyRateExternalDto.class);
     }
 
-    public BigDecimal getExchangeRateFromDatabase(LocalDateTime  ratioDate, String symbol) {
+    public CurrencyRateInternalDto getExchangeRateFromDatabase(LocalDateTime  ratioDate, String symbol) {
         LocalDateTime start = ratioDate.minusMinutes(1);
         LocalDateTime end = start.plusMinutes(2);
-        return currencyRateRepository.findRateByRatioDateBetween(start, end, symbol);
+        return currencyRateRepository.findExchangeRateByRatioDateBetween(start, end, symbol);
     }
 }
