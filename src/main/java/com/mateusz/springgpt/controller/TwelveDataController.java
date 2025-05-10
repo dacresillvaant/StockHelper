@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/twelvedata/")
@@ -40,12 +41,7 @@ public class TwelveDataController {
     @GetMapping("/exchange_rate_database/")
     public CurrencyRateInternalDto getExchangeRateFromDatabase(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime ratioDate,
                                                                @RequestParam String symbol) {
-        CurrencyRateInternalDto exchangeRate = twelveDataService.getExchangeRateFromDatabase(ratioDate, symbol);
-
-        if (exchangeRate == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Exchange rate not found");
-        } else {
-            return exchangeRate;
-        }
+        return Optional.ofNullable(twelveDataService.getExchangeRateFromDatabase(ratioDate, symbol))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exchange rate not found"));
     }
 }
