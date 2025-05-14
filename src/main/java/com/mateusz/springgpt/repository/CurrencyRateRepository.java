@@ -14,11 +14,11 @@ public interface CurrencyRateRepository extends JpaRepository<CurrencyRateEntity
 
     @Query("""
     select new com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto(cr.symbol, cr.rate, cr.ratioDate)
-    from CurrencyRateEntity cr 
+    from CurrencyRateEntity cr
     where cr.ratioDate >= :start and cr.ratioDate < :end
     and cr.symbol = :symbol
     """)
     CurrencyRateInternalDto findExchangeRateByRatioDateBetween(@Param("start") LocalDateTime start,
                                                                @Param("end") LocalDateTime end,
-                                                               @Param("symbol")String symbol);
+                                                               @Param("symbol") String symbol);
 }
