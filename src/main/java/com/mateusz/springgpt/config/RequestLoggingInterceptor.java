@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.Optional;
+
 @Component
 @Slf4j
 public class RequestLoggingInterceptor implements HandlerInterceptor {
@@ -16,7 +18,7 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
             String ipAddress = request.getRemoteAddr();
             String method = request.getMethod();
             String uri = request.getRequestURI();
-            String param = request.getQueryString();
+            String param = Optional.ofNullable(request.getQueryString()).orElse("");
             String userAgent = request.getHeader("User-Agent");
 
             log.info("Incoming request from IP: {}, - Method: {}, - URI: {} - User-Agent: {}", ipAddress, method, uri.concat(param), userAgent);
