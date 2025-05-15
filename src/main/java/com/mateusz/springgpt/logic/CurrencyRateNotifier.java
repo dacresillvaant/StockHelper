@@ -70,9 +70,9 @@ public class CurrencyRateNotifier {
             return "NaN";
         } else {
             BigDecimal diff = newValue.subtract(oldValue);
-            BigDecimal percentageDiff = diff.divide(oldValue, 2, RoundingMode.HALF_UP)
+            BigDecimal percentageDiff = diff.divide(oldValue, 6, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100))
-                    .setScale(2, RoundingMode.HALF_UP);
+                    .setScale(3, RoundingMode.HALF_UP);
 
             return percentageDiff.toString();
         }

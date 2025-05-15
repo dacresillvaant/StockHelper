@@ -55,8 +55,8 @@ public class TwelveDataService {
     }
 
     public CurrencyRateInternalDto getExchangeRateFromDatabase(LocalDateTime ratioDate, String symbol) {
-        LocalDateTime start = ratioDate.minusMinutes(1);
-        LocalDateTime end = start.plusMinutes(2);
+        LocalDateTime start = ratioDate.minusMinutes(5);
+        LocalDateTime end = ratioDate.plusMinutes(5);
         return currencyRateRepository.findExchangeRateByRatioDateBetween(start, end, symbol);
     }
 }
