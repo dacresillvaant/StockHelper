@@ -38,6 +38,11 @@ public class TwelveDataController {
         return twelveDataService.getExchangeRate(symbol);
     }
 
+    @GetMapping("/quote/")
+    public Mono<ResponseEntity<String>> getQuote(@RequestParam String symbol) {
+        return twelveDataService.getQuote(symbol);
+    }
+
     @GetMapping("/exchange_rate_database/")
     public CurrencyRateInternalDto getExchangeRateFromDatabase(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime ratioDate,
                                                                @RequestParam String symbol) {

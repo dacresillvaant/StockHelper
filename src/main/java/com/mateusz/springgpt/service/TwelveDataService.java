@@ -54,6 +54,14 @@ public class TwelveDataService {
                 .retrieve().toEntity(CurrencyRateExternalDto.class);
     }
 
+    public Mono<ResponseEntity<String>> getQuote(String symbol) {
+        return webClient.get().uri(uriBuilder -> uriBuilder
+                        .path("quote")
+                        .queryParam("symbol", symbol)
+                        .build())
+                .retrieve().toEntity(String.class);
+    }
+
     public CurrencyRateInternalDto getExchangeRateFromDatabase(LocalDateTime ratioDate, String symbol) {
         LocalDateTime start = ratioDate.minusMinutes(5);
         LocalDateTime end = ratioDate.plusMinutes(5);
