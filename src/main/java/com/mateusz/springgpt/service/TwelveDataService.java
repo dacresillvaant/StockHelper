@@ -3,6 +3,7 @@ package com.mateusz.springgpt.service;
 import com.mateusz.springgpt.config.WebClientLoggingUtil;
 import com.mateusz.springgpt.controller.dto.CurrencyRateExternalDto;
 import com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto;
+import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
 import com.mateusz.springgpt.repository.CurrencyRateRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +55,12 @@ public class TwelveDataService {
                 .retrieve().toEntity(CurrencyRateExternalDto.class);
     }
 
-    public Mono<ResponseEntity<String>> getQuote(String symbol) {
+    public Mono<ResponseEntity<QuoteExternalDto>> getQuote(String symbol) {
         return webClient.get().uri(uriBuilder -> uriBuilder
                         .path("quote")
                         .queryParam("symbol", symbol)
                         .build())
-                .retrieve().toEntity(String.class);
+                .retrieve().toEntity(QuoteExternalDto.class);
     }
 
     public CurrencyRateInternalDto getExchangeRateFromDatabase(LocalDateTime ratioDate, String symbol) {

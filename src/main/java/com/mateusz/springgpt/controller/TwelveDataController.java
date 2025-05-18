@@ -2,6 +2,7 @@ package com.mateusz.springgpt.controller;
 
 import com.mateusz.springgpt.controller.dto.CurrencyRateExternalDto;
 import com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto;
+import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
 import com.mateusz.springgpt.service.TwelveDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -39,7 +40,7 @@ public class TwelveDataController {
     }
 
     @GetMapping("/quote/")
-    public Mono<ResponseEntity<String>> getQuote(@RequestParam String symbol) {
+    public Mono<ResponseEntity<QuoteExternalDto>> getQuote(@RequestParam String symbol) {
         return twelveDataService.getQuote(symbol);
     }
 

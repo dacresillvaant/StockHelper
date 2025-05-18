@@ -1,6 +1,8 @@
 package com.mateusz.springgpt.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,18 +11,37 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException exception, HttpServletRequest request) {
+        String param = Optional.ofNullable(request.getQueryString()).orElse("");
+
         Map<String, Object> responseBody = new LinkedHashMap<>();
         responseBody.put("timestamp", LocalDateTime.now());
         responseBody.put("status", exception.getStatusCode().value());
         responseBody.put("error", exception.getStatusCode());
         responseBody.put("message", exception.getReason());
-        responseBody.put("path", request.getRequestURI().concat(request.getQueryString()));
+        responseBody.put("path", request.getRequestURI().concat(param));
         return new ResponseEntity<>(responseBody, exception.getStatusCode());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception exception, HttpServletRequest request) {
+        String param = Optional.ofNullable(request.getQueryString()).orElse("");
+
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        responseBody.put("timestamp", LocalDateTime.now());
+        responseBody.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseBody.put("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        responseBody.put("message", exception.getMessage());
+        responseBody.put("path", request.getRequestURI().concat(param));
+
+        log.error("Unhandled exception caught in global handler", exception);
+        return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
