@@ -14,4 +14,6 @@
 15.04.2025 - Adds incoming requests logging\
 19.04.2025 - Successful integration with Twelvedata API\
 29.04.2025 - Added job which checks currency rate twice a day, saves it to the database and sends email notification\
-14.05.2025 - Extends currency rate mail with % change information
+14.05.2025 - Extends currency rate mail with % change information\
+18.05.2025 - Adds first integration tests and method for low price alert\
+19.05.2025 - Low price alert added to scheduler

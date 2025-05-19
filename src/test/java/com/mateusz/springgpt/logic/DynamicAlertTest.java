@@ -41,7 +41,7 @@ public class DynamicAlertTest {
     }
 
     @Test(testName = "Should send email notification when latest close price fallen below threshold price")
-    public void testPriceChangeAlertTriggered() {
+    public void testLowPriceAlertTriggered() {
 //      given
         QuoteExternalDto quote = new QuoteExternalDto();
         quote.setClose("310"); // below threshold
@@ -55,14 +55,14 @@ public class DynamicAlertTest {
         when(twelveDataService.getQuote(symbol))
                 .thenReturn(Mono.just(ResponseEntity.ok(quote)));
 
-        dynamicAlert.priceChangeAlert(symbol, percentChange);
+        dynamicAlert.lowPriceAlert(symbol, percentChange);
 
 //      then
         verify(mailgunEmailService).sendEmail(anyString(), anyString(), anyString());
     }
 
     @Test(testName = "Should not send email when latest close price was above threshold price")
-    public void testPriceChangeAlertOmitted() {
+    public void testLowPriceAlertOmitted() {
 //      given
         QuoteExternalDto quote = new QuoteExternalDto();
         quote.setClose("365"); // above threshold
@@ -76,7 +76,7 @@ public class DynamicAlertTest {
         when(twelveDataService.getQuote(symbol))
                 .thenReturn(Mono.just(ResponseEntity.ok(quote)));
 
-        dynamicAlert.priceChangeAlert(symbol, percentChange);
+        dynamicAlert.lowPriceAlert(symbol, percentChange);
 
 //      then
         verify(mailgunEmailService, never()).sendEmail(anyString(), anyString(), anyString());

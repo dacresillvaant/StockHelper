@@ -12,3 +12,4 @@ playwright:
 scheduler:
   heatmap: "0 */5 * * * *"
   usdpln: "0 0 8,16 * * *"
+  low-price-alert: "0 15 21 ? * MON-SAT"
