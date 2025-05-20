@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-public class SpringGptApplication {
+public class StockAssistantApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringGptApplication.class, args);
+        SpringApplication.run(StockAssistantApplication.class, args);
     }
 }

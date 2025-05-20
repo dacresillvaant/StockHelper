@@ -11,10 +11,10 @@
 	</parent>
 
 	<groupId>com.mateusz</groupId>
-	<artifactId>springai</artifactId>
+	<artifactId>stock_assistant</artifactId>
 	<version>1.0</version>
-	<name>SpringAI</name>
-	<description>Project used to analyze various stock data</description>
+	<name>Stock Assistant</name>
+	<description>Project used to assist and analyze with various stock data</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -134,7 +134,7 @@
 	</dependencyManagement>
 
 	<build>
-		<finalName>springai</finalName>
+		<finalName>stock_assistant</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
