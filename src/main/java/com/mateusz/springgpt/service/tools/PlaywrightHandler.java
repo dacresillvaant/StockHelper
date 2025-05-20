@@ -81,17 +81,21 @@ public class PlaywrightHandler {
                 .setFullPage(true));
     }
 
-    public byte[] screenshotSelectedPart(Page page, String namePrefix, String selector) {
+    public byte[] screenshotSelectedPart(Page page, String namePrefix, String selector, boolean saveToTarget) {
         String filePath = "target/screenshots/";
         String timestamp = new SimpleDateFormat("_yyyy-MM-dd HH-mm").format(new Date());
         String fileExtension = ".png";
 
         Locator locatorToCapture = page.locator(selector);
 
-        log.info("Making a partial screenshot of: {}, element: \"{}\", on {} to -> {}", page.url(), selector, timestamp, filePath);
-
-        return locatorToCapture.screenshot(new Locator.ScreenshotOptions()
-                .setPath(Path.of(filePath + namePrefix + timestamp + fileExtension)));
+        if (saveToTarget) {
+            log.info("Making a partial screenshot of: {}, element: \"{}\", on {} to -> {}", page.url(), selector, timestamp, filePath);
+            return locatorToCapture.screenshot(new Locator.ScreenshotOptions()
+                    .setPath(Path.of(filePath + namePrefix + timestamp + fileExtension)));
+        } else {
+            log.info("Making a partial screenshot of: {}, element: \"{}\", on {}", page.url(), selector, timestamp);
+            return locatorToCapture.screenshot();
+        }
     }
 
     public void closeBrowser(Browser browser) {

@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -115,8 +116,9 @@ public class CurrencyRateNotifier {
         sendRateEmail(currencyRateResponse, symbol);
     }
 
-    @Scheduled(cron = "${scheduler.usdpln}")
-    public void processUsdPln() {
-        processCurrencyRate("USD/PLN");
+    @Scheduled(cron = "${scheduler.process-currencies}")
+    public void scheduledProcessCurrencyRate() {
+        List<String> currencies = List.of("USD/PLN");
+        currencies.forEach(currency -> processCurrencyRate(currency));
     }
 }

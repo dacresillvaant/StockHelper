@@ -26,6 +26,8 @@ public class HeatMapScrapper {
 
     @Value("${playwright.headless}")
     private boolean headless;
+    @Value("${scheduler.heatmap.save-to-target}")
+    private boolean saveToTarget;
 
     private final PlaywrightHandler playwrightHandler;
     private final HeatmapRepository heatmapRepository;
@@ -36,7 +38,6 @@ public class HeatMapScrapper {
         this.heatmapRepository = heatmapRepository;
     }
 
-    @Scheduled(cron = "${scheduler.heatmap}")
     public void scrapHeatMap() {
         Browser browser = playwrightHandler.createBrowser(headless);
         Page page = playwrightHandler.createPage(browser, true);
@@ -45,7 +46,8 @@ public class HeatMapScrapper {
         playwrightHandler.click(page, "button:has-text('DISAGREE')");
         playwrightHandler.click(page, "button:has(div:has-text('Fullscreen'))");
 
-        byte[] screenshot = playwrightHandler.screenshotSelectedPart(page, "heatMap", "canvas.chart.initialized");
+        byte[] screenshot = playwrightHandler.screenshotSelectedPart(
+                page, "heatMap", "canvas.chart.initialized", saveToTarget);
         String base64screenshot = ImageAnalyzer.byteToBase64(screenshot);
         double heatmapRatio = calculateHeatmapRatio(screenshot).doubleValue();
 
@@ -70,5 +72,10 @@ public class HeatMapScrapper {
     private BigDecimal calculateHeatmapRatio(byte[] screenshot) {
         Mat heatmap = ImageAnalyzer.byteToMat(screenshot);
         return ImageAnalyzer.greenRedRatio(heatmap);
+    }
+
+    @Scheduled(cron = "${scheduler.heatmap.cron}")
+    public void scheduledScrapHeatMap() {
+        scrapHeatMap();
     }
 }

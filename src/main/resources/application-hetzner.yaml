@@ -10,6 +10,8 @@ playwright:
   headless: true
 
 scheduler:
-  heatmap: "0 */30 * * * *"
-  usdpln: "0 0 8,16 * * *"
+  heatmap:
+    cron: "0 */30 * * * *"
+    save-to-target: false
+  process-currencies: "0 0 8,16 * * *"
   low-price-alert: "0 15 21 ? * MON-SAT"

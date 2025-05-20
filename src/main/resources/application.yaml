@@ -42,8 +42,10 @@ twelvedata:
   api-key: ${TWELVEDATA_API_KEY}
 
 scheduler:
-  heatmap: "0 */5 * * * *"
-  usdpln: "0 0 8,16 * * *"
+  heatmap:
+    cron: "0 */5 * * * *"
+    save-to-target: false
+  process-currencies: "0 0 8,16 * * *"
   low-price-alert: "0 15 21 ? * MON-SAT"
 
 logging:
