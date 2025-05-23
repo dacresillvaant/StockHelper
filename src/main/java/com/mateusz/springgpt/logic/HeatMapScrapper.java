@@ -39,21 +39,28 @@ public class HeatMapScrapper {
     }
 
     public void scrapHeatMap() {
-        Browser browser = playwrightHandler.createBrowser(headless);
-        Page page = playwrightHandler.createPage(browser, true);
+        Browser browser = null;
+        Page page;
 
-        playwrightHandler.navigate(page, URL);
-        playwrightHandler.click(page, "button:has-text('DISAGREE')");
-        playwrightHandler.click(page, "button:has(div:has-text('Fullscreen'))");
+        try {
+            browser = playwrightHandler.createBrowser(headless);
+            page = playwrightHandler.createPage(browser, true);
 
-        byte[] screenshot = playwrightHandler.screenshotSelectedPart(
-                page, "heatMap", "canvas.chart.initialized", saveToTarget);
-        String base64screenshot = ImageAnalyzer.byteToBase64(screenshot);
-        double heatmapRatio = calculateHeatmapRatio(screenshot).doubleValue();
+            playwrightHandler.navigate(page, URL);
+            playwrightHandler.click(page, "button:has-text('DISAGREE')");
+            playwrightHandler.click(page, "button:has(span:has-text('Fullscreen'))");
 
-        saveHeatmapToDatabase(page, base64screenshot, heatmapRatio);
+            byte[] screenshot = playwrightHandler.screenshotSelectedPart(
+                    page, "heatMap", "canvas.chart.initialized", saveToTarget);
+            String base64screenshot = ImageAnalyzer.byteToBase64(screenshot);
+            double heatmapRatio = calculateHeatmapRatio(screenshot).doubleValue();
 
-        playwrightHandler.closeBrowser(browser);
+            saveHeatmapToDatabase(page, base64screenshot, heatmapRatio);
+        } catch (Exception e) {
+            throw new RuntimeException("Heat map scrapping failed", e);
+        } finally {
+            playwrightHandler.closeBrowser(browser);
+        }
     }
 
     private void saveHeatmapToDatabase(Page page, String base64screenshot, double heatmapRatio) {
