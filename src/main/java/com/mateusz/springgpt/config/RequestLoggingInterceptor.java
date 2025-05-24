@@ -34,7 +34,8 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         String ipAddress = request.getRemoteAddr();
         int status = response.getStatus();
         String uri = request.getRequestURI();
+        String param = Optional.ofNullable(request.getQueryString()).orElse("");
 
-        log.trace("Completed response to IP: {}, URI: {} Status: {}", ipAddress, uri, status);
+        log.info("Completed response to IP: {}, URI: {} - Status: {}", ipAddress, uri.concat(param), status);
     }
 }

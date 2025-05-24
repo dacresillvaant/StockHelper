@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -27,6 +28,22 @@ public class GlobalExceptionHandler {
         responseBody.put("error", exception.getStatusCode());
         responseBody.put("message", exception.getReason());
         responseBody.put("path", request.getRequestURI().concat(param));
+        return new ResponseEntity<>(responseBody, exception.getStatusCode());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNoResourceFoundException(NoResourceFoundException exception, HttpServletRequest request) {
+        String param = Optional.ofNullable(request.getQueryString()).orElse("");
+
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        responseBody.put("timestamp", LocalDateTime.now());
+        responseBody.put("status", HttpStatus.NOT_FOUND.value());
+        responseBody.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
+        responseBody.put("message", "Static resource not found");
+        responseBody.put("path", request.getRequestURI().concat(param));
+
+        log.debug("No static resource found {}", request.getRequestURI().concat(param));
+
         return new ResponseEntity<>(responseBody, exception.getStatusCode());
     }
 
