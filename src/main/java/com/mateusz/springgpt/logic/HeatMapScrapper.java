@@ -47,7 +47,7 @@ public class HeatMapScrapper {
             page = playwrightHandler.createPage(browser, true);
 
             playwrightHandler.navigate(page, URL);
-            playwrightHandler.click(page, "button:has-text('DISAGREE')");
+            playwrightHandler.click(page, "button:has-text('Reject all')");
             playwrightHandler.click(page, "button:has(span:has-text('Fullscreen'))");
 
             byte[] screenshot = playwrightHandler.screenshotSelectedPart(
