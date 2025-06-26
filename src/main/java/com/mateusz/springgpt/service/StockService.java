@@ -5,6 +5,7 @@ import com.mateusz.springgpt.entity.OwnedStockEntity;
 import com.mateusz.springgpt.repository.OwnedStockRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,10 @@ public class StockService {
     }
 
     public OwnedStockEntity addStock(NewStockDto newStockDto) {
+        if (ownedStockRepository.existsByTicker(newStockDto.getTicker())) {
+            throw new DataIntegrityViolationException("Stock with ticker '" + newStockDto.getTicker() + "' already exists.");
+        }
+
         OwnedStockEntity newStock = OwnedStockEntity.builder()
                 .createdDate(LocalDateTime.now())
                 .modifiedDate(LocalDateTime.now())

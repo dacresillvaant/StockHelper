@@ -2,6 +2,7 @@ package com.mateusz.springgpt.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,6 +29,7 @@ public class GlobalExceptionHandler {
         responseBody.put("error", exception.getStatusCode());
         responseBody.put("message", exception.getReason());
         responseBody.put("path", request.getRequestURI().concat(param));
+
         return new ResponseEntity<>(responseBody, exception.getStatusCode());
     }
 
@@ -43,8 +45,22 @@ public class GlobalExceptionHandler {
         responseBody.put("path", request.getRequestURI().concat(param));
 
         log.debug("No static resource found {}", request.getRequestURI().concat(param));
-
         return new ResponseEntity<>(responseBody, exception.getStatusCode());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolationExceptions(Exception exception, HttpServletRequest request) {
+        String param = Optional.ofNullable(request.getQueryString()).orElse("");
+
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        responseBody.put("timestamp", LocalDateTime.now());
+        responseBody.put("status", HttpStatus.CONFLICT.value());
+        responseBody.put("error", HttpStatus.CONFLICT.getReasonPhrase());
+        responseBody.put("message", exception.getMessage());
+        responseBody.put("path", request.getRequestURI().concat(param));
+
+        log.warn("Conflict while adding resource", exception);
+        return new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)

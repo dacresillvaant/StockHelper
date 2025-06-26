@@ -24,6 +24,7 @@ public class OwnedStockEntity {
 
     private LocalDateTime boughtDate;
 
+    @Column(unique = true)
     private String ticker;
 
     private String name;
