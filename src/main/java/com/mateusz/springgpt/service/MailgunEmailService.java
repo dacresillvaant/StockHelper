@@ -2,17 +2,23 @@ package com.mateusz.springgpt.service;
 
 import com.mailgun.api.v3.MailgunMessagesApi;
 import com.mailgun.model.message.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class MailgunEmailService {
 
     private final MailgunMessagesApi mailgunMessagesApi;
+    private final MailgunEmailService mailgunEmailServiceProxy;
 
     @Value("${mailgun.from}")
     private String mailgunFrom;
@@ -20,9 +26,16 @@ public class MailgunEmailService {
     @Value("${mailgun.domain}")
     private String mailgunDomain;
 
+    @Value("${mailgun.default-receiver}")
+    private String defaultMailReceiver;
+
+    private final Environment environment;
+
     @Autowired
-    public MailgunEmailService(MailgunMessagesApi mailgunMessagesApi) {
+    public MailgunEmailService(MailgunMessagesApi mailgunMessagesApi, MailgunEmailService mailgunEmailServiceProxy, Environment environment) {
         this.mailgunMessagesApi = mailgunMessagesApi;
+        this.mailgunEmailServiceProxy = mailgunEmailServiceProxy;
+        this.environment = environment;
     }
 
     @Async
@@ -40,5 +53,32 @@ public class MailgunEmailService {
         } catch (Exception e) {
             log.error("Failed to send the e-mail.", e);
         }
+    }
+
+    @Async
+    public void sendErrorAlertEmail(Exception exception, HttpServletRequest request) {
+        String activeProfile = environment.getActiveProfiles()[0];
+        String subject = "[".concat(activeProfile).concat("] Unhandled exception alert");
+
+        StringBuilder message = new StringBuilder();
+        message.append("Unhandled exception occurred in Stock Assistant app:\n\n");
+        message.append("Timestamp: ").append(LocalDateTime.now()).append("\n");
+
+        if (request != null) {
+            message.append("Path: ").append(Optional.ofNullable(request.getRequestURI()).orElse("-")).append("\n");
+            message.append("Query: ").append(Optional.ofNullable(request.getQueryString()).orElse("-")).append("\n");
+            message.append("User-Agent: ").append(Optional.ofNullable(request.getHeader("User-Agent")).orElse("-")).append("\n");
+            message.append("Remote IP: ").append(Optional.ofNullable(request.getRemoteAddr()).orElse("-")).append("\n");
+        }
+
+        message.append("\nException: ").append(exception.getClass().getName()).append("\n");
+        message.append("Message: ").append(Optional.ofNullable(exception.getMessage()).orElse("(no message)")).append("\n");
+        message.append("Stack trace:\n");
+
+        for (StackTraceElement element : exception.getStackTrace()) {
+            message.append("    at ").append(element.toString()).append("\n");
+        }
+
+        mailgunEmailServiceProxy.sendEmail(defaultMailReceiver, subject, message.toString());
     }
 }

@@ -17,4 +17,5 @@
 14.05.2025 - Extends currency rate mail with % change information\
 18.05.2025 - Adds first integration tests and method for low price alert\
 19.05.2025 - Low price alert added to scheduler\
-26.06.2025 - Adds functionality to store owned stock in the database 
+26.06.2025 - Adds functionality to store owned stock in the database\
+27.06.2025 - Adds email notification for unhandled exceptions

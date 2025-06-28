@@ -1,7 +1,9 @@
 package com.mateusz.springgpt.config;
 
+import com.mateusz.springgpt.service.MailgunEmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,13 @@ import java.util.Optional;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    private MailgunEmailService mailgunEmailService;
+
+    @Autowired
+    public GlobalExceptionHandler(MailgunEmailService mailgunEmailService) {
+        this.mailgunEmailService = mailgunEmailService;
+    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException exception, HttpServletRequest request) {
@@ -75,6 +84,8 @@ public class GlobalExceptionHandler {
         responseBody.put("path", request.getRequestURI().concat(param));
 
         log.error("Unhandled exception caught in global handler", exception);
+        mailgunEmailService.sendErrorAlertEmail(exception, request);
+
         return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
