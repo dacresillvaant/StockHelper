@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,9 @@ public class MailgunEmailService {
     private final Environment environment;
 
     @Autowired
-    public MailgunEmailService(MailgunMessagesApi mailgunMessagesApi, MailgunEmailService mailgunEmailServiceProxy, Environment environment) {
+    public MailgunEmailService(MailgunMessagesApi mailgunMessagesApi,
+                               @Lazy MailgunEmailService mailgunEmailServiceProxy,
+                               Environment environment) {
         this.mailgunMessagesApi = mailgunMessagesApi;
         this.mailgunEmailServiceProxy = mailgunEmailServiceProxy;
         this.environment = environment;

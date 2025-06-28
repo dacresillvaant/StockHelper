@@ -21,7 +21,7 @@ import java.util.Optional;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    private MailgunEmailService mailgunEmailService;
+    private final MailgunEmailService mailgunEmailService;
 
     @Autowired
     public GlobalExceptionHandler(MailgunEmailService mailgunEmailService) {
