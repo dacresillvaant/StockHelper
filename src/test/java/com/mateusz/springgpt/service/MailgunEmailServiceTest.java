@@ -1,8 +1,8 @@
 package com.mateusz.springgpt.service;
 
+import com.mailgun.api.v3.MailgunMessagesApi;
 import jakarta.servlet.http.HttpServletRequest;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.env.Environment;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 public class MailgunEmailServiceTest {
 
     @Mock
-    private MailgunEmailService mailgunEmailServiceProxy;
+    private MailgunMessagesApi mailgunMessagesApi;
 
     @Mock
     private Environment environment;
@@ -25,7 +25,6 @@ public class MailgunEmailServiceTest {
     @Mock
     private HttpServletRequest request;
 
-    @InjectMocks
     private MailgunEmailService mailgunEmailService;
 
     private AutoCloseable closeable;
@@ -33,6 +32,10 @@ public class MailgunEmailServiceTest {
     @BeforeClass
     public void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
+
+        mailgunEmailService = spy(new MailgunEmailService(mailgunMessagesApi, environment));
+
+        ReflectionTestUtils.setField(mailgunEmailService, "mailgunFrom","sender@test.com");
         ReflectionTestUtils.setField(mailgunEmailService, "defaultMailReceiver","receiver@test.com");
     }
 
@@ -55,11 +58,11 @@ public class MailgunEmailServiceTest {
 //      when
         mailgunEmailService.sendErrorAlertEmail(exception, request);
 
-        // then - capture the arguments
+//      then - capture the arguments
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
 
-        verify(mailgunEmailServiceProxy, atMost(1)).sendEmail(
+        verify(mailgunEmailService, atMost(1)).sendEmailBasicTemplate(
                 anyString(),
                 subjectCaptor.capture(),
                 bodyCaptor.capture()
@@ -71,7 +74,7 @@ public class MailgunEmailServiceTest {
         System.out.println("📧 Captured Subject:\n" + capturedSubject);
         System.out.println("📨 Captured Body:\n" + capturedBody);
 
-        // Assertions
+//      expect
         SoftAssert softAssert = new SoftAssert();
 
         softAssert.assertTrue(capturedSubject.contains("[test-profile]"));

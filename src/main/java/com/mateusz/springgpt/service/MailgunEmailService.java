@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import java.util.Optional;
 public class MailgunEmailService {
 
     private final MailgunMessagesApi mailgunMessagesApi;
-    private final MailgunEmailService mailgunEmailServiceProxy;
 
     @Value("${mailgun.from}")
     private String mailgunFrom;
@@ -33,16 +31,12 @@ public class MailgunEmailService {
     private final Environment environment;
 
     @Autowired
-    public MailgunEmailService(MailgunMessagesApi mailgunMessagesApi,
-                               @Lazy MailgunEmailService mailgunEmailServiceProxy,
-                               Environment environment) {
+    public MailgunEmailService(MailgunMessagesApi mailgunMessagesApi, Environment environment) {
         this.mailgunMessagesApi = mailgunMessagesApi;
-        this.mailgunEmailServiceProxy = mailgunEmailServiceProxy;
         this.environment = environment;
     }
 
-    @Async
-    public void sendEmail(String to, String subject, String text) {
+    protected void sendEmailBasicTemplate(String to, String subject, String text) {
         Message message = Message.builder()
                 .from(mailgunFrom)
                 .to(to)
@@ -56,6 +50,11 @@ public class MailgunEmailService {
         } catch (Exception e) {
             log.error("Failed to send the e-mail.", e);
         }
+    }
+
+    @Async
+    public void sendEmail(String to, String subject, String text) {
+        sendEmailBasicTemplate(to, subject, text);
     }
 
     @Async
@@ -82,6 +81,6 @@ public class MailgunEmailService {
             message.append("    at ").append(element.toString()).append("\n");
         }
 
-        mailgunEmailServiceProxy.sendEmail(defaultMailReceiver, subject, message.toString());
+        sendEmailBasicTemplate(defaultMailReceiver, subject, message.toString());
     }
 }
