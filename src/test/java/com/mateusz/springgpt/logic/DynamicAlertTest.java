@@ -4,6 +4,7 @@ import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
 import com.mateusz.springgpt.controller.dto.model.FiftyTwoWeek;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.TwelveDataService;
+import com.mateusz.springgpt.utils.TestListener;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -11,11 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import reactor.core.publisher.Mono;
 
 import static org.mockito.Mockito.*;
 
+@Listeners(TestListener.class)
 public class DynamicAlertTest {
 
     @Mock

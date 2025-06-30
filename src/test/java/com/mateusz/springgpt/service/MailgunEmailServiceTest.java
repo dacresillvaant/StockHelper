@@ -1,6 +1,7 @@
 package com.mateusz.springgpt.service;
 
 import com.mailgun.api.v3.MailgunMessagesApi;
+import com.mateusz.springgpt.utils.TestListener;
 import jakarta.servlet.http.HttpServletRequest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -9,11 +10,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import static org.mockito.Mockito.*;
 
+@Listeners(TestListener.class)
 public class MailgunEmailServiceTest {
 
     @Mock
