@@ -3,6 +3,7 @@ package com.mateusz.springgpt.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,7 +32,7 @@ public class OwnedStockEntity {
 
     private int position;
 
-    private int purchasePrice;
+    private BigDecimal purchasePrice;
 
     private String currency;
 }

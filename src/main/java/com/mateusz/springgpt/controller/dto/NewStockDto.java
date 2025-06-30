@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,6 +16,6 @@ public class NewStockDto {
     private String ticker;
     private String name;
     private int position;
-    private int purchasePrice;
+    private BigDecimal purchasePrice;
     private String currency;
 }
