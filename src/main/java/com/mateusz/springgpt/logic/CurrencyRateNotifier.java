@@ -83,8 +83,8 @@ public class CurrencyRateNotifier {
         Optional<CurrencyRateInternalDto> dayBeforeData = findPreviousRateData(symbol, "day");
         Optional<CurrencyRateInternalDto> weekBeforeData = findPreviousRateData(symbol, "week");
 
-        BigDecimal dayBeforeRate = weekBeforeData.map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
-        BigDecimal weekBeforeRate = dayBeforeData.map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
+        BigDecimal dayBeforeRate = dayBeforeData.map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
+        BigDecimal weekBeforeRate = weekBeforeData.map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
 
         BigDecimal currentRate = currencyRateResponse.getRate();
         String rateChangeDayBefore = calculatePercentageChange(dayBeforeRate, currentRate);
