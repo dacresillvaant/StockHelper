@@ -8,8 +8,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -32,7 +32,7 @@ public class MailgunEmailServiceTest {
 
     private AutoCloseable closeable;
 
-    @BeforeClass
+    @BeforeMethod
     public void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
 
@@ -42,7 +42,7 @@ public class MailgunEmailServiceTest {
         ReflectionTestUtils.setField(mailgunEmailService, "defaultMailReceiver","receiver@test.com");
     }
 
-    @AfterClass
+    @AfterMethod
     public void tearDown() throws Exception {
         closeable.close();
     }
@@ -80,12 +80,58 @@ public class MailgunEmailServiceTest {
 //      expect
         SoftAssert softAssert = new SoftAssert();
 
-        softAssert.assertTrue(capturedSubject.contains("[test-profile]"));
-        softAssert.assertTrue(capturedBody.contains("Unhandled exception occurred"));
-        softAssert.assertTrue(capturedBody.contains("Test exception"));
-        softAssert.assertTrue(capturedBody.contains("/api/test"));
-        softAssert.assertTrue(capturedBody.contains("id=123"));
-        softAssert.assertTrue(capturedBody.contains("127.0.0.1"));
+        softAssert.assertTrue(capturedSubject.contains("[test-profile] Unhandled exception alert"));
+        softAssert.assertTrue(capturedBody.contains("Unhandled exception occurred in Stock Assistant app:"));
+
+        softAssert.assertTrue(capturedBody.contains("Timestamp:"));
+        softAssert.assertTrue(capturedBody.contains("Path: /api/test"));
+        softAssert.assertTrue(capturedBody.contains("Query: id=123"));
+        softAssert.assertTrue(capturedBody.contains("User-Agent: TestNG-Test-Agent"));
+        softAssert.assertTrue(capturedBody.contains("Remote IP:"));
+
+        softAssert.assertTrue(capturedBody.contains("Exception: java.lang.RuntimeException"));
+        softAssert.assertTrue(capturedBody.contains("Message: Test exception"));
+        softAssert.assertTrue(capturedBody.contains("Stack trace:"));
+
+        softAssert.assertAll();
+    }
+
+    @Test
+    public void testSendErrorAlertEmailWithoutRequestPresent() {
+//      given
+        Exception exception = new RuntimeException("Test exception");
+
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"test-profile"});
+
+//      when
+        mailgunEmailService.sendErrorAlertEmail(exception, null);
+
+//      then - capture the arguments
+        ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+
+        verify(mailgunEmailService, atMost(1)).sendEmailBasicTemplate(
+                anyString(),
+                subjectCaptor.capture(),
+                bodyCaptor.capture()
+        );
+
+        String capturedSubject = subjectCaptor.getValue();
+        String capturedBody = bodyCaptor.getValue();
+
+        System.out.println("📧 Captured Subject:\n" + capturedSubject);
+        System.out.println("📨 Captured Body:\n" + capturedBody);
+
+//      expect
+        SoftAssert softAssert = new SoftAssert();
+
+        softAssert.assertTrue(capturedSubject.contains("[test-profile] Unhandled exception alert"));
+        softAssert.assertTrue(capturedBody.contains("Unhandled exception occurred in Stock Assistant app:"));
+
+        softAssert.assertTrue(capturedBody.contains("Timestamp:"));
+        softAssert.assertTrue(capturedBody.contains("Exception: java.lang.RuntimeException"));
+        softAssert.assertTrue(capturedBody.contains("Message: Test exception"));
+        softAssert.assertTrue(capturedBody.contains("Stack trace:"));
 
         softAssert.assertAll();
     }
