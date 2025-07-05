@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 @Service
 @Slf4j
@@ -37,5 +38,10 @@ public class StockService {
                 .currency(newStockDto.getCurrency()).build();
 
         return ownedStockRepository.save(newStock);
+    }
+
+    public OwnedStockEntity getStock(String ticker) {
+        return ownedStockRepository.findByTicker(ticker)
+                .orElseThrow(() -> new NoSuchElementException("Stock with ticker '" + ticker + "' not found"));
     }
 }

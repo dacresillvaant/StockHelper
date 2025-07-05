@@ -15,6 +15,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestControllerAdvice
@@ -70,6 +71,21 @@ public class GlobalExceptionHandler {
 
         log.warn("Conflict while adding resource", exception);
         return new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Map<String, Object>> handleNoSuchElementExceptions(Exception exception, HttpServletRequest request) {
+        String param = Optional.ofNullable(request.getQueryString()).orElse("");
+
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        responseBody.put("timestamp", LocalDateTime.now());
+        responseBody.put("status", HttpStatus.NOT_FOUND.value());
+        responseBody.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
+        responseBody.put("message", exception.getMessage());
+        responseBody.put("path", request.getRequestURI().concat(param));
+
+        log.warn("Data not found", exception);
+        return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
