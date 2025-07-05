@@ -6,17 +6,14 @@ import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
 import com.mateusz.springgpt.service.TwelveDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/twelvedata/")
@@ -47,7 +44,6 @@ public class TwelveDataController {
     @GetMapping("/exchange_rate_database/")
     public CurrencyRateInternalDto getExchangeRateFromDatabase(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime ratioDate,
                                                                @RequestParam String symbol) {
-        return Optional.ofNullable(twelveDataService.getExchangeRateFromDatabase(ratioDate, symbol))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exchange rate not found"));
+        return twelveDataService.getExchangeRateFromDatabase(ratioDate, symbol);
     }
 }

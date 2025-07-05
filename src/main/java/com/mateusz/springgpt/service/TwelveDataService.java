@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 /**
  * Free API key is limited to 8 credits/minute & 800/day
@@ -66,6 +67,8 @@ public class TwelveDataService {
     public CurrencyRateInternalDto getExchangeRateFromDatabase(LocalDateTime ratioDate, String symbol) {
         LocalDateTime start = ratioDate.minusMinutes(5);
         LocalDateTime end = ratioDate.plusMinutes(5);
-        return currencyRateRepository.findExchangeRateByRatioDateBetween(start, end, symbol);
+
+        return (currencyRateRepository.findExchangeRateByRatioDateBetween(start, end, symbol))
+                .orElseThrow(() -> new NoSuchElementException("Currency rate of " + symbol + " between " + start + " and " + end + " not found"));
     }
 }

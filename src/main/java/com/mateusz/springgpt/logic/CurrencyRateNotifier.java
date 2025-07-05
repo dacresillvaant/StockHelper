@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Component
@@ -55,14 +56,16 @@ public class CurrencyRateNotifier {
 
     private Optional<CurrencyRateInternalDto> findPreviousRateData(String symbol, String period) {
         LocalDateTime now = LocalDateTime.now();
-        switch (period) {
-            case "day" -> {
-                return Optional.ofNullable(twelveDataService.getExchangeRateFromDatabase(now.minusHours(24), symbol));
-            }
-            case "week" -> {
-                return Optional.ofNullable(twelveDataService.getExchangeRateFromDatabase(now.minusHours(168), symbol));
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + period);
+        try {
+            return switch (period) {
+                case "day" -> Optional.ofNullable(twelveDataService.getExchangeRateFromDatabase(now.minusHours(24), symbol));
+                case "week" -> Optional.ofNullable(twelveDataService.getExchangeRateFromDatabase(now.minusHours(168), symbol));
+
+                default -> throw new IllegalStateException("Unexpected value: " + period);
+            };
+        } catch (NoSuchElementException e) {
+            log.warn(e.getMessage());
+            return Optional.empty(); // Or log the exception if needed
         }
     }
 
