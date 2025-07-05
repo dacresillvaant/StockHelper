@@ -3,6 +3,7 @@ package com.mateusz.springgpt.service;
 import com.mailgun.api.v3.MailgunMessagesApi;
 import com.mailgun.model.message.Message;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ public class MailgunEmailService {
     private String mailgunDomain;
 
     @Value("${mailgun.default-receiver}")
+    @Getter
     private String defaultMailReceiver;
 
     private final Environment environment;

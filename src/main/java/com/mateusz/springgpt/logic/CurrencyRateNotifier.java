@@ -8,7 +8,6 @@ import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.TwelveDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -30,9 +29,6 @@ public class CurrencyRateNotifier {
     private final TwelveDataService twelveDataService;
     private final CurrencyRateRepository currencyRateRepository;
     private final MailgunEmailService mailgunEmailService;
-
-    @Value("${mailgun.default-receiver}")
-    private String mailReceiver;
 
     @Autowired
     public CurrencyRateNotifier(TwelveDataService twelveDataService, CurrencyRateRepository currencyRateRepository,
@@ -65,7 +61,7 @@ public class CurrencyRateNotifier {
             };
         } catch (NoSuchElementException e) {
             log.warn(e.getMessage());
-            return Optional.empty(); // Or log the exception if needed
+            return Optional.empty();
         }
     }
 
@@ -83,13 +79,10 @@ public class CurrencyRateNotifier {
     }
 
     private void sendRateEmail(CurrencyRateExternalDto currencyRateResponse, String symbol) {
-        Optional<CurrencyRateInternalDto> dayBeforeData = findPreviousRateData(symbol, "day");
-        Optional<CurrencyRateInternalDto> weekBeforeData = findPreviousRateData(symbol, "week");
-
-        BigDecimal dayBeforeRate = dayBeforeData.map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
-        BigDecimal weekBeforeRate = weekBeforeData.map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
-
         BigDecimal currentRate = currencyRateResponse.getRate();
+        BigDecimal dayBeforeRate = findPreviousRateData(symbol, "day").map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
+        BigDecimal weekBeforeRate = findPreviousRateData(symbol, "week").map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
+
         String rateChangeDayBefore = calculatePercentageChange(dayBeforeRate, currentRate);
         String rateChangeWeekBefore = calculatePercentageChange(weekBeforeRate, currentRate);
 
@@ -98,7 +91,6 @@ public class CurrencyRateNotifier {
                 .atZone(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
-        String to = mailReceiver;
         String subject = String.format("Currency rate report for: %s %s", currencyRateResponse.getSymbol(), formattedTimestamp);
         String mailBody = String.format("""
                 Currency rate of %s is %s - %s
@@ -106,7 +98,7 @@ public class CurrencyRateNotifier {
                 Change 7D is - %s%%
                 """, currencyRateResponse.getSymbol(), currencyRateResponse.getRate(), formattedTimestamp, rateChangeDayBefore, rateChangeWeekBefore);
 
-        mailgunEmailService.sendEmail(to, subject, mailBody);
+        mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), subject, mailBody);
     }
 
     private void processCurrencyRate(String symbol) {
