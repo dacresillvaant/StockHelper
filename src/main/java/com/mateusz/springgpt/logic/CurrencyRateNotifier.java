@@ -56,6 +56,7 @@ public class CurrencyRateNotifier {
             return switch (period) {
                 case "day" -> Optional.ofNullable(twelveDataService.getExchangeRateFromDatabase(now.minusHours(24), symbol));
                 case "week" -> Optional.ofNullable(twelveDataService.getExchangeRateFromDatabase(now.minusHours(168), symbol));
+                case "month" -> Optional.ofNullable(twelveDataService.getExchangeRateFromDatabase(now.minusHours(720), symbol));
 
                 default -> throw new IllegalStateException("Unexpected value: " + period);
             };
@@ -80,11 +81,14 @@ public class CurrencyRateNotifier {
 
     private void sendRateEmail(CurrencyRateExternalDto currencyRateResponse, String symbol) {
         BigDecimal currentRate = currencyRateResponse.getRate();
+
         BigDecimal dayBeforeRate = findPreviousRateData(symbol, "day").map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
         BigDecimal weekBeforeRate = findPreviousRateData(symbol, "week").map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
+        BigDecimal monthBeforeRate = findPreviousRateData(symbol, "month").map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
 
         String rateChangeDayBefore = calculatePercentageChange(dayBeforeRate, currentRate);
         String rateChangeWeekBefore = calculatePercentageChange(weekBeforeRate, currentRate);
+        String rateChangeMonthBefore = calculatePercentageChange(monthBeforeRate, currentRate);
 
         long timestamp = currencyRateResponse.getTimestamp();
         String formattedTimestamp = Instant.ofEpochSecond(timestamp)
@@ -94,9 +98,11 @@ public class CurrencyRateNotifier {
         String subject = String.format("Currency rate report for: %s %s", currencyRateResponse.getSymbol(), formattedTimestamp);
         String mailBody = String.format("""
                 Currency rate of %s is %s - %s
-                Change 1D is - %s%%
-                Change 7D is - %s%%
-                """, currencyRateResponse.getSymbol(), currencyRateResponse.getRate(), formattedTimestamp, rateChangeDayBefore, rateChangeWeekBefore);
+                Change 1D is: %s%%
+                Change 7D is: %s%%
+                Change 30D is: %s%%
+                """, currencyRateResponse.getSymbol(), currencyRateResponse.getRate(), formattedTimestamp,
+                rateChangeDayBefore, rateChangeWeekBefore, rateChangeMonthBefore);
 
         mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), subject, mailBody);
     }
