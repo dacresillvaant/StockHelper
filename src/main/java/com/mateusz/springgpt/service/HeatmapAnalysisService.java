@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -20,6 +21,10 @@ public class HeatmapAnalysisService {
     @Autowired
     public HeatmapAnalysisService(HeatmapRepository heatmapRepository) {
         this.heatmapRepository = heatmapRepository;
+    }
+
+    public HeatmapEntity getHeatmapById(Long id) {
+        return heatmapRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Screenshot with id '" + id + "' not found"));
     }
 
     public BigDecimal analyzeHeatmap(Long id) {
