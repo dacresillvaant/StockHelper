@@ -9,7 +9,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -43,5 +45,9 @@ public class StockService {
     public OwnedStockEntity getStock(String ticker) {
         return ownedStockRepository.findByTicker(ticker)
                 .orElseThrow(() -> new NoSuchElementException("Stock with ticker '" + ticker + "' not found"));
+    }
+
+    public List<OwnedStockEntity> getAllStocks() {
+        return Optional.of(ownedStockRepository.findAll()).orElseThrow(() -> new NoSuchElementException("Stock entity is empty"));
     }
 }
