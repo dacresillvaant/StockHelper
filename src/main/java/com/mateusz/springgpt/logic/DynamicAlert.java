@@ -5,6 +5,7 @@ import com.mateusz.springgpt.entity.OwnedStockEntity;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.StockService;
 import com.mateusz.springgpt.service.TwelveDataService;
+import com.mateusz.springgpt.service.tools.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -59,27 +62,51 @@ public class DynamicAlert {
         }
     }
 
-    @Scheduled(cron = "${scheduler.owned-stock-alert}")
-    public void ownedStockPriceAlert() throws InterruptedException {
+    private void compareOwnedStocksPrice(List<OwnedStockEntity> ownedStocks, Map<String, QuoteExternalDto> ownedStocksLatestData, int percentChangeThreshold) {
+
+        for (OwnedStockEntity ownedStock : ownedStocks) {
+            String symbol = ownedStock.getTicker();
+            BigDecimal purchasePrice = ownedStock.getPurchasePrice();
+            BigDecimal lastClosePrice = new BigDecimal(ownedStocksLatestData.get(symbol).getClose());
+            BigDecimal priceChange = Utils.calculatePercentChange(purchasePrice, lastClosePrice);
+
+            if (priceChange.abs().compareTo(BigDecimal.valueOf(percentChangeThreshold)) > 0) {
+                String symbolFullName = ownedStock.getName();
+                String symbolCurrency = ownedStock.getCurrency();
+                String mailSubject = "ALERT - ".concat(symbolFullName).concat(" price significantly changed!");
+                String mailBody = String.format("""
+                Purchase price of %s %s is: %s %s
+                Latest close is: %s
+                Change: %s%%, threshold was set to -> %s%%
+                """, symbol, symbolFullName, purchasePrice, symbolCurrency, lastClosePrice, priceChange, percentChangeThreshold);
+
+                mailgunEmailService.sendEmail(mailReceiver, mailSubject, mailBody);
+            }
+
+            log.info("Symbol: {}, purchase price: {}, last close price: {}, price change: {}%", symbol, purchasePrice, lastClosePrice, priceChange);
+        }
+    }
+
+    public void ownedStockPriceAlert(int percentChangeThreshold) {
         int batchSize = 8;
 
-        List<OwnedStockEntity> stocks = stockService.getAllStocks();
-        stocks.forEach(s -> log.info("Found stock ticker: " + s.getName()));
+        List<OwnedStockEntity> ownedStocks = stockService.getAllStocks();
+        Map<String, QuoteExternalDto> ownedStocksCurrentData = new HashMap<>();
+        ownedStocks.forEach(s -> log.info("Found stock ticker: " + s.getName()));
 
-        for (int i = 0; i < stocks.size(); i+= batchSize) {
+        for (int i = 0; i < ownedStocks.size(); i+= batchSize) {
             log.info("Starting batch");
-            List<OwnedStockEntity> batchOfStocks = new ArrayList<>(stocks.subList(i, Math.min(i + batchSize, stocks.size())));
-//            batchOfStocks.forEach(s -> log.info("Stock of batch " + s.getName()));
+            List<OwnedStockEntity> batchOfStocks = new ArrayList<>(ownedStocks.subList(i, Math.min(i + batchSize, ownedStocks.size())));
+            batchOfStocks.forEach(s -> ownedStocksCurrentData.put(s.getTicker(), twelveDataService.getQuote(s.getTicker()).blockOptional().orElseThrow().getBody()));
 
-            batchOfStocks.forEach(s -> twelveDataService.getQuote(s.getTicker()).blockOptional().orElseThrow().getBody());
+            compareOwnedStocksPrice(batchOfStocks, ownedStocksCurrentData, percentChangeThreshold);
 
             // Sleep only if it's not the last batch
-            if (i + batchSize < stocks.size()) {
-                Thread.sleep(65000);
+            if (i + batchSize < ownedStocks.size()) {
+                Utils.sleep(65000);
             } else {
                 log.info("Finished processing last batch.");
             }
-
         }
     }
 
@@ -90,5 +117,10 @@ public class DynamicAlert {
                 new AlertConfig("MA", 15)
         );
         alertConfigurations.forEach(alert -> lowPriceAlert(alert.symbol(), alert.percent()));
+    }
+
+    @Scheduled(cron = "${scheduler.owned-stock-alert}")
+    public void scheduleOwnedStockPriceAlert() {
+        ownedStockPriceAlert(30);
     }
 }
