@@ -12,4 +12,6 @@ public interface OwnedStockRepository extends JpaRepository<OwnedStockEntity, Lo
     boolean existsByTicker(String ticker);
 
     Optional<OwnedStockEntity> findByTicker(String ticker);
+
+    int deleteByTicker(String ticker);
 }

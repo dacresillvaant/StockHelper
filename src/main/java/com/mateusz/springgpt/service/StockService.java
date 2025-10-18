@@ -3,6 +3,7 @@ package com.mateusz.springgpt.service;
 import com.mateusz.springgpt.controller.dto.NewStockDto;
 import com.mateusz.springgpt.entity.OwnedStockEntity;
 import com.mateusz.springgpt.repository.OwnedStockRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -49,5 +50,15 @@ public class StockService {
 
     public List<OwnedStockEntity> getAllStocks() {
         return Optional.of(ownedStockRepository.findAll()).orElseThrow(() -> new NoSuchElementException("Stock entity is empty"));
+    }
+
+    @Transactional
+    public String deleteStock(String ticker) {
+        int numberOfStockDeleted = ownedStockRepository.deleteByTicker(ticker);
+        if (numberOfStockDeleted > 0) {
+            return ticker.concat(" stock has been deleted");
+        } else  {
+            return ticker.concat(" ticker not found, no stock has been deleted");
+        }
     }
 }

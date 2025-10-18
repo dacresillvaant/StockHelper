@@ -26,4 +26,9 @@ public class StockController {
     public OwnedStockEntity getStock(@RequestParam String ticker) {
         return stockService.getStock(ticker);
     }
+
+    @DeleteMapping("/delete/")
+    public String deleteStock(@RequestParam String ticker) {
+        return stockService.deleteStock(ticker);
+    }
 }
