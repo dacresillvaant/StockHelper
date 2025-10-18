@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -49,7 +48,7 @@ public class StockService {
     }
 
     public List<OwnedStockEntity> getAllStocks() {
-        return Optional.of(ownedStockRepository.findAll()).orElseThrow(() -> new NoSuchElementException("Stock entity is empty"));
+        return ownedStockRepository.findAll();
     }
 
     @Transactional
