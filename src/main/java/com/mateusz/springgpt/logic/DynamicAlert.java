@@ -6,6 +6,8 @@ import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.StockService;
 import com.mateusz.springgpt.service.TwelveDataService;
 import com.mateusz.springgpt.service.tools.Utils;
+import com.mateusz.springgpt.service.tools.mail.MailTemplate;
+import com.mateusz.springgpt.service.tools.mail.MailTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,16 +51,9 @@ public class DynamicAlert {
 
         log.info("Symbol: \"{}\" - last close price: {}, year high: {}, threshold for alert: {}", symbol, lastClose, yearHigh, alertThreshold);
 
-        String symbolFullName = quote.getName();
-        String mailSubject = "ALERT - ".concat(symbolFullName).concat(" fallen below threshold price");
-        String mailBody = String.format("""
-                Latest price of %s %s is: %s
-                Year high is: %s
-                Threshold was set to: %s%% -> %s
-                """, symbol, symbolFullName, lastClose, yearHigh, percentChange, alertThreshold);
-
         if (lastClose.compareTo(alertThreshold) < 0) {
-            mailgunEmailService.sendEmail(mailReceiver, mailSubject, mailBody);
+            MailTemplate mailTemplate = MailTemplateFactory.lowPriceAlertTemplate(symbol, percentChange, quote, lastClose, yearHigh, alertThreshold);
+            mailgunEmailService.sendEmail(mailReceiver, mailTemplate);
         }
     }
 
@@ -71,16 +66,8 @@ public class DynamicAlert {
             BigDecimal priceChange = Utils.calculatePercentChange(purchasePrice, lastClosePrice);
 
             if (priceChange.abs().compareTo(BigDecimal.valueOf(percentChangeThreshold)) > 0) {
-                String symbolFullName = ownedStock.getName();
-                String symbolCurrency = ownedStock.getCurrency();
-                String mailSubject = "ALERT - ".concat(symbolFullName).concat(" price significantly changed!");
-                String mailBody = String.format("""
-                Purchase price of %s %s is: %s %s
-                Latest close is: %s
-                Change: %s%%, threshold was set to -> %s%%
-                """, symbol, symbolFullName, purchasePrice, symbolCurrency, lastClosePrice, priceChange, percentChangeThreshold);
-
-                mailgunEmailService.sendEmail(mailReceiver, mailSubject, mailBody);
+                MailTemplate mailTemplate = MailTemplateFactory.ownedStockPriceAlertTemplate(ownedStock, purchasePrice, lastClosePrice, priceChange, percentChangeThreshold);
+                mailgunEmailService.sendEmail(mailReceiver, mailTemplate);
             }
 
             log.info("Symbol: {}, purchase price: {}, last close price: {}, price change: {}%", symbol, purchasePrice, lastClosePrice, priceChange);

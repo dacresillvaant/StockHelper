@@ -2,6 +2,7 @@ package com.mateusz.springgpt.service;
 
 import com.mailgun.api.v3.MailgunMessagesApi;
 import com.mailgun.model.message.Message;
+import com.mateusz.springgpt.service.tools.mail.MailTemplate;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +58,11 @@ public class MailgunEmailService {
     @Async
     public void sendEmail(String to, String subject, String text) {
         sendEmailBasicTemplate(to, subject, text);
+    }
+
+    @Async
+    public void sendEmail(String to, MailTemplate mailTemplate) {
+        sendEmailBasicTemplate(to, mailTemplate.subject(), mailTemplate.body());
     }
 
     @Async

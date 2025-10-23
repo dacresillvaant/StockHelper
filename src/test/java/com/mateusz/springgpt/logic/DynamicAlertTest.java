@@ -4,6 +4,7 @@ import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
 import com.mateusz.springgpt.controller.dto.model.FiftyTwoWeek;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.TwelveDataService;
+import com.mateusz.springgpt.service.tools.mail.MailTemplate;
 import com.mateusz.springgpt.utils.TestListener;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -61,7 +62,7 @@ public class DynamicAlertTest {
         dynamicAlert.lowPriceAlert(symbol, percentChange);
 
 //      then
-        verify(mailgunEmailService).sendEmail(anyString(), anyString(), anyString());
+        verify(mailgunEmailService).sendEmail(anyString(), any(MailTemplate.class));
     }
 
     @Test(testName = "Should not send email when latest close price was above threshold price")
@@ -83,5 +84,6 @@ public class DynamicAlertTest {
 
 //      then
         verify(mailgunEmailService, never()).sendEmail(anyString(), anyString(), anyString());
+        verify(mailgunEmailService, never()).sendEmail(anyString(), any(MailTemplate.class));
     }
 }

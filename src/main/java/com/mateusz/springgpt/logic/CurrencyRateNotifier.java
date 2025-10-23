@@ -6,6 +6,8 @@ import com.mateusz.springgpt.entity.CurrencyRateEntity;
 import com.mateusz.springgpt.repository.CurrencyRateRepository;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.TwelveDataService;
+import com.mateusz.springgpt.service.tools.mail.MailTemplate;
+import com.mateusz.springgpt.service.tools.mail.MailTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -90,21 +89,8 @@ public class CurrencyRateNotifier {
         String rateChangeWeekBefore = calculatePercentageChange(weekBeforeRate, currentRate);
         String rateChangeMonthBefore = calculatePercentageChange(monthBeforeRate, currentRate);
 
-        long timestamp = currencyRateResponse.getTimestamp();
-        String formattedTimestamp = Instant.ofEpochSecond(timestamp)
-                .atZone(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
-
-        String subject = String.format("Currency rate report for: %s %s", currencyRateResponse.getSymbol(), formattedTimestamp);
-        String mailBody = String.format("""
-                Currency rate of %s is %s - %s
-                Change 1D is: %s%%
-                Change 7D is: %s%%
-                Change 30D is: %s%%
-                """, currencyRateResponse.getSymbol(), currencyRateResponse.getRate(), formattedTimestamp,
-                rateChangeDayBefore, rateChangeWeekBefore, rateChangeMonthBefore);
-
-        mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), subject, mailBody);
+        MailTemplate mailTemplate = MailTemplateFactory.currencyRateTemplate(currencyRateResponse,  rateChangeDayBefore, rateChangeWeekBefore, rateChangeMonthBefore);
+        mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
     }
 
     private void processCurrencyRate(String symbol) {
