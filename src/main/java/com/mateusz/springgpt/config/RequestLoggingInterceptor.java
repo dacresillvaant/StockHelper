@@ -3,6 +3,8 @@ package com.mateusz.springgpt.config;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
+import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -37,5 +39,14 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         String param = Optional.ofNullable(request.getQueryString()).orElse("");
 
         log.info("Completed response to IP: {}, URI: {} - Status: {}", ipAddress, uri.concat(param), status);
+    }
+
+    @EventListener
+    public void onAuthenticationFailure(AbstractAuthenticationFailureEvent event) {
+        String username = event.getAuthentication().getName();
+        String error = event.getException().getMessage();
+        String authenticationDetails = event.getAuthentication().getDetails().toString();
+
+        log.warn("Failed authentication attempt for user: {} - Reason: {},\n details: {}", username, error, authenticationDetails);
     }
 }
