@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -79,10 +78,5 @@ public class HeatMapScrapper {
     private BigDecimal calculateHeatmapRatio(byte[] screenshot) {
         Mat heatmap = ImageAnalyzer.byteToMat(screenshot);
         return ImageAnalyzer.greenRedRatio(heatmap);
-    }
-
-    @Scheduled(cron = "${scheduler.heatmap.cron}")
-    public void scheduledScrapHeatMap() {
-        scrapHeatMap();
     }
 }

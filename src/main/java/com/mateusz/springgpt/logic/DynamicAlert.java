@@ -11,7 +11,6 @@ import com.mateusz.springgpt.service.tools.mail.MailTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -29,7 +28,7 @@ public class DynamicAlert {
     private final MailgunEmailService mailgunEmailService;
     private final StockService stockService;
 
-    private record AlertConfig(String symbol, int percent) {}
+    public record AlertConfig(String symbol, int percent) {}
 
     @Value("${mailgun.default-receiver}")
     private String mailReceiver;
@@ -95,19 +94,5 @@ public class DynamicAlert {
                 log.info("Finished processing last batch.");
             }
         }
-    }
-
-    @Scheduled(cron = "${scheduler.low-price-alert}")
-    public void scheduledLowPriceAlert() {
-        List<AlertConfig> alertConfigurations = List.of(
-                new AlertConfig("V", 15),
-                new AlertConfig("MA", 15)
-        );
-        alertConfigurations.forEach(alert -> lowPriceAlert(alert.symbol(), alert.percent()));
-    }
-
-    @Scheduled(cron = "${scheduler.owned-stock-alert}")
-    public void scheduleOwnedStockPriceAlert() {
-        ownedStockPriceAlert(30);
     }
 }

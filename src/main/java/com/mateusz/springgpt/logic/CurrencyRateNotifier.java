@@ -11,13 +11,11 @@ import com.mateusz.springgpt.service.tools.mail.MailTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -93,7 +91,7 @@ public class CurrencyRateNotifier {
         mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
     }
 
-    private void processCurrencyRate(String symbol) {
+    public void processCurrencyRate(String symbol) {
         CurrencyRateExternalDto currencyRateResponse = twelveDataService
                 .getExchangeRate(symbol)
                 .map(ResponseEntity::getBody)
@@ -101,11 +99,5 @@ public class CurrencyRateNotifier {
 
         saveRateToDatabase(currencyRateResponse);
         sendRateEmail(currencyRateResponse, symbol);
-    }
-
-    @Scheduled(cron = "${scheduler.process-currencies}")
-    public void scheduledProcessCurrencyRate() {
-        List<String> currencies = List.of("USD/PLN");
-        currencies.forEach(currency -> processCurrencyRate(currency));
     }
 }
