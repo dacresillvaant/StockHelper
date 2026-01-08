@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/twelvedata/")
+@RequestMapping("/api/twelvedata/")
 public class TwelveDataController {
 
     private final TwelveDataService twelveDataService;
