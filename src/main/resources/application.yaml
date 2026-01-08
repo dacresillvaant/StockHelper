@@ -44,6 +44,9 @@ twelvedata:
   url: https://api.twelvedata.com/
   api-key: ${TWELVEDATA_API_KEY}
 
+yahoofinance:
+  url: https://query1.finance.yahoo.com/
+
 scheduler:
   heatmap:
     cron: "0 */5 * * * *"
