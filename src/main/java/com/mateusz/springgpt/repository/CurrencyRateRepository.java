@@ -1,6 +1,6 @@
 package com.mateusz.springgpt.repository;
 
-import com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.CurrencyRateInternalDto;
 import com.mateusz.springgpt.entity.CurrencyRateEntity;
 import feign.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface CurrencyRateRepository extends JpaRepository<CurrencyRateEntity, Long> {
 
     @Query("""
-            select new com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto(cr.symbol, cr.rate, cr.ratioDate)
+            select new com.mateusz.springgpt.controller.twelvedata.dto.CurrencyRateInternalDto(cr.symbol, cr.rate, cr.ratioDate)
             from CurrencyRateEntity cr
             where cr.ratioDate >= :start and cr.ratioDate < :end
             and cr.symbol = :symbol

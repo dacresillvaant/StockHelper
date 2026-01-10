@@ -1,4 +1,4 @@
-package com.mateusz.springgpt.controller.dto;
+package com.mateusz.springgpt.controller.twelvedata.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
-package com.mateusz.springgpt.service.tools.mail;
+package com.mateusz.springgpt.tools.mail;
 
-import com.mateusz.springgpt.controller.dto.CurrencyRateExternalDto;
-import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.CurrencyRateExternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.QuoteExternalDto;
 import com.mateusz.springgpt.entity.OwnedStockEntity;
 
 import java.math.BigDecimal;

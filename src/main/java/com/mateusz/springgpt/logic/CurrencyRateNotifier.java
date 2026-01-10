@@ -1,13 +1,13 @@
 package com.mateusz.springgpt.logic;
 
-import com.mateusz.springgpt.controller.dto.CurrencyRateExternalDto;
-import com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.CurrencyRateExternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.CurrencyRateInternalDto;
 import com.mateusz.springgpt.entity.CurrencyRateEntity;
 import com.mateusz.springgpt.repository.CurrencyRateRepository;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.TwelveDataService;
-import com.mateusz.springgpt.service.tools.mail.MailTemplate;
-import com.mateusz.springgpt.service.tools.mail.MailTemplateFactory;
+import com.mateusz.springgpt.tools.mail.MailTemplate;
+import com.mateusz.springgpt.tools.mail.MailTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

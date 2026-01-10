@@ -1,6 +1,6 @@
 package com.mateusz.springgpt.service;
 
-import com.mateusz.springgpt.controller.dto.NewStockDto;
+import com.mateusz.springgpt.controller.stock.dto.NewStockDto;
 import com.mateusz.springgpt.entity.OwnedStockEntity;
 import com.mateusz.springgpt.repository.OwnedStockRepository;
 import jakarta.transaction.Transactional;

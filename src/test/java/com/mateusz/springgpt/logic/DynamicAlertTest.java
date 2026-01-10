@@ -1,10 +1,10 @@
 package com.mateusz.springgpt.logic;
 
-import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
-import com.mateusz.springgpt.controller.dto.model.FiftyTwoWeek;
+import com.mateusz.springgpt.controller.twelvedata.dto.QuoteExternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.model.FiftyTwoWeek;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.TwelveDataService;
-import com.mateusz.springgpt.service.tools.mail.MailTemplate;
+import com.mateusz.springgpt.tools.mail.MailTemplate;
 import com.mateusz.springgpt.utils.TestListener;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

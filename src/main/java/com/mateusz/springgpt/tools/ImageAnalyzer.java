@@ -1,4 +1,4 @@
-package com.mateusz.springgpt.service.tools;
+package com.mateusz.springgpt.tools;
 
 import org.bytedeco.javacpp.indexer.UByteIndexer;
 import org.bytedeco.opencv.global.opencv_imgcodecs;

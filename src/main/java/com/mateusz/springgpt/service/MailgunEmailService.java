@@ -2,7 +2,7 @@ package com.mateusz.springgpt.service;
 
 import com.mailgun.api.v3.MailgunMessagesApi;
 import com.mailgun.model.message.Message;
-import com.mateusz.springgpt.service.tools.mail.MailTemplate;
+import com.mateusz.springgpt.tools.mail.MailTemplate;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

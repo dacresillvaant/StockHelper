@@ -2,7 +2,7 @@ package com.mateusz.springgpt.service;
 
 import com.mateusz.springgpt.entity.HeatmapEntity;
 import com.mateusz.springgpt.repository.HeatmapRepository;
-import com.mateusz.springgpt.service.tools.ImageAnalyzer;
+import com.mateusz.springgpt.tools.ImageAnalyzer;
 import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;

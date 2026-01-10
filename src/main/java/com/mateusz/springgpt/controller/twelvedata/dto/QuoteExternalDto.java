@@ -1,7 +1,7 @@
-package com.mateusz.springgpt.controller.dto;
+package com.mateusz.springgpt.controller.twelvedata.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mateusz.springgpt.controller.dto.model.FiftyTwoWeek;
+import com.mateusz.springgpt.controller.twelvedata.dto.model.FiftyTwoWeek;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

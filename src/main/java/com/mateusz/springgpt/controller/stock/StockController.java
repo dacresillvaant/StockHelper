@@ -1,6 +1,6 @@
-package com.mateusz.springgpt.controller;
+package com.mateusz.springgpt.controller.stock;
 
-import com.mateusz.springgpt.controller.dto.NewStockDto;
+import com.mateusz.springgpt.controller.stock.dto.NewStockDto;
 import com.mateusz.springgpt.entity.OwnedStockEntity;
 import com.mateusz.springgpt.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;

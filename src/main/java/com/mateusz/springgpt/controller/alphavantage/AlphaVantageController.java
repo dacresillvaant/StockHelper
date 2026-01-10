@@ -1,4 +1,4 @@
-package com.mateusz.springgpt.controller;
+package com.mateusz.springgpt.controller.alphavantage;
 
 import com.mateusz.springgpt.service.AlphaVantageService;
 import org.springframework.beans.factory.annotation.Autowired;

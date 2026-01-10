@@ -1,4 +1,4 @@
-package com.mateusz.springgpt.controller.dto;
+package com.mateusz.springgpt.controller.stock.dto;
 
 import lombok.Builder;
 import lombok.Getter;

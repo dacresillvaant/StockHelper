@@ -2,8 +2,8 @@ package com.mateusz.springgpt.logic;
 
 import com.mateusz.springgpt.entity.HeatmapEntity;
 import com.mateusz.springgpt.repository.HeatmapRepository;
-import com.mateusz.springgpt.service.tools.ImageAnalyzer;
-import com.mateusz.springgpt.service.tools.PlaywrightHandler;
+import com.mateusz.springgpt.tools.ImageAnalyzer;
+import com.mateusz.springgpt.tools.PlaywrightHandler;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static com.mateusz.springgpt.service.tools.ImageAnalyzer.IMAGE_ANALYZER_VERSION;
+import static com.mateusz.springgpt.tools.ImageAnalyzer.IMAGE_ANALYZER_VERSION;
 
 @Component
 @Slf4j

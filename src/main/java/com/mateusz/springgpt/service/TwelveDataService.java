@@ -1,9 +1,9 @@
 package com.mateusz.springgpt.service;
 
 import com.mateusz.springgpt.config.WebClientLoggingUtil;
-import com.mateusz.springgpt.controller.dto.CurrencyRateExternalDto;
-import com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto;
-import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.CurrencyRateExternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.CurrencyRateInternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.QuoteExternalDto;
 import com.mateusz.springgpt.repository.CurrencyRateRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

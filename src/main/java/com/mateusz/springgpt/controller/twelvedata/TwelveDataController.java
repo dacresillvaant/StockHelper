@@ -1,8 +1,8 @@
-package com.mateusz.springgpt.controller;
+package com.mateusz.springgpt.controller.twelvedata;
 
-import com.mateusz.springgpt.controller.dto.CurrencyRateExternalDto;
-import com.mateusz.springgpt.controller.dto.CurrencyRateInternalDto;
-import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.CurrencyRateExternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.CurrencyRateInternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.QuoteExternalDto;
 import com.mateusz.springgpt.service.TwelveDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -1,4 +1,4 @@
-package com.mateusz.springgpt.controller;
+package com.mateusz.springgpt.controller.openai;
 
 import com.mateusz.springgpt.service.OpenAiService;
 import org.springframework.ai.chat.messages.AssistantMessage;

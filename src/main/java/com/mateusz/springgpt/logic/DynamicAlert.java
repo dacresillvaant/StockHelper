@@ -1,13 +1,13 @@
 package com.mateusz.springgpt.logic;
 
-import com.mateusz.springgpt.controller.dto.QuoteExternalDto;
+import com.mateusz.springgpt.controller.twelvedata.dto.QuoteExternalDto;
 import com.mateusz.springgpt.entity.OwnedStockEntity;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.StockService;
 import com.mateusz.springgpt.service.TwelveDataService;
-import com.mateusz.springgpt.service.tools.Utils;
-import com.mateusz.springgpt.service.tools.mail.MailTemplate;
-import com.mateusz.springgpt.service.tools.mail.MailTemplateFactory;
+import com.mateusz.springgpt.tools.Utils;
+import com.mateusz.springgpt.tools.mail.MailTemplate;
+import com.mateusz.springgpt.tools.mail.MailTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

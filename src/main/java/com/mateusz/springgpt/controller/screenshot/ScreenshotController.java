@@ -1,6 +1,6 @@
-package com.mateusz.springgpt.controller;
+package com.mateusz.springgpt.controller.screenshot;
 
-import com.mateusz.springgpt.controller.dto.ImageAnalyzeDto;
+import com.mateusz.springgpt.controller.screenshot.dto.ImageAnalyzeDto;
 import com.mateusz.springgpt.entity.HeatmapEntity;
 import com.mateusz.springgpt.service.HeatmapAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
