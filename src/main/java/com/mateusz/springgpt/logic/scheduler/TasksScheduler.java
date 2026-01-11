@@ -30,11 +30,7 @@ public class TasksScheduler {
 
     @Scheduled(cron = "${scheduler.low-price-alert}")
     public void scheduledLowPriceAlert() {
-        List<DynamicAlert.AlertConfig> alertConfigurations = List.of(
-                new DynamicAlert.AlertConfig("V", 15),
-                new DynamicAlert.AlertConfig("MA", 15)
-        );
-        alertConfigurations.forEach(alert -> dynamicAlert.lowPriceAlert(alert.symbol(), alert.percent()));
+        dynamicAlert.lowPriceAlert();
     }
 
     @Scheduled(cron = "${scheduler.owned-stock-alert}")

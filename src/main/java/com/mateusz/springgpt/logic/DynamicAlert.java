@@ -1,7 +1,9 @@
 package com.mateusz.springgpt.logic;
 
 import com.mateusz.springgpt.controller.twelvedata.dto.QuoteExternalDto;
+import com.mateusz.springgpt.entity.LowPriceAlertEntity;
 import com.mateusz.springgpt.entity.OwnedStockEntity;
+import com.mateusz.springgpt.service.AlertConfigService;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.StockService;
 import com.mateusz.springgpt.service.TwelveDataService;
@@ -27,32 +29,40 @@ public class DynamicAlert {
     private final TwelveDataService twelveDataService;
     private final MailgunEmailService mailgunEmailService;
     private final StockService stockService;
-
-    public record AlertConfig(String symbol, int percent) {}
+    private final AlertConfigService alertConfigService;
 
     @Value("${mailgun.default-receiver}")
     private String mailReceiver;
 
     @Autowired
-    public DynamicAlert(TwelveDataService twelveDataService, MailgunEmailService mailgunEmailService, StockService stockService) {
+    public DynamicAlert(TwelveDataService twelveDataService, MailgunEmailService mailgunEmailService,
+                        StockService stockService, AlertConfigService alertConfigService) {
         this.twelveDataService = twelveDataService;
         this.mailgunEmailService = mailgunEmailService;
         this.stockService = stockService;
+        this.alertConfigService = alertConfigService;
     }
 
-    public void lowPriceAlert(String symbol, int percentChange) {
-        QuoteExternalDto quote = twelveDataService.getQuote(symbol).blockOptional().orElseThrow().getBody();
-        BigDecimal lastClose = new BigDecimal(quote.getClose());
-        BigDecimal yearHigh = new BigDecimal(quote.getFiftyTwoWeek().getHigh());
+    public void lowPriceAlert() {
+        List<LowPriceAlertEntity> listOfAlertConfig = alertConfigService.getLowPriceAlertConfigurations();
 
-        BigDecimal percentThreshold = new BigDecimal(100 - percentChange).divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
-        BigDecimal alertThreshold = yearHigh.multiply(percentThreshold);
+        for (LowPriceAlertEntity alertConfig : listOfAlertConfig) {
+            String symbol = alertConfig.getTicker();
+            int percentChange = alertConfig.getPercentChangeThreshold();
 
-        log.info("Symbol: \"{}\" - last close price: {}, year high: {}, threshold for alert: {}", symbol, lastClose, yearHigh, alertThreshold);
+            QuoteExternalDto quote = twelveDataService.getQuote(symbol).blockOptional().orElseThrow().getBody();
+            BigDecimal lastClose = new BigDecimal(quote.getClose());
+            BigDecimal yearHigh = new BigDecimal(quote.getFiftyTwoWeek().getHigh());
 
-        if (lastClose.compareTo(alertThreshold) < 0) {
-            MailTemplate mailTemplate = MailTemplateFactory.lowPriceAlertTemplate(symbol, percentChange, quote, lastClose, yearHigh, alertThreshold);
-            mailgunEmailService.sendEmail(mailReceiver, mailTemplate);
+            BigDecimal percentThreshold = new BigDecimal(100 - percentChange).divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+            BigDecimal alertThreshold = yearHigh.multiply(percentThreshold);
+
+            log.info("Symbol: \"{}\" - last close price: {}, year high: {}, threshold for alert: {}", symbol, lastClose, yearHigh, alertThreshold);
+
+            if (lastClose.compareTo(alertThreshold) < 0) {
+                MailTemplate mailTemplate = MailTemplateFactory.lowPriceAlertTemplate(symbol, percentChange, quote, lastClose, yearHigh, alertThreshold);
+                mailgunEmailService.sendEmail(mailReceiver, mailTemplate);
+            }
         }
     }
 

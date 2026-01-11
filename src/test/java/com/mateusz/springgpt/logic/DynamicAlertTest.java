@@ -2,6 +2,8 @@ package com.mateusz.springgpt.logic;
 
 import com.mateusz.springgpt.controller.twelvedata.dto.QuoteExternalDto;
 import com.mateusz.springgpt.controller.twelvedata.dto.model.FiftyTwoWeek;
+import com.mateusz.springgpt.entity.LowPriceAlertEntity;
+import com.mateusz.springgpt.service.AlertConfigService;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.TwelveDataService;
 import com.mateusz.springgpt.tools.mail.MailTemplate;
@@ -17,6 +19,8 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 
 @Listeners(TestListener.class)
@@ -26,6 +30,9 @@ public class DynamicAlertTest {
     private TwelveDataService twelveDataService;
     @Mock
     private MailgunEmailService mailgunEmailService;
+    @Mock
+    private AlertConfigService alertConfigService;
+
     @InjectMocks
     private DynamicAlert dynamicAlert;
 
@@ -47,6 +54,11 @@ public class DynamicAlertTest {
     @Test(testName = "Should send email notification when latest close price fallen below threshold price")
     public void testLowPriceAlertTriggered() {
 //      given
+        LowPriceAlertEntity alertConfig = new LowPriceAlertEntity();
+        alertConfig.setTicker(symbol);
+        alertConfig.setPercentChangeThreshold(percentChange);
+        List<LowPriceAlertEntity> alertConfigs = List.of(alertConfig);
+
         QuoteExternalDto quote = new QuoteExternalDto();
         quote.setClose("310"); // below threshold
 
@@ -56,10 +68,10 @@ public class DynamicAlertTest {
         quote.setName("Visa Inc.");
 
 //      when
-        when(twelveDataService.getQuote(symbol))
-                .thenReturn(Mono.just(ResponseEntity.ok(quote)));
+        when(alertConfigService.getLowPriceAlertConfigurations()).thenReturn(alertConfigs);
+        when(twelveDataService.getQuote(symbol)).thenReturn(Mono.just(ResponseEntity.ok(quote)));
 
-        dynamicAlert.lowPriceAlert(symbol, percentChange);
+        dynamicAlert.lowPriceAlert();
 
 //      then
         verify(mailgunEmailService).sendEmail(anyString(), any(MailTemplate.class));
@@ -68,6 +80,11 @@ public class DynamicAlertTest {
     @Test(testName = "Should not send email when latest close price was above threshold price")
     public void testLowPriceAlertOmitted() {
 //      given
+        LowPriceAlertEntity alertConfig = new LowPriceAlertEntity();
+        alertConfig.setTicker(symbol);
+        alertConfig.setPercentChangeThreshold(percentChange);
+        List<LowPriceAlertEntity> alertConfigs = List.of(alertConfig);
+
         QuoteExternalDto quote = new QuoteExternalDto();
         quote.setClose("365"); // above threshold
 
@@ -77,10 +94,10 @@ public class DynamicAlertTest {
         quote.setName("Visa Inc.");
 
 //      when
-        when(twelveDataService.getQuote(symbol))
-                .thenReturn(Mono.just(ResponseEntity.ok(quote)));
+        when(alertConfigService.getLowPriceAlertConfigurations()).thenReturn(alertConfigs);
+        when(twelveDataService.getQuote(symbol)).thenReturn(Mono.just(ResponseEntity.ok(quote)));
 
-        dynamicAlert.lowPriceAlert(symbol, percentChange);
+        dynamicAlert.lowPriceAlert();
 
 //      then
         verify(mailgunEmailService, never()).sendEmail(anyString(), anyString(), anyString());
