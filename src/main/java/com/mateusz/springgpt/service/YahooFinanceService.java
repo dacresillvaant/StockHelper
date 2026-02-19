@@ -1,10 +1,12 @@
 package com.mateusz.springgpt.service;
 
 import com.mateusz.springgpt.config.WebClientLoggingUtil;
+import com.mateusz.springgpt.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -46,5 +48,21 @@ public class YahooFinanceService {
                         .queryParam("interval", interval)
                         .build())
                 .retrieve().toEntity(String.class);
+    }
+
+    public Mono<ResponseEntity<YahooTruncatedChartResponseDto>> getSimplifiedData(String symbol) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v8/finance/chart/" + symbol)
+                        .queryParam("range", "1y")
+                        .queryParam("interval", "1mo")
+                        .build())
+                .exchangeToMono(response -> {
+                    HttpStatusCode status = response.statusCode();
+
+                    return response.bodyToMono(YahooTruncatedChartResponseDto.class)
+                            .map(body -> ResponseEntity.status(status).body(body))
+                            .defaultIfEmpty(ResponseEntity.status(status).build());
+                });
     }
 }

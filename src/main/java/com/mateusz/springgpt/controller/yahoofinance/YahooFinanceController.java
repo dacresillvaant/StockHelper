@@ -1,5 +1,6 @@
 package com.mateusz.springgpt.controller.yahoofinance;
 
+import com.mateusz.springgpt.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.springgpt.service.YahooFinanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,10 @@ public class YahooFinanceController {
         } else {
             return yahooFinanceService.getData(symbol, range, interval);
         }
+    }
+
+    @GetMapping("/data/simplified/")
+    public Mono<ResponseEntity<YahooTruncatedChartResponseDto>> getSimplifiedData(@RequestParam String symbol) {
+        return yahooFinanceService.getSimplifiedData(symbol);
     }
 }
