@@ -2,6 +2,7 @@ package com.mateusz.springgpt.controller.yahoofinance;
 
 import com.mateusz.springgpt.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.springgpt.service.YahooFinanceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/yahoofinance")
+@Slf4j
 public class YahooFinanceController {
 
     private final YahooFinanceService yahooFinanceService;
@@ -35,6 +37,15 @@ public class YahooFinanceController {
 
     @GetMapping("/data/simplified/")
     public Mono<ResponseEntity<YahooTruncatedChartResponseDto>> getSimplifiedData(@RequestParam String symbol) {
-        return yahooFinanceService.getSimplifiedData(symbol);
+        String resolvedSymbol;
+
+        try {
+            resolvedSymbol = SymbolMapper.valueOf(symbol).getYahooValue();
+        } catch (IllegalArgumentException e) {
+            log.info("Mapping for {} not found, passing as a raw value.", symbol);
+            resolvedSymbol = symbol;
+        }
+
+        return yahooFinanceService.getSimplifiedData(resolvedSymbol);
     }
 }

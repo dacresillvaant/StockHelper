@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -40,6 +41,10 @@ public class YahooTruncatedChartResponseDto {
         @JsonAlias("regularMarketPrice")
         @JsonProperty("lastPrice")
         private BigDecimal lastPrice;
+
+        @JsonAlias("regularMarketTime")
+        @JsonProperty("dateOfPrice")
+        private Instant dateOfPrice;
 
         private BigDecimal fiftyTwoWeekHigh;
         private BigDecimal fiftyTwoWeekLow;
