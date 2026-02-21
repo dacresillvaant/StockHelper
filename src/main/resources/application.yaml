@@ -47,6 +47,9 @@ twelvedata:
 yahoofinance:
   url: https://query1.finance.yahoo.com/
 
+nbp:
+  url: https://api.nbp.pl/
+
 scheduler:
   heatmap:
     cron: "0 */5 * * * *"
