@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/yahoofinance")
@@ -24,7 +23,7 @@ public class YahooFinanceController {
     }
 
     @GetMapping("/data/")
-    public Mono<ResponseEntity<String>> getData(
+    public ResponseEntity<String> getData(
             @RequestParam String symbol,
             @RequestParam(required = false) String range,
             @RequestParam(required = false) String interval) {
@@ -36,7 +35,7 @@ public class YahooFinanceController {
     }
 
     @GetMapping("/data/simplified/")
-    public Mono<ResponseEntity<YahooTruncatedChartResponseDto>> getSimplifiedData(@RequestParam String symbol) {
+    public ResponseEntity<YahooTruncatedChartResponseDto> getSimplifiedData(@RequestParam String symbol) {
         String resolvedSymbol;
 
         try {

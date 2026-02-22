@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 
@@ -27,17 +26,17 @@ public class TwelveDataController {
     }
 
     @GetMapping("/api_usage/")
-    public Mono<ResponseEntity<String>> getUsage() {
+    public ResponseEntity<String> getUsage() {
         return twelveDataService.getUsage();
     }
 
     @GetMapping("/exchange_rate/")
-    public Mono<ResponseEntity<CurrencyRateExternalDto>> getExchangeRate(@RequestParam String symbol) {
+    public ResponseEntity<CurrencyRateExternalDto> getExchangeRate(@RequestParam String symbol) {
         return twelveDataService.getExchangeRate(symbol);
     }
 
     @GetMapping("/quote/")
-    public Mono<ResponseEntity<QuoteExternalDto>> getQuote(@RequestParam String symbol) {
+    public ResponseEntity<QuoteExternalDto> getQuote(@RequestParam String symbol) {
         return twelveDataService.getQuote(symbol);
     }
 

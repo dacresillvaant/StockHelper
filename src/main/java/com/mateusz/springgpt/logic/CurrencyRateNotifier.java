@@ -10,7 +10,6 @@ import com.mateusz.springgpt.tools.mail.MailTemplate;
 import com.mateusz.springgpt.tools.mail.MailTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -94,8 +93,7 @@ public class CurrencyRateNotifier {
     public void processCurrencyRate(String symbol) {
         CurrencyRateExternalDto currencyRateResponse = twelveDataService
                 .getExchangeRate(symbol)
-                .map(ResponseEntity::getBody)
-                .block();
+                .getBody();
 
         saveRateToDatabase(currencyRateResponse);
         sendRateEmail(currencyRateResponse, symbol);

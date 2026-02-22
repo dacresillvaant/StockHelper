@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/alphavantage")
@@ -21,7 +20,7 @@ public class AlphaVantageController {
     }
 
     @GetMapping("/news/")
-    public Mono<ResponseEntity<String>> getNews(@RequestParam String topics, @RequestParam String limit) {
+    public ResponseEntity<String> getNews(@RequestParam String topics, @RequestParam String limit) {
         return alphaVantageService.getNews(topics, limit);
     }
 }

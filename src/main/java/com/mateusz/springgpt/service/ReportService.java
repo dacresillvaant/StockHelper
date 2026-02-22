@@ -71,6 +71,7 @@ public class ReportService {
             }
 
             BigDecimal purchaseDayValue = calculatePrice(ownedStock.getPurchasePrice(), purchaseDayXPlnCurrencyRate).multiply(BigDecimal.valueOf(ownedStock.getPosition()));
+            //dodac pobieranie dzisiejszej ceny waloru
             BigDecimal todayValue = calculatePrice(ownedStock.getPurchasePrice(), todayXPlnCurrencyRate).multiply(BigDecimal.valueOf(ownedStock.getPosition()));
 
             log.info("{} purchase price: {}, today price: {}", ownedStock.getName(), purchaseDayValue, todayValue);

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
@@ -41,27 +40,25 @@ public class TwelveDataService {
         this.currencyRateRepository = currencyRateRepository;
     }
 
-    public Mono<ResponseEntity<String>> getUsage() {
-        return webClient.get().uri(uriBuilder -> uriBuilder
-                        .path("api_usage")
-                        .build())
-                .retrieve().toEntity(String.class);
+    public ResponseEntity<String> getUsage() {
+        return webClient.get().uri(uriBuilder -> uriBuilder.path("api_usage").build())
+                .retrieve().toEntity(String.class).block();
     }
 
-    public Mono<ResponseEntity<CurrencyRateExternalDto>> getExchangeRate(String symbol) {
+    public ResponseEntity<CurrencyRateExternalDto> getExchangeRate(String symbol) {
         return webClient.get().uri(uriBuilder -> uriBuilder
                         .path("exchange_rate")
                         .queryParam("symbol", symbol)
                         .build())
-                .retrieve().toEntity(CurrencyRateExternalDto.class);
+                .retrieve().toEntity(CurrencyRateExternalDto.class).block();
     }
 
-    public Mono<ResponseEntity<QuoteExternalDto>> getQuote(String symbol) {
+    public ResponseEntity<QuoteExternalDto> getQuote(String symbol) {
         return webClient.get().uri(uriBuilder -> uriBuilder
                         .path("quote")
                         .queryParam("symbol", symbol)
                         .build())
-                .retrieve().toEntity(QuoteExternalDto.class);
+                .retrieve().toEntity(QuoteExternalDto.class).block();
     }
 
     public CurrencyRateInternalDto getExchangeRateFromDatabase(LocalDateTime ratioDate, String symbol) {

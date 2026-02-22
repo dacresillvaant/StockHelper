@@ -50,7 +50,7 @@ public class DynamicAlert {
             String symbol = alertConfig.getTicker();
             int percentChange = alertConfig.getPercentChangeThreshold();
 
-            QuoteExternalDto quote = twelveDataService.getQuote(symbol).blockOptional().orElseThrow().getBody();
+            QuoteExternalDto quote = twelveDataService.getQuote(symbol).getBody();
             BigDecimal lastClose = new BigDecimal(quote.getClose());
             BigDecimal yearHigh = new BigDecimal(quote.getFiftyTwoWeek().getHigh());
 
@@ -93,7 +93,7 @@ public class DynamicAlert {
         for (int i = 0; i < ownedStocks.size(); i+= batchSize) {
             log.info("Starting batch");
             List<OwnedStockEntity> batchOfStocks = new ArrayList<>(ownedStocks.subList(i, Math.min(i + batchSize, ownedStocks.size())));
-            batchOfStocks.forEach(s -> ownedStocksCurrentData.put(s.getTicker(), twelveDataService.getQuote(s.getTicker()).blockOptional().orElseThrow().getBody()));
+            batchOfStocks.forEach(s -> ownedStocksCurrentData.put(s.getTicker(), twelveDataService.getQuote(s.getTicker()).getBody()));
 
             compareOwnedStocksPrice(batchOfStocks, ownedStocksCurrentData, percentChangeThreshold);
 

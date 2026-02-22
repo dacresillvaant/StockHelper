@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -97,5 +98,18 @@ public class GlobalExceptionHandler {
         mailgunEmailService.sendErrorAlertEmail(exception, request);
 
         return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(WebClientResponseException.class)
+    public ResponseEntity<Map<String, Object>> handleWebClientResponseException(WebClientResponseException exception, HttpServletRequest request) {
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        responseBody.put("timestamp", LocalDateTime.now());
+        responseBody.put("status", exception.getStatusCode().value());
+        responseBody.put("error", exception.getStatusCode());
+        responseBody.put("message", exception.getMessage());
+        responseBody.put("path", request.getRequestURI().concat(getParam(request)));
+
+        log.warn("External API error: {}", exception.getMessage());
+        return new ResponseEntity<>(responseBody, exception.getStatusCode());
     }
 }

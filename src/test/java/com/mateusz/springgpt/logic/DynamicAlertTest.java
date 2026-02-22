@@ -17,7 +17,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -69,7 +68,7 @@ public class DynamicAlertTest {
 
 //      when
         when(alertConfigService.getLowPriceAlertConfigurations()).thenReturn(alertConfigs);
-        when(twelveDataService.getQuote(symbol)).thenReturn(Mono.just(ResponseEntity.ok(quote)));
+        when(twelveDataService.getQuote(symbol)).thenReturn((ResponseEntity.ok(quote)));
 
         dynamicAlert.lowPriceAlert();
 
@@ -95,7 +94,7 @@ public class DynamicAlertTest {
 
 //      when
         when(alertConfigService.getLowPriceAlertConfigurations()).thenReturn(alertConfigs);
-        when(twelveDataService.getQuote(symbol)).thenReturn(Mono.just(ResponseEntity.ok(quote)));
+        when(twelveDataService.getQuote(symbol)).thenReturn((ResponseEntity.ok(quote)));
 
         dynamicAlert.lowPriceAlert();
 

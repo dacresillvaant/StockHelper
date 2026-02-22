@@ -8,7 +8,6 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
@@ -44,16 +43,8 @@ public class NbpService {
 
     public ResponseEntity<NbpCurrencyRateDto> getPlnLastKnownCurrencyRate(String symbol) {
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("api/exchangerates/rates/a/" + symbol + "/")
-                        .build())
-                .exchangeToMono(response -> {
-                    HttpStatusCode status = response.statusCode();
-                    return response.bodyToMono(NbpCurrencyRateDto.class)
-                            .map(body -> ResponseEntity.status(status).body(body))
-                            .defaultIfEmpty(ResponseEntity.status(status).build());
-                })
-                .block();
+                .uri(uriBuilder -> uriBuilder.path("api/exchangerates/rates/a/" + symbol + "/").build())
+                .retrieve().toEntity(NbpCurrencyRateDto.class).block();
     }
 
     /**
@@ -63,15 +54,7 @@ public class NbpService {
      */
     public ResponseEntity<NbpCurrencyRateDto> getPlnCurrencyRateForDate(String symbol, String date) {
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("api/exchangerates/rates/a/" + symbol + "/" + date)
-                        .build())
-                .exchangeToMono(response -> {
-                    HttpStatusCode status = response.statusCode();
-                    return response.bodyToMono(NbpCurrencyRateDto.class)
-                            .map(body -> ResponseEntity.status(status).body(body))
-                            .defaultIfEmpty(ResponseEntity.status(status).build());
-                })
-                .block();
+                .uri(uriBuilder -> uriBuilder.path("api/exchangerates/rates/a/" + symbol + "/" + date).build())
+                .retrieve().toEntity(NbpCurrencyRateDto.class).block();
     }
 }
