@@ -45,8 +45,8 @@ public class ReportService {
             try {
                 return nbpService.getPlnCurrencyRateForDate(symbolCurrency, dateOf.format(DATE_FORMATTER)).getBody();
             } catch (Exception e) {
-                log.warn("Could not retrieve NBP data for currency rate {} for date {}. Retrying with date +1 day", symbolCurrency, dateOf);
-                dateOf = dateOf.plusDays(1);
+                log.warn("Could not retrieve NBP data for currency rate {} for date {}. Retrying with date -1 day", symbolCurrency, dateOf);
+                dateOf = dateOf.minusDays(1);
                 retryNumber++;
             }
         }
