@@ -2,7 +2,7 @@ package com.mateusz.springgpt.logic;
 
 import com.mateusz.springgpt.controller.twelvedata.dto.QuoteExternalDto;
 import com.mateusz.springgpt.controller.twelvedata.dto.model.FiftyTwoWeek;
-import com.mateusz.springgpt.entity.LowPriceAlertEntity;
+import com.mateusz.springgpt.entity.AlertConfigEntity;
 import com.mateusz.springgpt.service.AlertConfigService;
 import com.mateusz.springgpt.service.MailgunEmailService;
 import com.mateusz.springgpt.service.TwelveDataService;
@@ -53,10 +53,10 @@ public class DynamicAlertTest {
     @Test(testName = "Should send email notification when latest close price fallen below threshold price")
     public void testLowPriceAlertTriggered() {
 //      given
-        LowPriceAlertEntity alertConfig = new LowPriceAlertEntity();
+        AlertConfigEntity alertConfig = new AlertConfigEntity();
         alertConfig.setTicker(symbol);
         alertConfig.setPercentChangeThreshold(percentChange);
-        List<LowPriceAlertEntity> alertConfigs = List.of(alertConfig);
+        List<AlertConfigEntity> alertConfigs = List.of(alertConfig);
 
         QuoteExternalDto quote = new QuoteExternalDto();
         quote.setClose("310"); // below threshold
@@ -67,7 +67,7 @@ public class DynamicAlertTest {
         quote.setName("Visa Inc.");
 
 //      when
-        when(alertConfigService.getLowPriceAlertConfigurations()).thenReturn(alertConfigs);
+        when(alertConfigService.getAlertConfigurations()).thenReturn(alertConfigs);
         when(twelveDataService.getQuote(symbol)).thenReturn((ResponseEntity.ok(quote)));
 
         dynamicAlert.lowPriceAlert();
@@ -79,10 +79,10 @@ public class DynamicAlertTest {
     @Test(testName = "Should not send email when latest close price was above threshold price")
     public void testLowPriceAlertOmitted() {
 //      given
-        LowPriceAlertEntity alertConfig = new LowPriceAlertEntity();
+        AlertConfigEntity alertConfig = new AlertConfigEntity();
         alertConfig.setTicker(symbol);
         alertConfig.setPercentChangeThreshold(percentChange);
-        List<LowPriceAlertEntity> alertConfigs = List.of(alertConfig);
+        List<AlertConfigEntity> alertConfigs = List.of(alertConfig);
 
         QuoteExternalDto quote = new QuoteExternalDto();
         quote.setClose("365"); // above threshold
@@ -93,7 +93,7 @@ public class DynamicAlertTest {
         quote.setName("Visa Inc.");
 
 //      when
-        when(alertConfigService.getLowPriceAlertConfigurations()).thenReturn(alertConfigs);
+        when(alertConfigService.getAlertConfigurations()).thenReturn(alertConfigs);
         when(twelveDataService.getQuote(symbol)).thenReturn((ResponseEntity.ok(quote)));
 
         dynamicAlert.lowPriceAlert();

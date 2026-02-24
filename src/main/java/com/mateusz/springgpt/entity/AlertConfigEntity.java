@@ -1,18 +1,19 @@
 package com.mateusz.springgpt.entity;
 
+import com.mateusz.springgpt.controller.alertconfig.AlertType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "low_price_alert_config")
+@Table(name = "alert_config", uniqueConstraints = {@UniqueConstraint(columnNames = {"ticker", "alert_type"})})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LowPriceAlertEntity {
+public class AlertConfigEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +23,10 @@ public class LowPriceAlertEntity {
 
     private LocalDateTime modifiedDate;
 
-    @Column(unique = true)
     private String ticker;
 
     private int percentChangeThreshold;
+
+    @Enumerated(EnumType.STRING)
+    private AlertType alertType;
 }

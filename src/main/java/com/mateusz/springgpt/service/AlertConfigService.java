@@ -1,8 +1,9 @@
 package com.mateusz.springgpt.service;
 
-import com.mateusz.springgpt.controller.alertconfig.dto.NewLowPriceAlertConfigDto;
-import com.mateusz.springgpt.entity.LowPriceAlertEntity;
-import com.mateusz.springgpt.repository.LowPriceAlertRepository;
+import com.mateusz.springgpt.controller.alertconfig.AlertType;
+import com.mateusz.springgpt.controller.alertconfig.dto.AlertConfigDto;
+import com.mateusz.springgpt.entity.AlertConfigEntity;
+import com.mateusz.springgpt.repository.AlertConfigRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,40 +18,46 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class AlertConfigService {
 
-    private final LowPriceAlertRepository lowPriceAlertRepository;
+    private final AlertConfigRepository alertConfigRepository;
 
     @Autowired
-    public AlertConfigService(LowPriceAlertRepository lowPriceAlertRepository) {
-        this.lowPriceAlertRepository = lowPriceAlertRepository;
+    public AlertConfigService(AlertConfigRepository alertConfigRepository) {
+        this.alertConfigRepository = alertConfigRepository;
     }
 
-    public LowPriceAlertEntity addLowPriceAlertConfiguration(NewLowPriceAlertConfigDto newLowPriceAlertConfigDto) {
-        if (lowPriceAlertRepository.existsByTicker(newLowPriceAlertConfigDto.getTicker())) {
-            throw new DataIntegrityViolationException("Config for ticker '" + newLowPriceAlertConfigDto.getTicker() + "' already exists");
+    public AlertConfigEntity addAlertConfiguration(AlertConfigDto alertConfigDto) {
+        if (alertConfigRepository.existsByTicker(alertConfigDto.getTicker())) {
+            throw new DataIntegrityViolationException("Config for ticker '" + alertConfigDto.getTicker() + "' already exists");
         }
 
-        LowPriceAlertEntity newAlertConfig = LowPriceAlertEntity.builder()
+        AlertConfigEntity newAlertConfig = AlertConfigEntity.builder()
                 .createdDate(LocalDateTime.now())
                 .modifiedDate(LocalDateTime.now())
-                .ticker(newLowPriceAlertConfigDto.getTicker())
-                .percentChangeThreshold(newLowPriceAlertConfigDto.getPercentChangeThreshold())
+                .ticker(alertConfigDto.getTicker())
+                .percentChangeThreshold(alertConfigDto.getPercentChangeThreshold())
+                .alertType(alertConfigDto.getAlertType())
                 .build();
 
-        return lowPriceAlertRepository.save(newAlertConfig);
+        return alertConfigRepository.save(newAlertConfig);
     }
 
-    public LowPriceAlertEntity getLowPriceAlertConfiguration(String ticker) {
-        return lowPriceAlertRepository.findByTicker(ticker)
-                .orElseThrow(() -> new NoSuchElementException("Config for ticker '" + ticker + "' not found."));
+    public List<AlertConfigEntity> getAlertConfiguration(String ticker) {
+        List<AlertConfigEntity> alertConfigEntities = alertConfigRepository.findByTicker(ticker);
+
+        if (alertConfigEntities.isEmpty()) {
+            throw new NoSuchElementException("Config for ticker '" + ticker + "' not found.");
+        } else {
+            return alertConfigEntities;
+        }
     }
 
-    public List<LowPriceAlertEntity> getLowPriceAlertConfigurations() {
-        return lowPriceAlertRepository.findAll();
+    public List<AlertConfigEntity> getAlertConfigurations() {
+        return alertConfigRepository.findAll();
     }
 
     @Transactional
-    public String deleteLowPriceAlertConfiguration(String ticker) {
-        int numberOfConfigurationsDeleted = lowPriceAlertRepository.deleteByTicker(ticker);
+    public String deleteAlertConfiguration(String ticker, AlertType alertType) {
+        int numberOfConfigurationsDeleted = alertConfigRepository.deleteByTickerAndAlertType(ticker, alertType);
         if (numberOfConfigurationsDeleted > 0) {
             return ticker.concat(" alert configuration has been deleted");
         } else {

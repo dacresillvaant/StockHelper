@@ -1,7 +1,7 @@
 package com.mateusz.springgpt.controller.alertconfig;
 
-import com.mateusz.springgpt.controller.alertconfig.dto.NewLowPriceAlertConfigDto;
-import com.mateusz.springgpt.entity.LowPriceAlertEntity;
+import com.mateusz.springgpt.controller.alertconfig.dto.AlertConfigDto;
+import com.mateusz.springgpt.entity.AlertConfigEntity;
 import com.mateusz.springgpt.service.AlertConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,18 +21,18 @@ public class AlertConfigController {
     }
 
     @PostMapping("/add/lowpricealert")
-    public LowPriceAlertEntity addLowPriceAlertConfig(@RequestBody NewLowPriceAlertConfigDto newLowPriceAlertConfigDto) {
-        return alertConfigService.addLowPriceAlertConfiguration(newLowPriceAlertConfigDto);
+    public AlertConfigEntity addAlertConfig(@RequestBody AlertConfigDto alertConfigDto) {
+        return alertConfigService.addAlertConfiguration(alertConfigDto);
     }
 
     @GetMapping("/get/lowpricealert/")
-    public LowPriceAlertEntity getLowPriceAlertConfig(@RequestParam String ticker) {
-        return alertConfigService.getLowPriceAlertConfiguration(ticker);
+    public List<AlertConfigEntity> getAlertConfig(@RequestParam String ticker) {
+        return alertConfigService.getAlertConfiguration(ticker);
     }
 
     @GetMapping("/get/lowpricealert/all")
-    public ResponseEntity<List<LowPriceAlertEntity>> getAllLowPriceAlertConfigurations() {
-        List<LowPriceAlertEntity> lowPriceAlertConfigurations = alertConfigService.getLowPriceAlertConfigurations();
+    public ResponseEntity<List<AlertConfigEntity>> getAllAlertConfigurations() {
+        List<AlertConfigEntity> lowPriceAlertConfigurations = alertConfigService.getAlertConfigurations();
 
         if (lowPriceAlertConfigurations.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -42,7 +42,7 @@ public class AlertConfigController {
     }
 
     @DeleteMapping("/delete/lowpricealert/")
-    public String deleteLowPriceAlertConfig(@RequestParam String ticker) {
-        return alertConfigService.deleteLowPriceAlertConfiguration(ticker);
+    public String deleteAlertConfig(@RequestParam String ticker, @RequestParam AlertType alertType) {
+        return alertConfigService.deleteAlertConfiguration(ticker, alertType);
     }
 }

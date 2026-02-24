@@ -1,7 +1,7 @@
 package com.mateusz.springgpt.logic;
 
 import com.mateusz.springgpt.controller.twelvedata.dto.QuoteExternalDto;
-import com.mateusz.springgpt.entity.LowPriceAlertEntity;
+import com.mateusz.springgpt.entity.AlertConfigEntity;
 import com.mateusz.springgpt.entity.OwnedStockEntity;
 import com.mateusz.springgpt.service.AlertConfigService;
 import com.mateusz.springgpt.service.MailgunEmailService;
@@ -44,9 +44,9 @@ public class DynamicAlert {
     }
 
     public void lowPriceAlert() {
-        List<LowPriceAlertEntity> listOfAlertConfig = alertConfigService.getLowPriceAlertConfigurations();
+        List<AlertConfigEntity> listOfAlertConfig = alertConfigService.getAlertConfigurations();
 
-        for (LowPriceAlertEntity alertConfig : listOfAlertConfig) {
+        for (AlertConfigEntity alertConfig : listOfAlertConfig) {
             String symbol = alertConfig.getTicker();
             int percentChange = alertConfig.getPercentChangeThreshold();
 
