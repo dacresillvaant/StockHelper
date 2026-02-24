@@ -51,8 +51,12 @@ public class AlertConfigService {
         }
     }
 
-    public List<AlertConfigEntity> getAlertConfigurations() {
+    public List<AlertConfigEntity> getAllAlertConfigurations() {
         return alertConfigRepository.findAll();
+    }
+
+    public List<AlertConfigEntity> getAlertConfigurationsByAlertType(AlertType alertType) {
+        return alertConfigRepository.findByAlertType(alertType);
     }
 
     @Transactional

@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.mateusz.springgpt.controller.alertconfig.AlertType.LOW_PRICE_ALERT;
+
 @Component
 @Slf4j
 public class DynamicAlert {
@@ -44,7 +46,7 @@ public class DynamicAlert {
     }
 
     public void lowPriceAlert() {
-        List<AlertConfigEntity> listOfAlertConfig = alertConfigService.getAlertConfigurations();
+        List<AlertConfigEntity> listOfAlertConfig = alertConfigService.getAlertConfigurationsByAlertType(LOW_PRICE_ALERT);
 
         for (AlertConfigEntity alertConfig : listOfAlertConfig) {
             String symbol = alertConfig.getTicker();

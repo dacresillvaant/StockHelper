@@ -15,4 +15,6 @@ public interface AlertConfigRepository extends JpaRepository<AlertConfigEntity,L
     List<AlertConfigEntity> findByTicker(String ticker);
 
     int deleteByTickerAndAlertType(String ticker, AlertType alertType);
+
+    List<AlertConfigEntity> findByAlertType(AlertType alertType);
 }

@@ -20,6 +20,7 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
+import static com.mateusz.springgpt.controller.alertconfig.AlertType.LOW_PRICE_ALERT;
 import static org.mockito.Mockito.*;
 
 @Listeners(TestListener.class)
@@ -67,7 +68,7 @@ public class DynamicAlertTest {
         quote.setName("Visa Inc.");
 
 //      when
-        when(alertConfigService.getAlertConfigurations()).thenReturn(alertConfigs);
+        when(alertConfigService.getAlertConfigurationsByAlertType(LOW_PRICE_ALERT)).thenReturn(alertConfigs);
         when(twelveDataService.getQuote(symbol)).thenReturn((ResponseEntity.ok(quote)));
 
         dynamicAlert.lowPriceAlert();
@@ -93,7 +94,7 @@ public class DynamicAlertTest {
         quote.setName("Visa Inc.");
 
 //      when
-        when(alertConfigService.getAlertConfigurations()).thenReturn(alertConfigs);
+        when(alertConfigService.getAlertConfigurationsByAlertType(LOW_PRICE_ALERT)).thenReturn(alertConfigs);
         when(twelveDataService.getQuote(symbol)).thenReturn((ResponseEntity.ok(quote)));
 
         dynamicAlert.lowPriceAlert();
