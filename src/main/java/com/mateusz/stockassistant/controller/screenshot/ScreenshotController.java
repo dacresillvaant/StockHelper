@@ -1,0 +1,41 @@
+package com.mateusz.stockassistant.controller.screenshot;
+
+import com.mateusz.stockassistant.controller.screenshot.dto.ImageAnalyzeDto;
+import com.mateusz.stockassistant.entity.HeatmapEntity;
+import com.mateusz.stockassistant.service.HeatmapAnalysisService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigDecimal;
+
+@RestController
+@RequestMapping("/api/screenshot")
+public class ScreenshotController {
+
+    private final HeatmapAnalysisService heatmapAnalysisService;
+
+    @Autowired
+    public ScreenshotController(HeatmapAnalysisService heatmapAnalysisService) {
+        this.heatmapAnalysisService = heatmapAnalysisService;
+    }
+
+    @GetMapping("/{id}")
+    public HeatmapEntity getHeatmapById(@PathVariable Long id) {
+        return heatmapAnalysisService.getHeatmapById(id);
+    }
+
+    @GetMapping("/{id}/analyze")
+    public ResponseEntity<ImageAnalyzeDto> analyzeScreenshot(@PathVariable Long id) {
+        BigDecimal ratio = heatmapAnalysisService.analyzeHeatmap(id);
+
+        if (ratio == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new ImageAnalyzeDto(id, ratio));
+    }
+}
