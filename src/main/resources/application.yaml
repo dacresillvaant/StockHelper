@@ -12,6 +12,10 @@ spring:
   ai:
     openai:
       api-key: ${OPEN_AI_API_KEY}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
 
   datasource:
     url: jdbc:postgresql://localhost:5432/spring_ai

@@ -135,6 +135,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
+        <!-- Spring automatically picks correct flyway version -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/org.flywaydb/flyway-database-postgresql -->
+        <!-- Spring automatically picks correct flyway version -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
 	</dependencies>
 
 	<dependencyManagement>
