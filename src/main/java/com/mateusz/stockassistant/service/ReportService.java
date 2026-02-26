@@ -33,8 +33,8 @@ public class ReportService {
         this.yahooFinanceService = yahooFinanceService;
     }
 
-    private BigDecimal calculatePrice(BigDecimal symbolPrice, BigDecimal currencyRate) {
-        return symbolPrice.multiply(currencyRate).setScale(2, RoundingMode.HALF_UP);
+    private BigDecimal calculateValue(BigDecimal symbolPrice, BigDecimal currencyRate, int multiplier) {
+        return symbolPrice.multiply(currencyRate).multiply(BigDecimal.valueOf(multiplier)).setScale(2, RoundingMode.HALF_UP);
     }
 
     private NbpCurrencyRateDto getFirstAvailableNbpData(String symbolCurrency, String date) {
@@ -63,10 +63,10 @@ public class ReportService {
         List<OwnedStockEntity> ownedStocks = ownedStockRepository.findAll();
         LinkedList<ProfitReportDto> results = new LinkedList<>();
 
-        for (OwnedStockEntity ownedStock : ownedStocks) {
-            log.info("Processing {}", ownedStock.getName());
-            String symbolCurrency = ownedStock.getCurrency();
-            String purchaseDate = ownedStock.getBoughtDate().format(DATE_FORMATTER);
+        for (OwnedStockEntity os : ownedStocks) {
+            log.info("Processing {}", os.getName());
+            String symbolCurrency = os.getCurrency();
+            String purchaseDate = os.getBoughtDate().format(DATE_FORMATTER);
 
             BigDecimal purchaseDayXPlnCurrencyRate = getFirstAvailableNbpData(symbolCurrency, purchaseDate).getRates().get(0).getMid();
 
@@ -77,20 +77,34 @@ public class ReportService {
                 default -> throw new IllegalArgumentException("Unmapped currency: " + symbolCurrency);
             }
 
-            BigDecimal lastPrice = yahooFinanceService.getSimplifiedData(ownedStock.getTicker()).getBody().getChart().getResult().get(0).getMeta().getLastPrice();
+            BigDecimal lastPrice = yahooFinanceService.getSimplifiedData(os.getTicker()).getBody().getChart().getResult().get(0).getMeta().getLastPrice();
 
-            BigDecimal purchaseDayValue = calculatePrice(ownedStock.getPurchasePrice(), purchaseDayXPlnCurrencyRate).multiply(BigDecimal.valueOf(ownedStock.getPosition()));
-            BigDecimal todayValue = calculatePrice(lastPrice, todayXPlnCurrencyRate).multiply(BigDecimal.valueOf(ownedStock.getPosition()));
+            BigDecimal purchaseDayValue = calculateValue(os.getPurchasePrice(), purchaseDayXPlnCurrencyRate, os.getPosition());
+            BigDecimal todayValue = calculateValue(lastPrice, todayXPlnCurrencyRate, os.getPosition());
 
             BigDecimal priceChange = todayValue.subtract(purchaseDayValue);
 
-            results.add(new ProfitReportDto(ownedStock.getName(), ownedStock.getTicker(), purchaseDayValue, todayValue, priceChange));
+            ProfitReportDto reportDataRow = ProfitReportDto.builder()
+                    .name(os.getName())
+                    .ticker(os.getTicker())
+                    .purchaseDate(LocalDate.parse(purchaseDate))
+                    .purchaseCurrencyRateToPLN(purchaseDayXPlnCurrencyRate)
+                    .todayCurrencyRateToPLN(todayXPlnCurrencyRate)
+                    .purchasePrice(new ProfitReportDto.PriceWithCurrency(calculateValue(os.getPurchasePrice(), BigDecimal.ONE, os.getPosition()), os.getCurrency()))
+                    .purchasePriceConverted(new ProfitReportDto.PriceWithCurrency(purchaseDayValue, "PLN"))
+                    .todayPrice(new ProfitReportDto.PriceWithCurrency(calculateValue(lastPrice, BigDecimal.ONE, os.getPosition()), os.getCurrency()))
+                    .todayPriceConverted(new ProfitReportDto.PriceWithCurrency(todayValue, "PLN"))
+                    .diff(new ProfitReportDto.PriceWithCurrency(calculateValue(lastPrice, BigDecimal.ONE, os.getPosition()).subtract(calculateValue(os.getPurchasePrice(), BigDecimal.ONE, os.getPosition())), os.getCurrency()))
+                    .diffConverted(new ProfitReportDto.PriceWithCurrency(priceChange, "PLN"))
+                    .build();
+
+            results.add(reportDataRow);
 
             Utils.sleep(100); //to avoid spamming NBP & Yahoo Finance APIs too much
         }
 
         results.forEach(result -> log.info("{} purchase price: {}, today price: {}, profit/loss: {}",
-                result.name(), result.purchasePrice(), result.todayPrice(), result.diff()));
+                result.getName(), result.getPurchasePrice(), result.getTodayPrice(), result.getDiff()));
 
         log.info("FINISH: Preparing owned stock profit report");
 
