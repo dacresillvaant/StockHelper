@@ -8,7 +8,6 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -41,10 +40,10 @@ public class NbpService {
                 .build();
     }
 
-    public ResponseEntity<NbpCurrencyRateDto> getPlnLastKnownCurrencyRate(String symbol) {
+    public NbpCurrencyRateDto getPlnLastKnownCurrencyRate(String symbol) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("api/exchangerates/rates/a/" + symbol + "/").build())
-                .retrieve().toEntity(NbpCurrencyRateDto.class).block();
+                .retrieve().bodyToMono(NbpCurrencyRateDto.class).block();
     }
 
     /**
@@ -52,9 +51,9 @@ public class NbpService {
      * @param date YYYY-MM-DD format
      * @return {@link NbpCurrencyRateDto}
      */
-    public ResponseEntity<NbpCurrencyRateDto> getPlnCurrencyRateForDate(String symbol, String date) {
+    public NbpCurrencyRateDto getPlnCurrencyRateForDate(String symbol, String date) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("api/exchangerates/rates/a/" + symbol + "/" + date).build())
-                .retrieve().toEntity(NbpCurrencyRateDto.class).block();
+                .retrieve().bodyToMono(NbpCurrencyRateDto.class).block();
     }
 }

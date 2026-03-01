@@ -91,9 +91,7 @@ public class CurrencyRateNotifier {
     }
 
     public void processCurrencyRate(String symbol) {
-        CurrencyRateExternalDto currencyRateResponse = twelveDataService
-                .getExchangeRate(symbol)
-                .getBody();
+        CurrencyRateExternalDto currencyRateResponse = twelveDataService.getExchangeRate(symbol);
 
         saveRateToDatabase(currencyRateResponse);
         sendRateEmail(currencyRateResponse, symbol);

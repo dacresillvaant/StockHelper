@@ -8,7 +8,6 @@ import com.mateusz.stockassistant.repository.CurrencyRateRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -40,25 +39,25 @@ public class TwelveDataService {
         this.currencyRateRepository = currencyRateRepository;
     }
 
-    public ResponseEntity<String> getUsage() {
+    public String getUsage() {
         return webClient.get().uri(uriBuilder -> uriBuilder.path("api_usage").build())
-                .retrieve().toEntity(String.class).block();
+                .retrieve().bodyToMono(String.class).block();
     }
 
-    public ResponseEntity<CurrencyRateExternalDto> getExchangeRate(String symbol) {
+    public CurrencyRateExternalDto getExchangeRate(String symbol) {
         return webClient.get().uri(uriBuilder -> uriBuilder
                         .path("exchange_rate")
                         .queryParam("symbol", symbol)
                         .build())
-                .retrieve().toEntity(CurrencyRateExternalDto.class).block();
+                .retrieve().bodyToMono(CurrencyRateExternalDto.class).block();
     }
 
-    public ResponseEntity<QuoteExternalDto> getQuote(String symbol) {
+    public QuoteExternalDto getQuote(String symbol) {
         return webClient.get().uri(uriBuilder -> uriBuilder
                         .path("quote")
                         .queryParam("symbol", symbol)
                         .build())
-                .retrieve().toEntity(QuoteExternalDto.class).block();
+                .retrieve().bodyToMono(QuoteExternalDto.class).block();
     }
 
     public CurrencyRateInternalDto getExchangeRateFromDatabase(LocalDateTime ratioDate, String symbol) {

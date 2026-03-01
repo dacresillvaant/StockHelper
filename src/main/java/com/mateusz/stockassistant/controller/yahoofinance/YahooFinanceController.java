@@ -5,7 +5,6 @@ import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChar
 import com.mateusz.stockassistant.service.YahooFinanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,8 +23,7 @@ public class YahooFinanceController {
     }
 
     @GetMapping("/data/")
-    public ResponseEntity<String> getData(
-            @RequestParam String symbol, @RequestParam(required = false) String range,  @RequestParam(required = false) String interval) {
+    public String getData(@RequestParam String symbol, @RequestParam(required = false) String range,  @RequestParam(required = false) String interval) {
 
         if (range == null && interval == null) {
             return yahooFinanceService.getData(symbol);
@@ -35,7 +33,7 @@ public class YahooFinanceController {
     }
 
     @GetMapping("/data/simplified/")
-    public ResponseEntity<YahooTruncatedChartResponseDto> getSimplifiedData(@RequestParam String symbol) {
+    public YahooTruncatedChartResponseDto getSimplifiedData(@RequestParam String symbol) {
         String resolvedSymbol;
 
         try {
@@ -49,10 +47,9 @@ public class YahooFinanceController {
     }
 
     @GetMapping("/data/detailed/")
-    public YahooDetailedChartResponseDto getDetailedData(
-            @RequestParam String symbol, @RequestParam String range, @RequestParam String interval) {
-
+    public YahooDetailedChartResponseDto getDetailedData(@RequestParam String symbol, @RequestParam String range, @RequestParam String interval) {
         String resolvedSymbol;
+
         try {
             resolvedSymbol = SymbolMapper.valueOf(symbol).getYahooValue();
         } catch (IllegalArgumentException e) {

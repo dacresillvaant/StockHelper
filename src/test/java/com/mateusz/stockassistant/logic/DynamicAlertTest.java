@@ -11,7 +11,6 @@ import com.mateusz.stockassistant.utils.TestListener;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -69,7 +68,7 @@ public class DynamicAlertTest {
 
 //      when
         when(alertConfigService.getAlertConfigurationsByAlertType(LOW_PRICE_ALERT)).thenReturn(alertConfigs);
-        when(twelveDataService.getQuote(symbol)).thenReturn((ResponseEntity.ok(quote)));
+        when(twelveDataService.getQuote(symbol)).thenReturn(quote);
 
         dynamicAlert.lowPriceAlert();
 
@@ -95,7 +94,7 @@ public class DynamicAlertTest {
 
 //      when
         when(alertConfigService.getAlertConfigurationsByAlertType(LOW_PRICE_ALERT)).thenReturn(alertConfigs);
-        when(twelveDataService.getQuote(symbol)).thenReturn((ResponseEntity.ok(quote)));
+        when(twelveDataService.getQuote(symbol)).thenReturn(quote);
 
         dynamicAlert.lowPriceAlert();
 

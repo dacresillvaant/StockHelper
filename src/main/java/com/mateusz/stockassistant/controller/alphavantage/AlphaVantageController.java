@@ -2,7 +2,6 @@ package com.mateusz.stockassistant.controller.alphavantage;
 
 import com.mateusz.stockassistant.service.AlphaVantageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +19,7 @@ public class AlphaVantageController {
     }
 
     @GetMapping("/news/")
-    public ResponseEntity<String> getNews(@RequestParam String topics, @RequestParam String limit) {
+    public String getNews(@RequestParam String topics, @RequestParam String limit) {
         return alphaVantageService.getNews(topics, limit);
     }
 }

@@ -43,7 +43,7 @@ public class ReportService {
 
         while (retryNumber < 10) {
             try {
-                return nbpService.getPlnCurrencyRateForDate(symbolCurrency, dateOf.format(DATE_FORMATTER)).getBody();
+                return nbpService.getPlnCurrencyRateForDate(symbolCurrency, dateOf.format(DATE_FORMATTER));
             } catch (Exception e) {
                 log.warn("Could not retrieve NBP data for currency rate {} for date {}. Retrying with date -1 day", symbolCurrency, dateOf);
                 dateOf = dateOf.minusDays(1);
@@ -57,8 +57,8 @@ public class ReportService {
     public List<ProfitReportDto> prepareOwnedStockProfitReport() {
         log.info("START: Preparing owned stock profit report");
 
-        BigDecimal todayUsdPlnCurrencyRate = nbpService.getPlnLastKnownCurrencyRate("USD").getBody().getRates().get(0).getMid();
-        BigDecimal todayCadPlnCurrencyRate = nbpService.getPlnLastKnownCurrencyRate("CAD").getBody().getRates().get(0).getMid();
+        BigDecimal todayUsdPlnCurrencyRate = nbpService.getPlnLastKnownCurrencyRate("USD").getRates().get(0).getMid();
+        BigDecimal todayCadPlnCurrencyRate = nbpService.getPlnLastKnownCurrencyRate("CAD").getRates().get(0).getMid();
 
         List<OwnedStockEntity> ownedStocks = ownedStockRepository.findAll();
         LinkedList<ProfitReportDto> results = new LinkedList<>();
@@ -77,7 +77,7 @@ public class ReportService {
                 default -> throw new IllegalArgumentException("Unmapped currency: " + symbolCurrency);
             }
 
-            BigDecimal lastPrice = yahooFinanceService.getSimplifiedData(os.getTicker()).getBody().getChart().getResult().get(0).getMeta().getLastPrice();
+            BigDecimal lastPrice = yahooFinanceService.getSimplifiedData(os.getTicker()).getChart().getResult().get(0).getMeta().getLastPrice();
 
             BigDecimal purchaseDayValue = calculateValue(os.getPurchasePrice(), purchaseDayXPlnCurrencyRate, os.getPosition());
             BigDecimal todayValue = calculateValue(lastPrice, todayXPlnCurrencyRate, os.getPosition());

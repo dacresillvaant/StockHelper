@@ -4,7 +4,6 @@ import com.mateusz.stockassistant.config.WebClientLoggingUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -28,15 +27,13 @@ public class AlphaVantageService {
                 .build();
     }
 
-    public ResponseEntity<String> getNews(String topics, String limit) {
+    public String getNews(String topics, String limit) {
         return webClient.get().uri(uriBuilder -> uriBuilder
                 .queryParam("function", "NEWS_SENTIMENT")
                 .queryParam("topics", topics)
                 .queryParam("limit", limit)
                 .queryParam("apikey", apiKey)
                 .build())
-                .retrieve()
-                .toEntity(String.class)
-                .block();
+                .retrieve().bodyToMono(String.class).block();
     }
 }

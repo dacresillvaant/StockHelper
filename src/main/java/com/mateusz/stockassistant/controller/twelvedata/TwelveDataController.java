@@ -6,7 +6,6 @@ import com.mateusz.stockassistant.controller.twelvedata.dto.QuoteExternalDto;
 import com.mateusz.stockassistant.service.TwelveDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,17 +25,17 @@ public class TwelveDataController {
     }
 
     @GetMapping("/api_usage/")
-    public ResponseEntity<String> getUsage() {
+    public String getUsage() {
         return twelveDataService.getUsage();
     }
 
     @GetMapping("/exchange_rate/")
-    public ResponseEntity<CurrencyRateExternalDto> getExchangeRate(@RequestParam String symbol) {
+    public CurrencyRateExternalDto getExchangeRate(@RequestParam String symbol) {
         return twelveDataService.getExchangeRate(symbol);
     }
 
     @GetMapping("/quote/")
-    public ResponseEntity<QuoteExternalDto> getQuote(@RequestParam String symbol) {
+    public QuoteExternalDto getQuote(@RequestParam String symbol) {
         return twelveDataService.getQuote(symbol);
     }
 
