@@ -39,25 +39,28 @@ I do not have rigidly set goals for this application, as the functionality chang
 - Spring Security (Basic Authentication)
 
 **Database:**
-- PostgreSQL 42.7.5
+- PostgreSQL
 - Hibernate ORM
+- Flyway
 
 **External APIs:**
-- OpenAI API - AI-powered analysis - will be probabvly removed
-- Alpha Vantage API - Stock market data
+- OpenAI API - AI-powered analysis - will be probably removed
+- Alpha Vantage API - News data
 - Twelve Data API - Stock market data
+- Yahoo Finance API - Stock market data
 - Mailgun API - Email notifications
+- NBP API - for currency rates to PLN
 
 **Web Scraping:**
 - Microsoft Playwright 1.50.0 - Automated browser control for dynamic content
 
 **Testing:**
-- TestNG 7.11.0
-- Mockito 5.17.0
+- TestNG
+- Mockito
 
 **Other Tools:**
 - Lombok - Boilerplate code reduction
-- JavaCV 1.5.11 - Image/video processing
+- JavaCV - Image/video processing
 - Maven - Build automation
 
 ## Deployment & Infrastructure
@@ -70,7 +73,7 @@ I do not have rigidly set goals for this application, as the functionality chang
 - 🔐 **Security**: Environment-based secrets management, SSH key authentication
 - 📊 **Monitoring**: Application logs and scheduled task execution tracking, mail notification whenever unhalded exception happens
 
-### Scheduled Tasks / Usage
+### Usage
 
 The application runs several automated tasks:
 
@@ -82,13 +85,16 @@ The application runs several automated tasks:
   - Sends daily mail notifications
 
 - **Low Price Alerts**: 9:15 PM, Monday-Saturday (`0 15 21 ? * MON-SAT`)
-  - Monitors configured stocks - at the moment - V, MA
+  - Monitors configured stocks
   - Mail notification alerts when prices drop below threshold percentages
 
 - **Owned Stock Alerts**: Saturdays at 8:15 AM (`0 15 8 ? * SAT`)
   - Weekly check of owned stock performance
   - Mail notification only when price changes more than 30% from purchase value
 
+- **Profit report**: on demand via API
+    - Compares purchase price and last price of owned stocks, takes purchase and latest currency rate into account and then calculates profit/loss.
+  
 All scheduled tasks can be run in parallel for optimal performance.
 
 
