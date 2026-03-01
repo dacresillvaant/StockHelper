@@ -33,8 +33,8 @@ public class ReportService {
         this.yahooFinanceService = yahooFinanceService;
     }
 
-    private BigDecimal calculateValue(BigDecimal symbolPrice, BigDecimal currencyRate, int multiplier) {
-        return symbolPrice.multiply(currencyRate).multiply(BigDecimal.valueOf(multiplier)).setScale(2, RoundingMode.HALF_UP);
+    private BigDecimal calculateValue(BigDecimal symbolPrice, BigDecimal currencyRate, int position) {
+        return symbolPrice.multiply(currencyRate).multiply(BigDecimal.valueOf(position)).setScale(2, RoundingMode.HALF_UP);
     }
 
     private NbpCurrencyRateDto getFirstAvailableNbpData(String symbolCurrency, String date) {

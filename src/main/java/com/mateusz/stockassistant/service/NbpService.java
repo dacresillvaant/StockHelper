@@ -50,7 +50,7 @@ public class NbpService {
     /**
      * @param symbol USD, EUR etc.
      * @param date YYYY-MM-DD format
-     * @return
+     * @return {@link NbpCurrencyRateDto}
      */
     public ResponseEntity<NbpCurrencyRateDto> getPlnCurrencyRateForDate(String symbol, String date) {
         return webClient.get()

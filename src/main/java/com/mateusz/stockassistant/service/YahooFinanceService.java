@@ -1,6 +1,7 @@
 package com.mateusz.stockassistant.service;
 
 import com.mateusz.stockassistant.config.WebClientLoggingUtil;
+import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooDetailedChartResponseDto;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,12 @@ public class YahooFinanceService {
                 .retrieve().toEntity(String.class).block();
     }
 
+    /**
+     * @param symbol ticker
+     * @param range "1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"
+     * @param interval "1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"
+     * @return
+     */
     public ResponseEntity<String> getData(String symbol, String range, String interval) {
         return webClient.get().uri(uriBuilder -> uriBuilder
                         .path("/v8/finance/chart/".concat(symbol))
@@ -56,5 +63,20 @@ public class YahooFinanceService {
                         .queryParam("interval", "1mo")
                         .build())
                 .retrieve().toEntity(YahooTruncatedChartResponseDto.class).block();
+    }
+
+    /**
+     * @param symbol ticker
+     * @param range "1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"
+     * @param interval "1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"
+     * @return {@link YahooDetailedChartResponseDto}
+     */
+    public YahooDetailedChartResponseDto getDetailedData(String symbol, String range, String interval) {
+        return webClient.get().uri(uriBuilder -> uriBuilder
+                        .path("/v8/finance/chart/".concat(symbol))
+                        .queryParam("range", range)
+                        .queryParam("interval", interval)
+                        .build())
+                .retrieve().bodyToMono(YahooDetailedChartResponseDto.class).block();
     }
 }

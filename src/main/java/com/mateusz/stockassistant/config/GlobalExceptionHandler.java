@@ -1,5 +1,7 @@
 package com.mateusz.stockassistant.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mateusz.stockassistant.service.MailgunEmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +26,16 @@ import java.util.Optional;
 public class GlobalExceptionHandler {
 
     private final MailgunEmailService mailgunEmailService;
+    private final ObjectMapper objectMapper;
 
     private String getParam(HttpServletRequest request) {
         return Optional.ofNullable(request.getQueryString()).orElse("");
     }
 
     @Autowired
-    public GlobalExceptionHandler(MailgunEmailService mailgunEmailService) {
+    public GlobalExceptionHandler(MailgunEmailService mailgunEmailService, ObjectMapper objectMapper) {
         this.mailgunEmailService = mailgunEmailService;
+        this.objectMapper = objectMapper;
     }
 
     @ExceptionHandler(ResponseStatusException.class)
@@ -101,12 +105,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(WebClientResponseException.class)
-    public ResponseEntity<Map<String, Object>> handleWebClientResponseException(WebClientResponseException exception, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> handleWebClientResponseException(WebClientResponseException exception, HttpServletRequest request) throws JsonProcessingException {
         Map<String, Object> responseBody = new LinkedHashMap<>();
         responseBody.put("timestamp", LocalDateTime.now());
         responseBody.put("status", exception.getStatusCode().value());
         responseBody.put("error", exception.getStatusCode());
-        responseBody.put("message", exception.getMessage());
+        responseBody.put("externalApiMessage", objectMapper.readTree(exception.getResponseBodyAsString()));
         responseBody.put("path", request.getRequestURI().concat(getParam(request)));
 
         log.warn("External API error: {}", exception.getMessage());

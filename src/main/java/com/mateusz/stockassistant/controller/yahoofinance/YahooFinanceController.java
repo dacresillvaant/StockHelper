@@ -1,5 +1,6 @@
 package com.mateusz.stockassistant.controller.yahoofinance;
 
+import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooDetailedChartResponseDto;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.service.YahooFinanceService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,8 @@ public class YahooFinanceController {
 
     @GetMapping("/data/")
     public ResponseEntity<String> getData(
-            @RequestParam String symbol,
-            @RequestParam(required = false) String range,
-            @RequestParam(required = false) String interval) {
+            @RequestParam String symbol, @RequestParam(required = false) String range,  @RequestParam(required = false) String interval) {
+
         if (range == null && interval == null) {
             return yahooFinanceService.getData(symbol);
         } else {
@@ -46,5 +46,20 @@ public class YahooFinanceController {
         }
 
         return yahooFinanceService.getSimplifiedData(resolvedSymbol);
+    }
+
+    @GetMapping("/data/detailed/")
+    public YahooDetailedChartResponseDto getDetailedData(
+            @RequestParam String symbol, @RequestParam String range, @RequestParam String interval) {
+
+        String resolvedSymbol;
+        try {
+            resolvedSymbol = SymbolMapper.valueOf(symbol).getYahooValue();
+        } catch (IllegalArgumentException e) {
+            log.info("Mapping for {} not found, passing as a raw value.", symbol);
+            resolvedSymbol = symbol;
+        }
+
+        return yahooFinanceService.getDetailedData(resolvedSymbol, range, interval);
     }
 }

@@ -1,12 +1,10 @@
 package com.mateusz.stockassistant.logic;
 
 import com.mateusz.stockassistant.controller.twelvedata.dto.QuoteExternalDto;
+import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooDetailedChartResponseDto;
 import com.mateusz.stockassistant.entity.AlertConfigEntity;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;
-import com.mateusz.stockassistant.service.AlertConfigService;
-import com.mateusz.stockassistant.service.MailgunEmailService;
-import com.mateusz.stockassistant.service.StockService;
-import com.mateusz.stockassistant.service.TwelveDataService;
+import com.mateusz.stockassistant.service.*;
 import com.mateusz.stockassistant.tools.Utils;
 import com.mateusz.stockassistant.tools.mail.MailTemplate;
 import com.mateusz.stockassistant.tools.mail.MailTemplateFactory;
@@ -22,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.mateusz.stockassistant.controller.alertconfig.AlertType.INDEX_ALERT;
 import static com.mateusz.stockassistant.controller.alertconfig.AlertType.LOW_PRICE_ALERT;
 
 @Component
@@ -29,6 +28,7 @@ import static com.mateusz.stockassistant.controller.alertconfig.AlertType.LOW_PR
 public class DynamicAlert {
 
     private final TwelveDataService twelveDataService;
+    private final YahooFinanceService yahooFinanceService;
     private final MailgunEmailService mailgunEmailService;
     private final StockService stockService;
     private final AlertConfigService alertConfigService;
@@ -38,11 +38,12 @@ public class DynamicAlert {
 
     @Autowired
     public DynamicAlert(TwelveDataService twelveDataService, MailgunEmailService mailgunEmailService,
-                        StockService stockService, AlertConfigService alertConfigService) {
+                        StockService stockService, AlertConfigService alertConfigService, YahooFinanceService yahooFinanceService) {
         this.twelveDataService = twelveDataService;
         this.mailgunEmailService = mailgunEmailService;
         this.stockService = stockService;
         this.alertConfigService = alertConfigService;
+        this.yahooFinanceService = yahooFinanceService;
     }
 
     public void lowPriceAlert() {
@@ -105,6 +106,16 @@ public class DynamicAlert {
             } else {
                 log.info("Finished processing last batch.");
             }
+        }
+    }
+
+    public void indexVolatilityAlert() {
+        List<AlertConfigEntity> listOfAlertConfig = alertConfigService.getAlertConfigurationsByAlertType(INDEX_ALERT);
+
+        for  (AlertConfigEntity alertConfig : listOfAlertConfig) {
+            String symbol = alertConfig.getTicker();
+            int percentChange = alertConfig.getPercentChangeThreshold();
+            YahooDetailedChartResponseDto previousData = yahooFinanceService.getDetailedData(symbol, "5d", "1d");
         }
     }
 }
