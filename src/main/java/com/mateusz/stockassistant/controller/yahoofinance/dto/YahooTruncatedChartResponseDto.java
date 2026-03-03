@@ -49,4 +49,8 @@ public class YahooTruncatedChartResponseDto {
         private BigDecimal fiftyTwoWeekHigh;
         private BigDecimal fiftyTwoWeekLow;
     }
+
+    public Meta getMeta() {
+        return this.getChart().getResult().get(0).getMeta();
+    }
 }

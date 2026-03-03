@@ -66,6 +66,7 @@ public class ReportService {
 
         for (OwnedStockEntity os : ownedStocks) {
             log.info("Processing {}", os.getName());
+            String ticker = os.getTicker();
             String symbolCurrency = os.getCurrency();
             String purchaseDate = os.getBoughtDate().format(DATE_FORMATTER);
 
@@ -83,10 +84,9 @@ public class ReportService {
 
             //many stocks on London Stock Exchange trade against GBX/GBp, which is equivalent to 0.01 GBP, therefore division is required
             if(os.getCurrency().equals("GBP")){
-                lastPrice = yahooFinanceService.getSimplifiedData(os.getTicker()).getChart().getResult().get(0).getMeta().getLastPrice()
-                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                lastPrice = yahooFinanceService.getSimplifiedData(ticker).getMeta().getLastPrice().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
             } else {
-                lastPrice = yahooFinanceService.getSimplifiedData(os.getTicker()).getChart().getResult().get(0).getMeta().getLastPrice();
+                lastPrice = yahooFinanceService.getSimplifiedData(ticker).getMeta().getLastPrice();
             }
 
             BigDecimal purchaseDayValue = calculateValue(os.getPurchasePrice(), purchaseDayXPlnCurrencyRate, os.getPosition());
@@ -96,7 +96,7 @@ public class ReportService {
 
             ProfitReportDto reportDataRow = ProfitReportDto.builder()
                     .name(os.getName())
-                    .ticker(os.getTicker())
+                    .ticker(ticker)
                     .purchaseDate(LocalDate.parse(purchaseDate))
                     .purchaseCurrencyRateToPLN(purchaseDayXPlnCurrencyRate)
                     .todayCurrencyRateToPLN(todayXPlnCurrencyRate)
