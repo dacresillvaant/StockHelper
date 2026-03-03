@@ -91,7 +91,7 @@ public class DynamicAlert {
 
         List<OwnedStockEntity> ownedStocks = stockService.getAllStocks();
         Map<String, QuoteExternalDto> ownedStocksCurrentData = new HashMap<>();
-        ownedStocks.forEach(s -> log.info("Found stock ticker: " + s.getName()));
+        ownedStocks.forEach(s -> log.info("Found stock ticker: {}",s.getName()));
 
         for (int i = 0; i < ownedStocks.size(); i+= batchSize) {
             log.info("Starting batch");

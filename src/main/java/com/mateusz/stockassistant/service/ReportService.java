@@ -59,6 +59,7 @@ public class ReportService {
 
         BigDecimal todayUsdPlnCurrencyRate = nbpService.getPlnLastKnownCurrencyRate("USD").getRates().get(0).getMid();
         BigDecimal todayCadPlnCurrencyRate = nbpService.getPlnLastKnownCurrencyRate("CAD").getRates().get(0).getMid();
+        BigDecimal todayGbpPlnCurrencyRate = nbpService.getPlnLastKnownCurrencyRate("GBP").getRates().get(0).getMid();
 
         List<OwnedStockEntity> ownedStocks = ownedStockRepository.findAll();
         LinkedList<ProfitReportDto> results = new LinkedList<>();
@@ -74,10 +75,19 @@ public class ReportService {
             switch (symbolCurrency) {
                 case "USD" -> todayXPlnCurrencyRate = todayUsdPlnCurrencyRate;
                 case "CAD" -> todayXPlnCurrencyRate =  todayCadPlnCurrencyRate;
+                case "GBP" -> todayXPlnCurrencyRate =  todayGbpPlnCurrencyRate;
                 default -> throw new IllegalArgumentException("Unmapped currency: " + symbolCurrency);
             }
 
-            BigDecimal lastPrice = yahooFinanceService.getSimplifiedData(os.getTicker()).getChart().getResult().get(0).getMeta().getLastPrice();
+            BigDecimal lastPrice;
+
+            //many stocks on London Stock Exchange trade against GBX/GBp, which is equivalent to 0.01 GBP, therefore division is required
+            if(os.getCurrency().equals("GBP")){
+                lastPrice = yahooFinanceService.getSimplifiedData(os.getTicker()).getChart().getResult().get(0).getMeta().getLastPrice()
+                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+            } else {
+                lastPrice = yahooFinanceService.getSimplifiedData(os.getTicker()).getChart().getResult().get(0).getMeta().getLastPrice();
+            }
 
             BigDecimal purchaseDayValue = calculateValue(os.getPurchasePrice(), purchaseDayXPlnCurrencyRate, os.getPosition());
             BigDecimal todayValue = calculateValue(lastPrice, todayXPlnCurrencyRate, os.getPosition());
