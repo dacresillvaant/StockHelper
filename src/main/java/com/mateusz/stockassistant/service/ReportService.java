@@ -70,13 +70,19 @@ public class ReportService {
             String symbolCurrency = os.getCurrency();
             String purchaseDate = os.getBoughtDate().format(DATE_FORMATTER);
 
-            BigDecimal purchaseDayXPlnCurrencyRate = getFirstAvailableNbpData(symbolCurrency, purchaseDate).getRates().get(0).getMid();
+            BigDecimal purchaseDayXPlnCurrencyRate;
+            if (symbolCurrency.equalsIgnoreCase("PLN")) {
+                purchaseDayXPlnCurrencyRate = BigDecimal.ONE;
+            } else {
+                purchaseDayXPlnCurrencyRate = getFirstAvailableNbpData(symbolCurrency, purchaseDate).getRates().get(0).getMid();
+            }
 
             BigDecimal todayXPlnCurrencyRate;
             switch (symbolCurrency) {
                 case "USD" -> todayXPlnCurrencyRate = todayUsdPlnCurrencyRate;
                 case "CAD" -> todayXPlnCurrencyRate =  todayCadPlnCurrencyRate;
                 case "GBP" -> todayXPlnCurrencyRate =  todayGbpPlnCurrencyRate;
+                case "PLN" -> todayXPlnCurrencyRate =  BigDecimal.ONE;
                 default -> throw new IllegalArgumentException("Unmapped currency: " + symbolCurrency);
             }
 
