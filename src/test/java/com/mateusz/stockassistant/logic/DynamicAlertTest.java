@@ -1,11 +1,10 @@
 package com.mateusz.stockassistant.logic;
 
-import com.mateusz.stockassistant.controller.twelvedata.dto.QuoteExternalDto;
-import com.mateusz.stockassistant.controller.twelvedata.dto.model.FiftyTwoWeek;
+import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.AlertConfigEntity;
 import com.mateusz.stockassistant.service.AlertConfigService;
 import com.mateusz.stockassistant.service.MailgunEmailService;
-import com.mateusz.stockassistant.service.TwelveDataService;
+import com.mateusz.stockassistant.service.YahooFinanceService;
 import com.mateusz.stockassistant.tools.mail.MailTemplate;
 import com.mateusz.stockassistant.utils.TestListener;
 import org.mockito.InjectMocks;
@@ -17,6 +16,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.mateusz.stockassistant.controller.alertconfig.AlertType.LOW_PRICE_ALERT;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class DynamicAlertTest {
 
     @Mock
-    private TwelveDataService twelveDataService;
+    private YahooFinanceService yahooFinanceService;
     @Mock
     private MailgunEmailService mailgunEmailService;
     @Mock
@@ -58,17 +58,21 @@ public class DynamicAlertTest {
         alertConfig.setPercentChangeThreshold(percentChange);
         List<AlertConfigEntity> alertConfigs = List.of(alertConfig);
 
-        QuoteExternalDto quote = new QuoteExternalDto();
-        quote.setClose("310"); // below threshold
+        YahooTruncatedChartResponseDto.Meta meta = new YahooTruncatedChartResponseDto.Meta();
+        meta.setLastPrice(BigDecimal.valueOf(310));
+        meta.setFiftyTwoWeekHigh(BigDecimal.valueOf(366.5400));
+        meta.setLongName("Visa Inc.");
 
-        FiftyTwoWeek fiftyTwoWeek = new FiftyTwoWeek();
-        fiftyTwoWeek.setHigh("366.5400");
-        quote.setFiftyTwoWeek(fiftyTwoWeek);
-        quote.setName("Visa Inc.");
+        YahooTruncatedChartResponseDto dto = YahooTruncatedChartResponseDto.builder()
+                .chart(new YahooTruncatedChartResponseDto.Chart())
+                .build();
+
+        dto.getChart().setResult(List.of(new YahooTruncatedChartResponseDto.Result()));
+        dto.getChart().getResult().get(0).setMeta(meta);
 
 //      when
         when(alertConfigService.getAlertConfigurationsByAlertType(LOW_PRICE_ALERT)).thenReturn(alertConfigs);
-        when(twelveDataService.getQuote(symbol)).thenReturn(quote);
+        when(yahooFinanceService.getSimplifiedData(symbol)).thenReturn(dto);
 
         dynamicAlert.lowPriceAlert();
 
@@ -84,17 +88,22 @@ public class DynamicAlertTest {
         alertConfig.setPercentChangeThreshold(percentChange);
         List<AlertConfigEntity> alertConfigs = List.of(alertConfig);
 
-        QuoteExternalDto quote = new QuoteExternalDto();
-        quote.setClose("365"); // above threshold
+        YahooTruncatedChartResponseDto.Meta meta = new YahooTruncatedChartResponseDto.Meta();
+        meta.setLastPrice(BigDecimal.valueOf(365));
+        meta.setFiftyTwoWeekHigh(BigDecimal.valueOf(366.5400));
+        meta.setLongName("Visa Inc.");
 
-        FiftyTwoWeek fiftyTwoWeek = new FiftyTwoWeek();
-        fiftyTwoWeek.setHigh("366.5400");
-        quote.setFiftyTwoWeek(fiftyTwoWeek);
-        quote.setName("Visa Inc.");
+        YahooTruncatedChartResponseDto dto = YahooTruncatedChartResponseDto.builder()
+                .chart(new YahooTruncatedChartResponseDto.Chart())
+                .build();
+
+        dto.getChart().setResult(List.of(new YahooTruncatedChartResponseDto.Result()));
+        dto.getChart().getResult().get(0).setMeta(meta);
+
 
 //      when
         when(alertConfigService.getAlertConfigurationsByAlertType(LOW_PRICE_ALERT)).thenReturn(alertConfigs);
-        when(twelveDataService.getQuote(symbol)).thenReturn(quote);
+        when(yahooFinanceService.getSimplifiedData(symbol)).thenReturn(dto);
 
         dynamicAlert.lowPriceAlert();
 

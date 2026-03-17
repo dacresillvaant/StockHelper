@@ -2,6 +2,7 @@ package com.mateusz.stockassistant.logic;
 
 import com.mateusz.stockassistant.controller.twelvedata.dto.QuoteExternalDto;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooDetailedChartResponseDto;
+import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.AlertConfigEntity;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;
 import com.mateusz.stockassistant.service.*;
@@ -53,9 +54,9 @@ public class DynamicAlert {
             String symbol = alertConfig.getTicker();
             int percentChange = alertConfig.getPercentChangeThreshold();
 
-            QuoteExternalDto quote = twelveDataService.getQuote(symbol);
-            BigDecimal lastClose = new BigDecimal(quote.getClose());
-            BigDecimal yearHigh = new BigDecimal(quote.getFiftyTwoWeek().getHigh());
+            YahooTruncatedChartResponseDto quote = yahooFinanceService.getSimplifiedData(symbol);
+            BigDecimal lastClose = quote.getMeta().getLastPrice();
+            BigDecimal yearHigh = quote.getMeta().getFiftyTwoWeekHigh();
 
             BigDecimal percentThreshold = new BigDecimal(100 - percentChange).divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
             BigDecimal alertThreshold = yearHigh.multiply(percentThreshold);

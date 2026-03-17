@@ -1,7 +1,7 @@
 package com.mateusz.stockassistant.tools.mail;
 
 import com.mateusz.stockassistant.controller.twelvedata.dto.CurrencyRateExternalDto;
-import com.mateusz.stockassistant.controller.twelvedata.dto.QuoteExternalDto;
+import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;
 
 import java.math.BigDecimal;
@@ -30,9 +30,9 @@ public class MailTemplateFactory {
         return new MailTemplate(mailSubject, mailBody);
     }
 
-    public static MailTemplate lowPriceAlertTemplate(String symbol, int percentChange, QuoteExternalDto quote,
+    public static MailTemplate lowPriceAlertTemplate(String symbol, int percentChange, YahooTruncatedChartResponseDto quote,
                                                      BigDecimal lastClose, BigDecimal yearHigh, BigDecimal alertThreshold) {
-        String symbolFullName = quote.getName();
+        String symbolFullName = quote.getMeta().getLongName();
         String mailSubject = "ALERT - ".concat(symbolFullName).concat(" fallen below threshold price");
         String mailBody = String.format("""
                 Latest price of %s %s is: %s

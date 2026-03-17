@@ -3,12 +3,16 @@ package com.mateusz.stockassistant.controller.yahoofinance.dto;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
+@AllArgsConstructor
+@Builder
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class YahooTruncatedChartResponseDto {
