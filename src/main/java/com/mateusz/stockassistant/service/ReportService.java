@@ -89,7 +89,7 @@ public class ReportService {
             BigDecimal lastPrice;
 
             //many stocks on London Stock Exchange trade against GBX/GBp, which is equivalent to 0.01 GBP, therefore division is required
-            if(os.getCurrency().equals("GBP")){
+            if(os.getCurrency().equalsIgnoreCase("GBP")){
                 lastPrice = yahooFinanceService.getSimplifiedData(ticker).getMeta().getLastPrice().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
             } else {
                 lastPrice = yahooFinanceService.getSimplifiedData(ticker).getMeta().getLastPrice();

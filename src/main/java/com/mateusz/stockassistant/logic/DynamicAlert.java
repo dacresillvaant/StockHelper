@@ -1,11 +1,13 @@
 package com.mateusz.stockassistant.logic;
 
-import com.mateusz.stockassistant.controller.twelvedata.dto.QuoteExternalDto;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooDetailedChartResponseDto;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.AlertConfigEntity;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;
-import com.mateusz.stockassistant.service.*;
+import com.mateusz.stockassistant.service.AlertConfigService;
+import com.mateusz.stockassistant.service.MailgunEmailService;
+import com.mateusz.stockassistant.service.StockService;
+import com.mateusz.stockassistant.service.YahooFinanceService;
 import com.mateusz.stockassistant.tools.Utils;
 import com.mateusz.stockassistant.tools.mail.MailTemplate;
 import com.mateusz.stockassistant.tools.mail.MailTemplateFactory;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ import static com.mateusz.stockassistant.controller.alertconfig.AlertType.LOW_PR
 @Slf4j
 public class DynamicAlert {
 
-    private final TwelveDataService twelveDataService;
     private final YahooFinanceService yahooFinanceService;
     private final MailgunEmailService mailgunEmailService;
     private final StockService stockService;
@@ -38,9 +38,8 @@ public class DynamicAlert {
     private String mailReceiver;
 
     @Autowired
-    public DynamicAlert(TwelveDataService twelveDataService, MailgunEmailService mailgunEmailService,
-                        StockService stockService, AlertConfigService alertConfigService, YahooFinanceService yahooFinanceService) {
-        this.twelveDataService = twelveDataService;
+    public DynamicAlert(MailgunEmailService mailgunEmailService, StockService stockService,
+                        AlertConfigService alertConfigService, YahooFinanceService yahooFinanceService) {
         this.mailgunEmailService = mailgunEmailService;
         this.stockService = stockService;
         this.alertConfigService = alertConfigService;
@@ -70,12 +69,21 @@ public class DynamicAlert {
         }
     }
 
-    private void compareOwnedStocksPrice(List<OwnedStockEntity> ownedStocks, Map<String, QuoteExternalDto> ownedStocksLatestData, int percentChangeThreshold) {
+    private void compareOwnedStocksPrice(List<OwnedStockEntity> ownedStocks, Map<String, YahooTruncatedChartResponseDto> ownedStocksLatestData, int percentChangeThreshold) {
 
         for (OwnedStockEntity ownedStock : ownedStocks) {
             String symbol = ownedStock.getTicker();
             BigDecimal purchasePrice = ownedStock.getPurchasePrice();
-            BigDecimal lastClosePrice = new BigDecimal(ownedStocksLatestData.get(symbol).getClose());
+
+            BigDecimal lastClosePrice;
+
+            //many stocks on London Stock Exchange trade against GBX/GBp, which is equivalent to 0.01 GBP, therefore division is required
+            if(ownedStock.getCurrency().equalsIgnoreCase("GBP")) {
+                lastClosePrice = yahooFinanceService.getSimplifiedData(symbol).getMeta().getLastPrice().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+            } else {
+                lastClosePrice = ownedStocksLatestData.get(symbol).getMeta().getLastPrice();
+            }
+
             BigDecimal priceChange = Utils.calculatePercentChange(purchasePrice, lastClosePrice);
 
             if (priceChange.abs().compareTo(BigDecimal.valueOf(percentChangeThreshold)) > 0) {
@@ -88,26 +96,16 @@ public class DynamicAlert {
     }
 
     public void ownedStockPriceAlert(int percentChangeThreshold) {
-        int batchSize = 8;
-
         List<OwnedStockEntity> ownedStocks = stockService.getAllStocks();
-        Map<String, QuoteExternalDto> ownedStocksCurrentData = new HashMap<>();
-        ownedStocks.forEach(s -> log.info("Found stock ticker: {}",s.getName()));
+        Map<String, YahooTruncatedChartResponseDto> ownedStocksCurrentData = new HashMap<>();
 
-        for (int i = 0; i < ownedStocks.size(); i+= batchSize) {
-            log.info("Starting batch");
-            List<OwnedStockEntity> batchOfStocks = new ArrayList<>(ownedStocks.subList(i, Math.min(i + batchSize, ownedStocks.size())));
-            batchOfStocks.forEach(s -> ownedStocksCurrentData.put(s.getTicker(), twelveDataService.getQuote(s.getTicker())));
+        ownedStocks.forEach(s -> log.info("Found stock ticker: {}", s.getName()));
+        ownedStocks.forEach(s -> {
+            Utils.sleep(100); //to avoid spamming YahooFinance service too much
+            ownedStocksCurrentData.put(s.getTicker(), yahooFinanceService.getSimplifiedData(s.getTicker()));
+        });
 
-            compareOwnedStocksPrice(batchOfStocks, ownedStocksCurrentData, percentChangeThreshold);
-
-            // Sleep only if it's not the last batch
-            if (i + batchSize < ownedStocks.size()) {
-                Utils.sleep(65000);
-            } else {
-                log.info("Finished processing last batch.");
-            }
-        }
+        compareOwnedStocksPrice(ownedStocks, ownedStocksCurrentData, percentChangeThreshold);
     }
 
     public void indexVolatilityAlert() {
