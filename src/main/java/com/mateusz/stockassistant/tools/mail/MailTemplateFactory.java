@@ -1,30 +1,31 @@
 package com.mateusz.stockassistant.tools.mail;
 
-import com.mateusz.stockassistant.controller.twelvedata.dto.CurrencyRateExternalDto;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MailTemplateFactory {
 
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm").withZone(ZoneId.systemDefault());
 
-    public static MailTemplate currencyRateTemplate(CurrencyRateExternalDto currencyRateResponse, String rateChangeDayBefore,
+    public static MailTemplate currencyRateTemplate(YahooTruncatedChartResponseDto currencyRateResponse, String rateChangeDayBefore,
                                                     String rateChangeWeekBefore, String rateChangeMonthBefore) {
-        String formattedTimestamp = DATE_FORMATTER.format(Instant.ofEpochSecond(currencyRateResponse.getTimestamp()));
+        String formattedTimestamp = DATE_FORMATTER.format(currencyRateResponse.getMeta().getDateOfPrice());
 
-        String mailSubject = String.format("Currency rate report for: %s %s", currencyRateResponse.getSymbol(), formattedTimestamp);
+        String mailSubject = String.format("Currency rate report for: %s %s", currencyRateResponse.getMeta().getLongName(), formattedTimestamp);
         String mailBody = String.format("""
                 Currency rate of %s is %s - %s
                 Change 1D is: %s%%
                 Change 7D is: %s%%
                 Change 30D is: %s%%
-                """, currencyRateResponse.getSymbol(), currencyRateResponse.getRate(), formattedTimestamp,
+                """, currencyRateResponse.getMeta().getLongName(), currencyRateResponse.getMeta().getLastPrice(), formattedTimestamp,
                 rateChangeDayBefore, rateChangeWeekBefore, rateChangeMonthBefore);
 
         return new MailTemplate(mailSubject, mailBody);

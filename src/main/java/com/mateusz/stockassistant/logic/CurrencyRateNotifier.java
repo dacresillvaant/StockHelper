@@ -1,11 +1,11 @@
 package com.mateusz.stockassistant.logic;
 
-import com.mateusz.stockassistant.controller.twelvedata.dto.CurrencyRateExternalDto;
 import com.mateusz.stockassistant.controller.twelvedata.dto.CurrencyRateInternalDto;
+import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.CurrencyRateEntity;
-import com.mateusz.stockassistant.repository.CurrencyRateRepository;
+import com.mateusz.stockassistant.service.CurrencyRateService;
 import com.mateusz.stockassistant.service.MailgunEmailService;
-import com.mateusz.stockassistant.service.TwelveDataService;
+import com.mateusz.stockassistant.service.YahooFinanceService;
 import com.mateusz.stockassistant.tools.mail.MailTemplate;
 import com.mateusz.stockassistant.tools.mail.MailTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -22,24 +22,26 @@ import java.util.Optional;
 @Slf4j
 public class CurrencyRateNotifier {
 
-    private final TwelveDataService twelveDataService;
-    private final CurrencyRateRepository currencyRateRepository;
+    private final CurrencyRateService twelveDataService;
+    private final YahooFinanceService yahooFinanceService;
+    private final com.mateusz.stockassistant.repository.CurrencyRateRepository currencyRateRepository;
     private final MailgunEmailService mailgunEmailService;
 
     @Autowired
-    public CurrencyRateNotifier(TwelveDataService twelveDataService, CurrencyRateRepository currencyRateRepository,
-                                MailgunEmailService mailgunEmailService) {
+    public CurrencyRateNotifier(CurrencyRateService twelveDataService, com.mateusz.stockassistant.repository.CurrencyRateRepository currencyRateRepository,
+                                MailgunEmailService mailgunEmailService, YahooFinanceService yahooFinanceService) {
         this.twelveDataService = twelveDataService;
         this.currencyRateRepository = currencyRateRepository;
         this.mailgunEmailService = mailgunEmailService;
+        this.yahooFinanceService = yahooFinanceService;
     }
 
-    private void saveRateToDatabase(CurrencyRateExternalDto currencyRateResponse) {
+    private void saveRateToDatabase(YahooTruncatedChartResponseDto currencyRateResponse) {
         CurrencyRateEntity currencyRateEntity = CurrencyRateEntity.builder()
                 .createdDate(LocalDateTime.now())
                 .ratioDate(LocalDateTime.now())
-                .symbol(currencyRateResponse.getSymbol())
-                .rate(currencyRateResponse.getRate())
+                .symbol(currencyRateResponse.getMeta().getSymbol())
+                .rate(currencyRateResponse.getMeta().getLastPrice())
                 .build();
 
         currencyRateRepository.save(currencyRateEntity);
@@ -75,8 +77,8 @@ public class CurrencyRateNotifier {
         }
     }
 
-    private void sendRateEmail(CurrencyRateExternalDto currencyRateResponse, String symbol) {
-        BigDecimal currentRate = currencyRateResponse.getRate();
+    private void sendRateEmail(YahooTruncatedChartResponseDto currencyRateResponse, String symbol) {
+        BigDecimal currentRate = currencyRateResponse.getMeta().getLastPrice();
 
         BigDecimal dayBeforeRate = findPreviousRateData(symbol, "day").map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
         BigDecimal weekBeforeRate = findPreviousRateData(symbol, "week").map(CurrencyRateInternalDto::getRate).orElse(BigDecimal.ZERO);
@@ -86,12 +88,12 @@ public class CurrencyRateNotifier {
         String rateChangeWeekBefore = calculatePercentageChange(weekBeforeRate, currentRate);
         String rateChangeMonthBefore = calculatePercentageChange(monthBeforeRate, currentRate);
 
-        MailTemplate mailTemplate = MailTemplateFactory.currencyRateTemplate(currencyRateResponse,  rateChangeDayBefore, rateChangeWeekBefore, rateChangeMonthBefore);
+        MailTemplate mailTemplate = MailTemplateFactory.currencyRateTemplate(currencyRateResponse, rateChangeDayBefore, rateChangeWeekBefore, rateChangeMonthBefore);
         mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
     }
 
     public void processCurrencyRate(String symbol) {
-        CurrencyRateExternalDto currencyRateResponse = twelveDataService.getExchangeRate(symbol);
+        YahooTruncatedChartResponseDto currencyRateResponse = yahooFinanceService.getSimplifiedData(symbol);
 
         saveRateToDatabase(currencyRateResponse);
         sendRateEmail(currencyRateResponse, symbol);

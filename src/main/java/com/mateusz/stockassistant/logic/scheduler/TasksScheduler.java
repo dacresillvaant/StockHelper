@@ -1,5 +1,6 @@
 package com.mateusz.stockassistant.logic.scheduler;
 
+import com.mateusz.stockassistant.controller.yahoofinance.SymbolMapper;
 import com.mateusz.stockassistant.logic.CurrencyRateNotifier;
 import com.mateusz.stockassistant.logic.DynamicAlert;
 import com.mateusz.stockassistant.logic.HeatMapScrapper;
@@ -8,6 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static com.mateusz.stockassistant.controller.yahoofinance.SymbolMapper.USDPLN;
 
 @Component
 public class TasksScheduler {
@@ -40,7 +43,7 @@ public class TasksScheduler {
 
     @Scheduled(cron = "${scheduler.process-currencies}")
     public void scheduledProcessCurrencyRate() {
-        List<String> currencies = List.of("USD/PLN");
-        currencies.forEach(currency -> currencyRateNotifier.processCurrencyRate(currency));
+        List<SymbolMapper> currencies = List.of(USDPLN);
+        currencies.forEach(currency -> currencyRateNotifier.processCurrencyRate(currency.getYahooValue()));
     }
 }

@@ -46,7 +46,6 @@ I do not have rigidly set goals for this application, as the functionality chang
 **External APIs:**
 - OpenAI API - AI-powered analysis - will be probably removed
 - Alpha Vantage API - News data
-- Twelve Data API - Stock market data
 - Yahoo Finance API - Stock market data
 - Mailgun API - Email notifications
 - NBP API - for currency rates to PLN

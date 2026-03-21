@@ -44,10 +44,6 @@ alphavantage:
   url: https://www.alphavantage.co/query
   api-key: ${ALPHAVANTAGE_API_KEY}
 
-twelvedata:
-  url: https://api.twelvedata.com/
-  api-key: ${TWELVEDATA_API_KEY}
-
 yahoofinance:
   url: https://query1.finance.yahoo.com/
 
@@ -58,7 +54,7 @@ scheduler:
   heatmap:
     cron: "0 */5 * * * *"
     save-to-target: false
-  process-currencies: "0 0 8,16 * * *"
+  process-currencies: "0 0 8,20 * * *"
   low-price-alert: "0 15 21 ? * MON-SAT"
   owned-stock-alert: "0 15 8 ? * SAT"
 
