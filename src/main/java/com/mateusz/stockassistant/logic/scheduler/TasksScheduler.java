@@ -4,6 +4,7 @@ import com.mateusz.stockassistant.controller.yahoofinance.SymbolMapper;
 import com.mateusz.stockassistant.logic.CurrencyRateNotifier;
 import com.mateusz.stockassistant.logic.DynamicAlert;
 import com.mateusz.stockassistant.logic.HeatMapScrapper;
+import com.mateusz.stockassistant.logic.RegistrationChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,12 +19,15 @@ public class TasksScheduler {
     private final HeatMapScrapper heatMapScrapper;
     private final DynamicAlert dynamicAlert;
     private final CurrencyRateNotifier currencyRateNotifier;
+    private final RegistrationChecker registrationChecker;
 
     @Autowired
-    public TasksScheduler(HeatMapScrapper heatMapScrapper, DynamicAlert dynamicAlert, CurrencyRateNotifier currencyRateNotifier) {
+    public TasksScheduler(HeatMapScrapper heatMapScrapper, DynamicAlert dynamicAlert, CurrencyRateNotifier currencyRateNotifier,
+                          RegistrationChecker registrationChecker) {
         this.heatMapScrapper = heatMapScrapper;
         this.dynamicAlert = dynamicAlert;
         this.currencyRateNotifier = currencyRateNotifier;
+        this.registrationChecker = registrationChecker;
     }
 
     @Scheduled(cron = "${scheduler.heatmap.cron}")
@@ -45,5 +49,11 @@ public class TasksScheduler {
     public void scheduledProcessCurrencyRate() {
         List<SymbolMapper> currencies = List.of(USDPLN);
         currencies.forEach(currency -> currencyRateNotifier.processCurrencyRate(currency.getYahooValue()));
+    }
+
+    @Deprecated
+    @Scheduled(cron = "${scheduler.registration-checker}")
+    public void scheduleRegistrationCheck() {
+        registrationChecker.checkRegistration();
     }
 }

@@ -3,6 +3,7 @@ package com.mateusz.stockassistant.logic;
 import com.mateusz.stockassistant.controller.twelvedata.dto.CurrencyRateInternalDto;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.CurrencyRateEntity;
+import com.mateusz.stockassistant.repository.CurrencyRateRepository;
 import com.mateusz.stockassistant.service.CurrencyRateService;
 import com.mateusz.stockassistant.service.MailgunEmailService;
 import com.mateusz.stockassistant.service.YahooFinanceService;
@@ -24,7 +25,7 @@ public class CurrencyRateNotifier {
 
     private final CurrencyRateService twelveDataService;
     private final YahooFinanceService yahooFinanceService;
-    private final com.mateusz.stockassistant.repository.CurrencyRateRepository currencyRateRepository;
+    private final CurrencyRateRepository currencyRateRepository;
     private final MailgunEmailService mailgunEmailService;
 
     @Autowired

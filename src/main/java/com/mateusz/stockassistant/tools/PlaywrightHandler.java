@@ -25,15 +25,19 @@ public class PlaywrightHandler {
     }
 
 
-    public Browser createBrowser(boolean headless) {
+    public synchronized Browser createBrowser(boolean headless) {
         log.info("Launching new browser instance...");
-        return playwright.chromium().launch(new BrowserType.LaunchOptions()
-                .setHeadless(headless)
-                .setArgs(List.of("--disable-blink-features=AutomationControlled",
-                        "--disable-features=IsolateOrigins,site-per-process")));
+        try {
+            return playwright.chromium().launch(new BrowserType.LaunchOptions()
+                    .setHeadless(headless)
+                    .setArgs(List.of("--disable-blink-features=AutomationControlled",
+                            "--disable-features=IsolateOrigins,site-per-process")));
+        } catch (Exception e) {
+            throw new PlaywrightException("Failed to create browser instance", e);
+        }
     }
 
-    public Page createPage(Browser browser, boolean mockHuman) {
+    public synchronized Page createPage(Browser browser, boolean mockHuman) {
         if (mockHuman) {
             return browser.newContext(new Browser.NewContextOptions()
                     .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
@@ -47,7 +51,7 @@ public class PlaywrightHandler {
         }
     }
 
-    public void navigate(Page page, String URL) {
+    public synchronized void navigate(Page page, String URL) {
         try {
             log.info("Navigating to: {}", URL);
             page.navigate(URL);
@@ -57,7 +61,7 @@ public class PlaywrightHandler {
         }
     }
 
-    public void click(Page page, String cssSelector) {
+    public synchronized void click(Page page, String cssSelector) {
         Locator locator = page.locator(cssSelector);
         locator.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
 
@@ -69,7 +73,7 @@ public class PlaywrightHandler {
         }
     }
 
-    public byte[] screenshot(Page page, String namePrefix) {
+    public synchronized byte[] screenshot(Page page, String namePrefix) {
         String filePath = "target/screenshots/";
         String timestamp = new SimpleDateFormat("_yyyy-MM-dd HH-mm").format(new Date());
         String fileExtension = ".png";
@@ -81,7 +85,7 @@ public class PlaywrightHandler {
                 .setFullPage(true));
     }
 
-    public byte[] screenshotSelectedPart(Page page, String namePrefix, String selector, boolean saveToTarget) {
+    public synchronized byte[] screenshotSelectedPart(Page page, String namePrefix, String selector, boolean saveToTarget) {
         String filePath = "target/screenshots/";
         String timestamp = new SimpleDateFormat("_yyyy-MM-dd HH-mm").format(new Date());
         String fileExtension = ".png";
@@ -98,16 +102,20 @@ public class PlaywrightHandler {
         }
     }
 
-    public void closeBrowser(Browser browser) {
+    public synchronized void closeBrowser(Browser browser) {
         if (browser != null) {
-            browser.contexts().forEach(c -> {c.close(); log.debug("Browser context closed");});
-            log.info("Closing browser...");
-            browser.close();
+            try {
+                browser.contexts().forEach(c -> {c.close(); log.debug("Browser context closed");});
+                log.info("Closing browser...");
+                browser.close();
+            } catch (Exception e) {
+                throw new PlaywrightException("Failed to close browser instance", e);
+            }
         }
     }
 
     @PreDestroy
-    public void closePlaywright() {
+    public synchronized void closePlaywright() {
         if (playwright != null) {
             log.info("Closing Playwright...");
             playwright.close();
