@@ -57,7 +57,6 @@ scheduler:
   process-currencies: "0 0 8,20 * * *"
   low-price-alert: "0 15 21 ? * MON-SAT"
   owned-stock-alert: "0 15 8 ? * SAT"
-  registration-checker: "0 0,30 6-22 * * *"
 
 logging:
   level:
