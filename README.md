@@ -6,9 +6,9 @@
 ![Playwright](https://img.shields.io/badge/Playwright-1.50.0-45ba4b?logo=playwright&logoColor=white)
 
 
-A simple Spring Boot application designed to assist with stock market data analysis and monitoring. The application uses automated web scraping, and scheduled  alerts to help me track my stocks and look for right timing to buy and sell various stock instruments.
+A simple Spring Boot application designed to assist with stock market data analysis and monitoring. The application uses automated web scraping, api calls, and scheduled  alerts to help me track my stocks and look for right timing to buy and sell various stock instruments.
 
-Application has only back-end layer and I do not plan to add any front-end functionalities. Everything is based on API, mail notifications and access to database.
+Application has only back-end layer and at the moment, I do not plan to add front-end layer. Everything is based on API, mail notifications and access to database.
 
 I do not have rigidly set goals for this application, as the functionality changes within my needs. In the beginning I planned to write it to remind myself how Spring works, although now it is 24/7 running application which is useful for me.
 
@@ -18,10 +18,10 @@ I do not have rigidly set goals for this application, as the functionality chang
 - 📊 **Automated Heatmap Scraping**: Scheduled web scraping using Playwright to capture and analyze market heatmaps - right now app only saves the data, I migh use it later for trend analysis
 - 📧 **Email Notifications**: Automated alerts for low prices, owned stock updates, and currency rate changes via Mailgun which is configured for my own domain
 - 🔒 **Secure API**: Protected endpoints with Spring Security Basic Authentication
-- 📈 **Multi-Source Data Integration**: Real-time data from Alpha Vantage and Twelve Data APIs
+- 📈 **Data Providers**: Real-time data from Yahoo Finance for stock prices
 - ⏰ **Scheduling**: Parallel execution of scheduled tasks for heatmap scraping, price alerts, and currency monitoring
 - 🗄️ **Persistent Storage**: PostgreSQL database for reliable data management
-- 🌐 **RESTful API**: Clean, well-structured endpoints for stock data retrieval and analysis
+- 🌐 **RESTful API**: Clean, well-structured endpoints to access app functionality and data
 
 ## Technologies Used
 
@@ -32,9 +32,6 @@ I do not have rigidly set goals for this application, as the functionality chang
 - Spring AOP (Aspect-Oriented Programming)
 - Spring Data JPA (Database persistence)
 
-**AI & Intelligence:**
-- Spring AI with OpenAI integration - I was going to use it with agents in order to analyze data and get suggestions, although I will probably dump this approach
-
 **Security:**
 - Spring Security (Basic Authentication)
 
@@ -44,14 +41,13 @@ I do not have rigidly set goals for this application, as the functionality chang
 - Flyway
 
 **External APIs:**
-- OpenAI API - AI-powered analysis - will be probably removed
 - Alpha Vantage API - News data
 - Yahoo Finance API - Stock market data
 - Mailgun API - Email notifications
 - NBP API - for currency rates to PLN
 
 **Web Scraping:**
-- Microsoft Playwright 1.50.0 - Automated browser control for dynamic content
+- Microsoft Playwright 1.50.0 - Automated browser control for web content
 
 **Testing:**
 - TestNG
@@ -74,7 +70,7 @@ I do not have rigidly set goals for this application, as the functionality chang
 
 ### Usage
 
-The application runs several automated tasks:
+The application runs several automated and on demand tasks:
 
 - **Heatmap Scraping**: Every 5 minutes (`0 */5 * * * *`)
   - Captures market heatmap data for trend analysis - each screenshot is analyzed based od red/green pixel count in order to give it a ratio (0.01 - 1.00), which tells if heatmap data is bullish or bearish
@@ -105,11 +101,11 @@ This project demonstrates practical implementation of modern Spring Boot develop
 
 ✅ **Advanced Scheduling**: Parallel task execution with ThreadPoolTaskScheduler for efficient resource utilization
 
-✅ **Security Best Practices**: Protected API endpoints with environment-based credential management
+✅ **Security**: Protected API endpoints with environment-based credential management
 
 ✅ **Web Scraping**: Automated data collection from dynamic websites using Playwright
 
-✅ **Multi-Source Integration**: Aggregation of data from multiple financial APIs (Alpha Vantage, Twelve Data)
+✅ **Multi-Source Integration**: Aggregation of data from multiple external APIs
 
 ✅ **Event-Driven Architecture**: Authentication event listeners for security monitoring and logging
 
@@ -122,8 +118,6 @@ This project demonstrates practical implementation of modern Spring Boot develop
 - Scheduled job management
 
 ✅ **RESTful API Design**: Clean endpoint structure with proper HTTP methods and response handling
-
-✅ **Reactive Programming**: WebClient usage for non-blocking API calls
 
 ### Technical Skills Demonstrated
 
