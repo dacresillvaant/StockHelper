@@ -8,7 +8,6 @@ import lombok.Getter;
 public enum GeoScope {
     PL("Poland"),
     US("USA"),
-    JP("Japan"),
     AU("Australia"),
     DE("Germany");
 

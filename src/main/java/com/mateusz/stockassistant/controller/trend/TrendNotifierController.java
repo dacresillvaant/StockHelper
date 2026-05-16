@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,9 +19,9 @@ public class TrendNotifierController {
         this.trendNotifier = trendNotifier;
     }
 
-    @GetMapping("/check")
-    public ResponseEntity<String> checkTrends() {
-        trendNotifier.checkTrends();
-        return ResponseEntity.ok("Trend check initiated");
+    @GetMapping("/check/")
+    public ResponseEntity<String> checkTrends(@RequestParam GeoScope geoScope) {
+        trendNotifier.checkTrends(geoScope);
+        return ResponseEntity.ok("Trend check for %s finished".formatted(geoScope.getFullName()));
     }
 }

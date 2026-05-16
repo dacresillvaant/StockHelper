@@ -12,14 +12,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Slf4j
 public class TrendNotifier {
 
-    private static final String BASE_URL = "https://trends.google.com/trending?";
-    private static final String GEO_SCOPE = "geo=$";
+    private static final String BASE_URL = "https://trends.google.com/trending";
+    private static final String GEO_SCOPE = "?geo=$";
     private static final String PERIOD = "&hours=168";
     private static final String SORT = "&sort=search-volume";
 
@@ -46,46 +47,42 @@ public class TrendNotifier {
                 .trim().strip();
     }
 
+    private void logRowData(int row, String col1, String col2, String col3) {
+        log.debug("""
+                Row: {}
+                Trend: {}
+                Search volume: {}
+                Started: {}
+                """, row, col1, col2, col3);
+    }
+
     public record TrendTableRow(String column1, String column2, String column3) {}
 
-    public void checkTrends() {
-        Browser browser = playwrightHandler.createBrowser(false);
+    public void checkTrends(GeoScope geoScope) {
+        log.info("START - Checking trends for: {}", geoScope.getFullName());
+        Browser browser = playwrightHandler.createBrowser(headless);
         Page page = browser.newPage();
 
-        page.navigate(BASE_URL.concat(GEO_SCOPE.replace("$", GeoScope.US.name())).concat(PERIOD).concat(SORT));
+        page.navigate(BASE_URL.concat(GEO_SCOPE.replace("$", geoScope.name())).concat(PERIOD).concat(SORT));
         page.waitForSelector("xpath=//*[@id='trend-table']/div[1]/table/tbody[2]/tr", new Page.WaitForSelectorOptions().setTimeout(10000));
 
         Locator trendsTableRows = page.locator("xpath=//*[@id='trend-table']/div[1]/table/tbody[2]/tr");
-        int rowCount = trendsTableRows.count();
+        List<TrendNotifier.TrendTableRow> trendsTableData = new ArrayList<>();
 
-        System.out.println("Total rows found: " + rowCount);
-        List<TrendNotifier.TrendTableRow> trendsTableData = new java.util.ArrayList<>();;
-
-        // Loop through each row and extract data
-        for (int i = 0; i < rowCount; i++) {
-            Locator row = trendsTableRows.nth(i);
-
+        for (Locator row : trendsTableRows.all()) {
             String col1 = cleanData(row.locator("td").nth(1).innerText());
             String col2 = cleanData(row.locator("td").nth(2).innerText());
             String col3 = cleanData(row.locator("td").nth(3).innerText());
 
             trendsTableData.add(new TrendTableRow(col1, col2, col3));
-
-            System.out.printf("""
-                    ##### START OF ROW #####
-                    Row: %d
-                    Trend: %s
-                    Search volume: %s
-                    Started: %s
-                    ##### END OF ROW #####
-                    %n
-                    """, i, col1, col2, col3);
+            logRowData(trendsTableData.size(), col1, col2, col3);
         }
 
-        MailTemplate mailTemplate = MailTemplateFactory.trendTemplate(GeoScope.US, trendsTableData);
+        MailTemplate mailTemplate = MailTemplateFactory.trendTemplate(geoScope, trendsTableData);
         mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
 
         page.close();
         browser.close();
+        log.info("END - Checking trends for: {}", geoScope.getFullName());
     }
 }
