@@ -52,7 +52,7 @@ nbp:
 
 scheduler:
   heatmap:
-    cron: "0 */5 * * * *"
+    cron: "0 0 12 * * *"
     save-to-target: false
   process-currencies: "0 0 8,20 * * *"
   low-price-alert: "0 15 21 ? * MON-SAT"

@@ -1,13 +1,17 @@
 package com.mateusz.stockassistant.tools.mail;
 
+import com.mateusz.stockassistant.controller.trend.GeoScope;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;
+import com.mateusz.stockassistant.logic.TrendNotifier;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MailTemplateFactory {
@@ -19,7 +23,7 @@ public class MailTemplateFactory {
                                                     String rateChangeWeekBefore, String rateChangeMonthBefore) {
         String formattedTimestamp = DATE_FORMATTER.format(currencyRateResponse.getMeta().getDateOfPrice());
 
-        String mailSubject = String.format("Currency rate report for: %s %s", currencyRateResponse.getMeta().getLongName(), formattedTimestamp);
+        String mailSubject = String.format("NOTIFICATION - Currency rate report for: %s %s", currencyRateResponse.getMeta().getLongName(), formattedTimestamp);
         String mailBody = String.format("""
                 Currency rate of %s is %s - %s
                 Change 1D is: %s%%
@@ -56,6 +60,16 @@ public class MailTemplateFactory {
                 Latest close is: %s
                 Change: %s%%, threshold was set to -> %s%%
                 """, symbol, symbolFullName, purchasePrice, symbolCurrency, lastClosePrice, priceChange, percentChangeThreshold);
+
+        return new MailTemplate(mailSubject, mailBody);
+    }
+
+    public static MailTemplate trendTemplate(GeoScope geoScope, List<TrendNotifier.TrendTableRow> trendsTableData) {
+        String mailSubject = "NOTIFICATION - ".concat("Top Google trends in ").concat(geoScope.getFullName());
+        String rowDataTemplate = "%d. Trend: %s, Search volume: %s Started: %s%n";
+        String mailBody = trendsTableData.stream()
+                .map(row -> String.format(rowDataTemplate, trendsTableData.indexOf(row) + 1, row.column1(), row.column2(), row.column3()))
+                .reduce(geoScope.getFullName().concat(" past week trends - ").concat(LocalDateTime.now().format(DATE_FORMATTER)).concat("\n"), String::concat);
 
         return new MailTemplate(mailSubject, mailBody);
     }

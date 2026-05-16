@@ -1,13 +1,18 @@
 package com.mateusz.stockassistant.logic;
 
 import com.mateusz.stockassistant.controller.trend.GeoScope;
+import com.mateusz.stockassistant.service.MailgunEmailService;
 import com.mateusz.stockassistant.tools.PlaywrightHandler;
+import com.mateusz.stockassistant.tools.mail.MailTemplate;
+import com.mateusz.stockassistant.tools.mail.MailTemplateFactory;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @Slf4j
@@ -22,9 +27,11 @@ public class TrendNotifier {
     private boolean headless;
 
     private final PlaywrightHandler playwrightHandler;
+    private final MailgunEmailService mailgunEmailService;
 
-    public TrendNotifier(PlaywrightHandler playwrightHandler) {
+    public TrendNotifier(PlaywrightHandler playwrightHandler, MailgunEmailService mailgunEmailService) {
         this.playwrightHandler = playwrightHandler;
+        this.mailgunEmailService = mailgunEmailService;
     }
 
     private String cleanData(String data) {
@@ -39,6 +46,8 @@ public class TrendNotifier {
                 .trim().strip();
     }
 
+    public record TrendTableRow(String column1, String column2, String column3) {}
+
     public void checkTrends() {
         Browser browser = playwrightHandler.createBrowser(false);
         Page page = browser.newPage();
@@ -50,6 +59,7 @@ public class TrendNotifier {
         int rowCount = trendsTableRows.count();
 
         System.out.println("Total rows found: " + rowCount);
+        List<TrendNotifier.TrendTableRow> trendsTableData = new java.util.ArrayList<>();;
 
         // Loop through each row and extract data
         for (int i = 0; i < rowCount; i++) {
@@ -58,6 +68,8 @@ public class TrendNotifier {
             String col1 = cleanData(row.locator("td").nth(1).innerText());
             String col2 = cleanData(row.locator("td").nth(2).innerText());
             String col3 = cleanData(row.locator("td").nth(3).innerText());
+
+            trendsTableData.add(new TrendTableRow(col1, col2, col3));
 
             System.out.printf("""
                     ##### START OF ROW #####
@@ -69,6 +81,11 @@ public class TrendNotifier {
                     %n
                     """, i, col1, col2, col3);
         }
+
+        MailTemplate mailTemplate = MailTemplateFactory.trendTemplate(GeoScope.US, trendsTableData);
+        mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
+
+        page.close();
         browser.close();
     }
 }
