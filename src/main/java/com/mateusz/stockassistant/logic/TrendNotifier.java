@@ -3,13 +3,12 @@ package com.mateusz.stockassistant.logic;
 import com.mateusz.stockassistant.controller.trend.GeoScope;
 import com.mateusz.stockassistant.service.MailgunEmailService;
 import com.mateusz.stockassistant.tools.PlaywrightHandler;
+import com.mateusz.stockassistant.tools.PlaywrightResourceManager;
 import com.mateusz.stockassistant.tools.mail.MailTemplate;
 import com.mateusz.stockassistant.tools.mail.MailTemplateFactory;
-import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,13 +23,12 @@ public class TrendNotifier {
     private static final String PERIOD = "&hours=168";
     private static final String SORT = "&sort=search-volume";
 
-    @Value("${playwright.headless}")
-    private boolean headless;
-
+    private final PlaywrightResourceManager playwrightResourceManager;
     private final PlaywrightHandler playwrightHandler;
     private final MailgunEmailService mailgunEmailService;
 
-    public TrendNotifier(PlaywrightHandler playwrightHandler, MailgunEmailService mailgunEmailService) {
+    public TrendNotifier(PlaywrightResourceManager playwrightResourceManager, PlaywrightHandler playwrightHandler, MailgunEmailService mailgunEmailService) {
+        this.playwrightResourceManager = playwrightResourceManager;
         this.playwrightHandler = playwrightHandler;
         this.mailgunEmailService = mailgunEmailService;
     }
@@ -60,29 +58,27 @@ public class TrendNotifier {
 
     public void checkTrends(GeoScope geoScope) {
         log.info("START - Checking trends for: {}", geoScope.getFullName());
-        Browser browser = playwrightHandler.createBrowser(headless);
-        Page page = browser.newPage();
 
-        page.navigate(BASE_URL.concat(GEO_SCOPE.replace("$", geoScope.name())).concat(PERIOD).concat(SORT));
-        page.waitForSelector("xpath=//*[@id='trend-table']/div[1]/table/tbody[2]/tr", new Page.WaitForSelectorOptions().setTimeout(10000));
-
-        Locator trendsTableRows = page.locator("xpath=//*[@id='trend-table']/div[1]/table/tbody[2]/tr");
         List<TrendNotifier.TrendTableRow> trendsTableData = new ArrayList<>();
 
-        for (Locator row : trendsTableRows.all()) {
-            String col1 = cleanData(row.locator("td").nth(1).innerText());
-            String col2 = cleanData(row.locator("td").nth(2).innerText());
-            String col3 = cleanData(row.locator("td").nth(3).innerText());
+        playwrightResourceManager.executeInBrowser(page -> {
+            playwrightHandler.navigate(page, BASE_URL.concat(GEO_SCOPE.replace("$", geoScope.name())).concat(PERIOD).concat(SORT));
+            page.waitForSelector("xpath=//*[@id='trend-table']/div[1]/table/tbody[2]/tr", new Page.WaitForSelectorOptions().setTimeout(10000));
+            Locator trendsTableRows = page.locator("xpath=//*[@id='trend-table']/div[1]/table/tbody[2]/tr");
 
-            trendsTableData.add(new TrendTableRow(col1, col2, col3));
-            logRowData(trendsTableData.size(), col1, col2, col3);
-        }
+            for (Locator row : trendsTableRows.all()) {
+                String col1 = cleanData(row.locator("td").nth(1).innerText());
+                String col2 = cleanData(row.locator("td").nth(2).innerText());
+                String col3 = cleanData(row.locator("td").nth(3).innerText());
+
+                trendsTableData.add(new TrendTableRow(col1, col2, col3));
+                logRowData(trendsTableData.size(), col1, col2, col3);
+            }
+        });
 
         MailTemplate mailTemplate = MailTemplateFactory.trendTemplate(geoScope, trendsTableData);
         mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
 
-        page.close();
-        browser.close();
         log.info("END - Checking trends for: {}", geoScope.getFullName());
     }
 }

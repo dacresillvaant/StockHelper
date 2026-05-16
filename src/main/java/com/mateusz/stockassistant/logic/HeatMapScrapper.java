@@ -4,7 +4,7 @@ import com.mateusz.stockassistant.entity.HeatmapEntity;
 import com.mateusz.stockassistant.repository.HeatmapRepository;
 import com.mateusz.stockassistant.tools.ImageAnalyzer;
 import com.mateusz.stockassistant.tools.PlaywrightHandler;
-import com.microsoft.playwright.Browser;
+import com.mateusz.stockassistant.tools.PlaywrightResourceManager;
 import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.opencv.opencv_core.Mat;
@@ -23,43 +23,36 @@ public class HeatMapScrapper {
 
     private static final String URL = "https://finviz.com/map.ashx?t=sec";
 
-    @Value("${playwright.headless}")
-    private boolean headless;
     @Value("${scheduler.heatmap.save-to-target}")
     private boolean saveToTarget;
 
+    private final PlaywrightResourceManager playwrightResourceManager;
     private final PlaywrightHandler playwrightHandler;
     private final HeatmapRepository heatmapRepository;
 
     @Autowired
-    public HeatMapScrapper(PlaywrightHandler playwrightHandler, HeatmapRepository heatmapRepository) {
+    public HeatMapScrapper(PlaywrightResourceManager playwrightResourceManager, PlaywrightHandler playwrightHandler, HeatmapRepository heatmapRepository) {
+        this.playwrightResourceManager = playwrightResourceManager;
         this.playwrightHandler = playwrightHandler;
         this.heatmapRepository = heatmapRepository;
     }
 
     public void scrapHeatMap() {
-        Browser browser = null;
-        Page page;
+        playwrightResourceManager.executeInBrowser(page -> {
+            try {
+                playwrightHandler.navigate(page, URL);
+                playwrightHandler.click(page, "button:has-text('Reject all')");
+                playwrightHandler.click(page, "button:has(span:has-text('Fullscreen'))");
 
-        try {
-            browser = playwrightHandler.createBrowser(headless);
-            page = playwrightHandler.createPage(browser, true);
+                byte[] screenshot = playwrightHandler.screenshotSelectedPart(page, "heatMap", "canvas.chart.initialized", saveToTarget);
+                String base64screenshot = ImageAnalyzer.byteToBase64(screenshot);
+                double heatmapRatio = calculateHeatmapRatio(screenshot).doubleValue();
 
-            playwrightHandler.navigate(page, URL);
-            playwrightHandler.click(page, "button:has-text('Reject all')");
-            playwrightHandler.click(page, "button:has(span:has-text('Fullscreen'))");
-
-            byte[] screenshot = playwrightHandler.screenshotSelectedPart(
-                    page, "heatMap", "canvas.chart.initialized", saveToTarget);
-            String base64screenshot = ImageAnalyzer.byteToBase64(screenshot);
-            double heatmapRatio = calculateHeatmapRatio(screenshot).doubleValue();
-
-            saveHeatmapToDatabase(page, base64screenshot, heatmapRatio);
-        } catch (Exception e) {
-            throw new RuntimeException("Heat map scrapping failed", e);
-        } finally {
-            playwrightHandler.closeBrowser(browser);
-        }
+                saveHeatmapToDatabase(page, base64screenshot, heatmapRatio);
+            } catch (Exception e) {
+                throw new RuntimeException("Heat map scrapping failed", e);
+            }
+        });
     }
 
     private void saveHeatmapToDatabase(Page page, String base64screenshot, double heatmapRatio) {

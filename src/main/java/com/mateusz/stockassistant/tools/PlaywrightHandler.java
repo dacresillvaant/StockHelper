@@ -24,7 +24,6 @@ public class PlaywrightHandler {
         this.playwright = Playwright.create();
     }
 
-
     public synchronized Browser createBrowser(boolean headless) {
         log.info("Launching new browser instance...");
         try {
@@ -38,16 +37,20 @@ public class PlaywrightHandler {
     }
 
     public synchronized Page createPage(Browser browser, boolean mockHuman) {
-        if (mockHuman) {
-            return browser.newContext(new Browser.NewContextOptions()
-                    .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
-                    .setExtraHTTPHeaders((Map.of(
-                            "Accept-Language", "en-US,en;q=0.9",
-                            "Referer", "https://google.com"
-                    )))
-                    .setViewportSize(resolution[0], resolution[1])).newPage();
-        } else {
-            return browser.newContext(new Browser.NewContextOptions().setViewportSize(resolution[0], resolution[1])).newPage();
+        try {
+            if (mockHuman) {
+                return browser.newContext(new Browser.NewContextOptions()
+                        .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
+                        .setExtraHTTPHeaders((Map.of(
+                                "Accept-Language", "en-US,en;q=0.9",
+                                "Referer", "https://google.com"
+                        )))
+                        .setViewportSize(resolution[0], resolution[1])).newPage();
+            } else {
+                return browser.newContext(new Browser.NewContextOptions().setViewportSize(resolution[0], resolution[1])).newPage();
+            }
+        } catch (Exception e) {
+            throw new PlaywrightException("Failed to create page", e);
         }
     }
 
