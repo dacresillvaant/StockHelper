@@ -35,4 +35,6 @@ public class OwnedStockEntity {
     private BigDecimal purchasePrice;
 
     private String currency;
+
+    boolean paysDividend;
 }

@@ -18,4 +18,5 @@ public class NewStockDto {
     private int position;
     private BigDecimal purchasePrice;
     private String currency;
+    boolean paysDividend;
 }
