@@ -80,16 +80,16 @@ public class ReportService {
             BigDecimal todayXPlnCurrencyRate;
             switch (symbolCurrency) {
                 case "USD" -> todayXPlnCurrencyRate = todayUsdPlnCurrencyRate;
-                case "CAD" -> todayXPlnCurrencyRate =  todayCadPlnCurrencyRate;
-                case "GBP" -> todayXPlnCurrencyRate =  todayGbpPlnCurrencyRate;
-                case "PLN" -> todayXPlnCurrencyRate =  BigDecimal.ONE;
+                case "CAD" -> todayXPlnCurrencyRate = todayCadPlnCurrencyRate;
+                case "GBP" -> todayXPlnCurrencyRate = todayGbpPlnCurrencyRate;
+                case "PLN" -> todayXPlnCurrencyRate = BigDecimal.ONE;
                 default -> throw new IllegalArgumentException("Unmapped currency: " + symbolCurrency);
             }
 
             BigDecimal lastPrice;
 
             //many stocks on London Stock Exchange trade against GBX/GBp, which is equivalent to 0.01 GBP, therefore division is required
-            if(os.getCurrency().equalsIgnoreCase("GBP")){
+            if (os.getCurrency().equalsIgnoreCase("GBP")) {
                 lastPrice = yahooFinanceService.getSimplifiedData(ticker).getMeta().getLastPrice().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
             } else {
                 lastPrice = yahooFinanceService.getSimplifiedData(ticker).getMeta().getLastPrice();
@@ -106,12 +106,24 @@ public class ReportService {
                     .purchaseDate(LocalDate.parse(purchaseDate))
                     .purchaseCurrencyRateToPLN(purchaseDayXPlnCurrencyRate)
                     .todayCurrencyRateToPLN(todayXPlnCurrencyRate)
-                    .purchasePrice(new ProfitReportDto.PriceWithCurrency(calculateValue(os.getPurchasePrice(), BigDecimal.ONE, os.getPosition()), os.getCurrency()))
-                    .purchasePriceConverted(new ProfitReportDto.PriceWithCurrency(purchaseDayValue, "PLN"))
-                    .todayPrice(new ProfitReportDto.PriceWithCurrency(calculateValue(lastPrice, BigDecimal.ONE, os.getPosition()), os.getCurrency()))
-                    .todayPriceConverted(new ProfitReportDto.PriceWithCurrency(todayValue, "PLN"))
-                    .diff(new ProfitReportDto.PriceWithCurrency(calculateValue(lastPrice, BigDecimal.ONE, os.getPosition()).subtract(calculateValue(os.getPurchasePrice(), BigDecimal.ONE, os.getPosition())), os.getCurrency()))
-                    .diffConverted(new ProfitReportDto.PriceWithCurrency(priceChange, "PLN"))
+                    .singleShare(ProfitReportDto.SingleShare.builder()
+                            .purchasePrice(new ProfitReportDto.PriceWithCurrency(os.getPurchasePrice(), os.getCurrency()))
+                            .purchasePriceConverted(new ProfitReportDto.PriceWithCurrency(os.getPurchasePrice().multiply(purchaseDayXPlnCurrencyRate).setScale(2, RoundingMode.HALF_UP), "PLN"))
+                            .todayPrice(new ProfitReportDto.PriceWithCurrency(lastPrice, os.getCurrency()))
+                            .todayPriceConverted(new ProfitReportDto.PriceWithCurrency(lastPrice.multiply(todayXPlnCurrencyRate).setScale(2, RoundingMode.HALF_UP), "PLN"))
+                            .diff(new ProfitReportDto.PriceWithCurrency(lastPrice.subtract(os.getPurchasePrice()), os.getCurrency()))
+                            .diffConverted(new ProfitReportDto.PriceWithCurrency(priceChange, "PLN"))
+                            .build())
+                    .totalShares(ProfitReportDto.TotalShares.builder()
+                            .amount(os.getPosition())
+                            .purchasePrice(new ProfitReportDto.PriceWithCurrency(calculateValue(os.getPurchasePrice(), BigDecimal.ONE, os.getPosition()), os.getCurrency()))
+                            .purchasePriceConverted(new ProfitReportDto.PriceWithCurrency(purchaseDayValue, "PLN"))
+                            .todayPrice(new ProfitReportDto.PriceWithCurrency(calculateValue(lastPrice, BigDecimal.ONE, os.getPosition()), os.getCurrency()))
+                            .todayPriceConverted(new ProfitReportDto.PriceWithCurrency(todayValue, "PLN"))
+                            .diff(new ProfitReportDto.PriceWithCurrency(calculateValue(lastPrice, BigDecimal.ONE, os.getPosition()).subtract(calculateValue(os.getPurchasePrice(), BigDecimal.ONE, os.getPosition())), os.getCurrency()))
+                            .diffConverted(new ProfitReportDto.PriceWithCurrency(priceChange, "PLN"))
+                            .diffPercentage(todayValue.subtract(purchaseDayValue).divide(purchaseDayValue, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)))
+                            .build())
                     .build();
 
             results.add(reportDataRow);
@@ -120,7 +132,7 @@ public class ReportService {
         }
 
         results.forEach(result -> log.info("{} purchase price: {}, today price: {}, profit/loss: {}",
-                result.getName(), result.getPurchasePrice(), result.getTodayPrice(), result.getDiff()));
+                result.getName(), result.getTotalShares().purchasePrice(), result.getTotalShares().todayPrice(), result.getTotalShares().diff()));
 
         log.info("FINISH: Preparing owned stock profit report");
 
