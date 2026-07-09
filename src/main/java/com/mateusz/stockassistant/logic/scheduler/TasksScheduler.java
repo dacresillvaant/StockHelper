@@ -6,6 +6,7 @@ import com.mateusz.stockassistant.logic.CurrencyRateNotifier;
 import com.mateusz.stockassistant.logic.DynamicAlert;
 import com.mateusz.stockassistant.logic.HeatMapScrapper;
 import com.mateusz.stockassistant.logic.TrendNotifier;
+import com.mateusz.stockassistant.service.YahooFinanceAnalystInsightsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,13 +22,17 @@ public class TasksScheduler {
     private final DynamicAlert dynamicAlert;
     private final CurrencyRateNotifier currencyRateNotifier;
     private final TrendNotifier trendNotifier;
+    private final YahooFinanceAnalystInsightsService yahooFinanceAnalystInsightsService;
 
     @Autowired
-    public TasksScheduler(HeatMapScrapper heatMapScrapper, DynamicAlert dynamicAlert, CurrencyRateNotifier currencyRateNotifier, TrendNotifier trendNotifier) {
+    public TasksScheduler(HeatMapScrapper heatMapScrapper, DynamicAlert dynamicAlert,
+                          CurrencyRateNotifier currencyRateNotifier, TrendNotifier trendNotifier,
+                          YahooFinanceAnalystInsightsService yahooFinanceAnalystInsightsService) {
         this.heatMapScrapper = heatMapScrapper;
         this.dynamicAlert = dynamicAlert;
         this.currencyRateNotifier = currencyRateNotifier;
         this.trendNotifier = trendNotifier;
+        this.yahooFinanceAnalystInsightsService = yahooFinanceAnalystInsightsService;
     }
 
     @Scheduled(cron = "${scheduler.heatmap.cron}")
@@ -56,5 +61,10 @@ public class TasksScheduler {
         for (GeoScope geoScope : GeoScope.values()) {
             trendNotifier.checkTrends(geoScope);
         }
+    }
+
+    @Scheduled(cron = "${scheduler.analyst-insights}")
+    public void scheduleAnalystInsightsCheck() {
+        yahooFinanceAnalystInsightsService.checkAnalystInsightsOfStocks();
     }
 }

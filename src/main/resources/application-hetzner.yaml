@@ -16,3 +16,4 @@ scheduler:
   process-currencies: "0 0 8,20 * * *"
   low-price-alert: "0 15 21 ? * MON-SAT"
   owned-stock-alert: "0 15 8 ? * SAT"
+  analyst-insights: "0 0 1 ? * SAT"

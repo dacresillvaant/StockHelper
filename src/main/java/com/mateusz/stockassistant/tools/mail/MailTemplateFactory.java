@@ -19,17 +19,20 @@ public class MailTemplateFactory {
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm").withZone(ZoneId.systemDefault());
 
+    private static final String ALERT = "ALERT - ";
+    private static final String NOTIFICATION = "NOTIFICATION - ";
+
     public static MailTemplate currencyRateTemplate(YahooTruncatedChartResponseDto currencyRateResponse, String rateChangeDayBefore,
                                                     String rateChangeWeekBefore, String rateChangeMonthBefore) {
         String formattedTimestamp = DATE_FORMATTER.format(currencyRateResponse.getMeta().getDateOfPrice());
 
-        String mailSubject = String.format("NOTIFICATION - Currency rate report for: %s %s", currencyRateResponse.getMeta().getLongName(), formattedTimestamp);
+        String mailSubject = String.format(NOTIFICATION + "Currency rate report for: %s %s", currencyRateResponse.getMeta().getLongName(), formattedTimestamp);
         String mailBody = String.format("""
-                Currency rate of %s is %s - %s
-                Change 1D is: %s%%
-                Change 7D is: %s%%
-                Change 30D is: %s%%
-                """, currencyRateResponse.getMeta().getLongName(), currencyRateResponse.getMeta().getLastPrice(), formattedTimestamp,
+                        Currency rate of %s is %s - %s
+                        Change 1D is: %s%%
+                        Change 7D is: %s%%
+                        Change 30D is: %s%%
+                        """, currencyRateResponse.getMeta().getLongName(), currencyRateResponse.getMeta().getLastPrice(), formattedTimestamp,
                 rateChangeDayBefore, rateChangeWeekBefore, rateChangeMonthBefore);
 
         return new MailTemplate(mailSubject, mailBody);
@@ -38,7 +41,7 @@ public class MailTemplateFactory {
     public static MailTemplate lowPriceAlertTemplate(String symbol, int percentChange, YahooTruncatedChartResponseDto quote,
                                                      BigDecimal lastClose, BigDecimal yearHigh, BigDecimal alertThreshold) {
         String symbolFullName = quote.getMeta().getLongName();
-        String mailSubject = "ALERT - ".concat(symbolFullName).concat(" fallen below threshold price");
+        String mailSubject = ALERT + "Watched stock" + symbolFullName + " fallen below threshold price";
         String mailBody = String.format("""
                 Latest price of %s %s is: %s
                 Year high is: %s
@@ -54,7 +57,7 @@ public class MailTemplateFactory {
         String symbolFullName = ownedStock.getName();
         String symbolCurrency = ownedStock.getCurrency();
 
-        String mailSubject = "ALERT - ".concat(symbolFullName).concat(" price significantly changed!");
+        String mailSubject = ALERT + "Owned stock " + symbolFullName + " price significantly changed!";
         String mailBody = String.format("""
                 Purchase price of %s %s is: %s %s
                 Latest close is: %s
@@ -65,11 +68,23 @@ public class MailTemplateFactory {
     }
 
     public static MailTemplate trendTemplate(GeoScope geoScope, List<TrendNotifier.TrendTableRow> trendsTableData) {
-        String mailSubject = "NOTIFICATION - ".concat("Top Google trends in ").concat(geoScope.getFullName());
+        String mailSubject = NOTIFICATION + "Top Google trends in " + geoScope.getFullName();
+
         String rowDataTemplate = "%d. Trend: %s, Search volume: %s Started: %s%n";
         String mailBody = trendsTableData.stream()
                 .map(row -> String.format(rowDataTemplate, trendsTableData.indexOf(row) + 1, row.column1(), row.column2(), row.column3()))
                 .reduce(geoScope.getFullName().concat(" past week trends - ").concat(LocalDateTime.now().format(DATE_FORMATTER)).concat("\n"), String::concat);
+
+        return new MailTemplate(mailSubject, mailBody);
+    }
+
+    public static MailTemplate analystInsightsTemplate(String ticker, BigDecimal currentPrice, BigDecimal lowPrice) {
+        String mailSubject = NOTIFICATION + "Analyst insights for " + ticker;
+        String mailBody = String.format("""
+                Analyst insights for: %s
+                Current price: %s
+                Analyst predicted low price: %s
+                """, ticker, currentPrice, lowPrice);
 
         return new MailTemplate(mailSubject, mailBody);
     }

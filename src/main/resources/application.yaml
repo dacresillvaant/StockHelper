@@ -58,6 +58,7 @@ scheduler:
   low-price-alert: "0 15 21 ? * MON-SAT"
   owned-stock-alert: "0 15 8 ? * SAT"
   trend-checker: "0 0 8 ? * SAT"
+  analyst-insights: "0 0 1 ? * SAT"
 
 logging:
   level:

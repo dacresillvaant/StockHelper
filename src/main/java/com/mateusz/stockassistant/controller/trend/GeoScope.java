@@ -8,8 +8,7 @@ import lombok.Getter;
 public enum GeoScope {
     PL("Poland"),
     US("USA"),
-    AU("Australia"),
-    DE("Germany");
+    AU("Australia");
 
     private final String fullName;
 }
