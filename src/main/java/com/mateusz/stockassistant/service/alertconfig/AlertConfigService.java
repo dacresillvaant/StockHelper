@@ -1,4 +1,4 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.alertconfig;
 
 import com.mateusz.stockassistant.controller.alertconfig.AlertType;
 import com.mateusz.stockassistant.controller.alertconfig.dto.AlertConfigDto;

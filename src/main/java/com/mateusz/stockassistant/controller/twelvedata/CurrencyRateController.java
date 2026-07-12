@@ -1,7 +1,7 @@
 package com.mateusz.stockassistant.controller.twelvedata;
 
 import com.mateusz.stockassistant.controller.twelvedata.dto.CurrencyRateInternalDto;
-import com.mateusz.stockassistant.service.CurrencyRateService;
+import com.mateusz.stockassistant.service.currencyrate.CurrencyRateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;

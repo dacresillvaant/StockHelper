@@ -4,9 +4,9 @@ import com.mateusz.stockassistant.controller.twelvedata.dto.CurrencyRateInternal
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.CurrencyRateEntity;
 import com.mateusz.stockassistant.repository.CurrencyRateRepository;
-import com.mateusz.stockassistant.service.CurrencyRateService;
-import com.mateusz.stockassistant.service.MailgunEmailService;
-import com.mateusz.stockassistant.service.YahooFinanceService;
+import com.mateusz.stockassistant.service.currencyrate.CurrencyRateService;
+import com.mateusz.stockassistant.service.mailgunemail.MailgunEmailService;
+import com.mateusz.stockassistant.service.yahoofinance.backend.YahooFinanceService;
 import com.mateusz.stockassistant.tools.mail.MailTemplate;
 import com.mateusz.stockassistant.tools.mail.MailTemplateFactory;
 import lombok.extern.slf4j.Slf4j;

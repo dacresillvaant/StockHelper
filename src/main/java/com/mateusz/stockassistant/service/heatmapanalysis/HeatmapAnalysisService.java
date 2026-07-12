@@ -1,4 +1,4 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.heatmapanalysis;
 
 import com.mateusz.stockassistant.entity.HeatmapEntity;
 import com.mateusz.stockassistant.repository.HeatmapRepository;

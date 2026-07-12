@@ -2,7 +2,7 @@ package com.mateusz.stockassistant.controller.screenshot;
 
 import com.mateusz.stockassistant.controller.screenshot.dto.ImageAnalyzeDto;
 import com.mateusz.stockassistant.entity.HeatmapEntity;
-import com.mateusz.stockassistant.service.HeatmapAnalysisService;
+import com.mateusz.stockassistant.service.heatmapanalysis.HeatmapAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,9 +1,11 @@
 package com.mateusz.stockassistant.controller.emergency;
 
-import com.mateusz.stockassistant.service.YahooFinanceAnalystInsightsService;
+import com.mateusz.stockassistant.service.yahoofinance.frontend.StockType;
+import com.mateusz.stockassistant.service.yahoofinance.frontend.YahooFinanceAnalystInsightsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,8 +19,8 @@ public class EmergencyController {
         this.yahooFinanceAnalystInsightsService = yahooFinanceAnalystInsightsService;
     }
 
-    @GetMapping("/get/analystinsights")
-    public void getDevelopedFunctionality3() {
-        yahooFinanceAnalystInsightsService.checkAnalystInsightsOfStocks();
+    @GetMapping("/get/analystinsights/")
+    public void getAnalystInsights(@RequestParam StockType stockType) {
+        yahooFinanceAnalystInsightsService.checkAnalystInsightsOfStocks(stockType);
     }
 }

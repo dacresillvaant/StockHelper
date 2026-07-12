@@ -1,5 +1,6 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.yahoofinance.frontend;
 
+import com.mateusz.stockassistant.service.mailgunemail.MailgunEmailService;
 import com.mateusz.stockassistant.tools.PlaywrightHandler;
 import com.mateusz.stockassistant.tools.PlaywrightResourceManager;
 import com.mateusz.stockassistant.tools.Utils;
@@ -21,8 +22,8 @@ import java.util.List;
 @Service
 public class YahooFinanceAnalystInsightsService {
 
-    private static final String BASE_URL = "https://finance.yahoo.com/quote/$ticker/analyst-insights/";
-    private static final String MOST_ACTIVE_URL = "https://finance.yahoo.com/markets/stocks/most-active/";
+    private static final String BASE_TICKER_URL = "https://finance.yahoo.com/quote/$ticker/analyst-insights/";
+    private static final String BASE_TICKERS_SOURCE_URL = "https://finance.yahoo.com/markets/stocks/$type/";
 
     private static final String REJECT_COOKIES = "button[type='submit'][name='reject']";
 
@@ -84,9 +85,9 @@ public class YahooFinanceAnalystInsightsService {
         return tickers;
     }
 
-    private List<String> getStocksOfInterest() {
+    private List<String> getStocksOfInterest(StockType stockType) {
         return playwrightResourceManager.executeInBrowser(page -> {
-            playwrightHandler.navigate(page, MOST_ACTIVE_URL);
+            playwrightHandler.navigate(page, BASE_TICKERS_SOURCE_URL.replace("$type", stockType.getDescription()));
             page.waitForLoadState();
             rejectCookies(page);
 
@@ -95,7 +96,7 @@ public class YahooFinanceAnalystInsightsService {
     }
 
     private void checkSingleStockAnalystInsights(Page page, String ticker) {
-        playwrightHandler.navigate(page, BASE_URL.replace("$ticker", ticker));
+        playwrightHandler.navigate(page, BASE_TICKER_URL.replace("$ticker", ticker));
         page.waitForLoadState();
         rejectCookies(page);
 
@@ -115,8 +116,8 @@ public class YahooFinanceAnalystInsightsService {
         }
     }
 
-    public void checkAnalystInsightsOfStocks() {
-        List<String> tickers = getStocksOfInterest();
+    public void checkAnalystInsightsOfStocks(StockType stockType) {
+        List<String> tickers = getStocksOfInterest(stockType);
 
         playwrightResourceManager.executeInBrowser(page -> {
             tickers.forEach(ticker -> {

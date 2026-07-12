@@ -2,7 +2,7 @@ package com.mateusz.stockassistant.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mateusz.stockassistant.service.MailgunEmailService;
+import com.mateusz.stockassistant.service.mailgunemail.MailgunEmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

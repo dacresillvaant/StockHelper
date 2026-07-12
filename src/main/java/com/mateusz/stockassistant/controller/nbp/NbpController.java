@@ -1,7 +1,7 @@
 package com.mateusz.stockassistant.controller.nbp;
 
 import com.mateusz.stockassistant.controller.nbp.dto.NbpCurrencyRateDto;
-import com.mateusz.stockassistant.service.NbpService;
+import com.mateusz.stockassistant.service.nbp.NbpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

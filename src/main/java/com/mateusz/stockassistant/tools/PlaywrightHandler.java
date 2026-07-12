@@ -38,16 +38,21 @@ public class PlaywrightHandler {
 
     public synchronized Page createPage(Browser browser, boolean mockHuman) {
         try {
+            Page page;
             if (mockHuman) {
-                return browser.newContext(new Browser.NewContextOptions()
+                page = browser.newContext(new Browser.NewContextOptions()
                         .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
                         .setExtraHTTPHeaders((Map.of(
                                 "Accept-Language", "en-US,en;q=0.9",
                                 "Referer", "https://google.com"
                         )))
                         .setViewportSize(resolution[0], resolution[1])).newPage();
+                page.setDefaultTimeout(10000);
+                return page;
             } else {
-                return browser.newContext(new Browser.NewContextOptions().setViewportSize(resolution[0], resolution[1])).newPage();
+                page = browser.newContext(new Browser.NewContextOptions().setViewportSize(resolution[0], resolution[1])).newPage();
+                page.setDefaultTimeout(10000);
+                return page;
             }
         } catch (Exception e) {
             throw new PlaywrightException("Failed to create page", e);
@@ -66,7 +71,9 @@ public class PlaywrightHandler {
 
     public synchronized void click(Page page, String cssSelector) {
         Locator locator = page.locator(cssSelector);
-        locator.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        locator.waitFor(new Locator.WaitForOptions()
+                .setState(WaitForSelectorState.VISIBLE)
+                .setTimeout(10000));
 
         try {
             log.info("Clicking on element: " + cssSelector);
@@ -108,7 +115,10 @@ public class PlaywrightHandler {
     public synchronized void closeBrowser(Browser browser) {
         if (browser != null) {
             try {
-                browser.contexts().forEach(c -> {c.close(); log.debug("Browser context closed");});
+                browser.contexts().forEach(c -> {
+                    c.close();
+                    log.debug("Browser context closed");
+                });
                 log.info("Closing browser...");
                 browser.close();
             } catch (Exception e) {

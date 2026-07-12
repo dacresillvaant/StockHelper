@@ -1,7 +1,7 @@
 package com.mateusz.stockassistant.controller.mailgun;
 
 import com.mateusz.stockassistant.controller.mailgun.dto.EmailRequest;
-import com.mateusz.stockassistant.service.MailgunEmailService;
+import com.mateusz.stockassistant.service.mailgunemail.MailgunEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

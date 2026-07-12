@@ -1,4 +1,4 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.stock;
 
 import com.mateusz.stockassistant.controller.stock.dto.NewStockDto;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;

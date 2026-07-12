@@ -1,4 +1,4 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.mailgunemail;
 
 import com.mailgun.api.v3.MailgunMessagesApi;
 import com.mailgun.model.message.Message;

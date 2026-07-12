@@ -1,7 +1,7 @@
 package com.mateusz.stockassistant.logic;
 
 import com.mateusz.stockassistant.controller.trend.GeoScope;
-import com.mateusz.stockassistant.service.MailgunEmailService;
+import com.mateusz.stockassistant.service.mailgunemail.MailgunEmailService;
 import com.mateusz.stockassistant.tools.PlaywrightHandler;
 import com.mateusz.stockassistant.tools.PlaywrightResourceManager;
 import com.mateusz.stockassistant.tools.mail.MailTemplate;

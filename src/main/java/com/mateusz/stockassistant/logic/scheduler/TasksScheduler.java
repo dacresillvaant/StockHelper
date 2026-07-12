@@ -6,11 +6,13 @@ import com.mateusz.stockassistant.logic.CurrencyRateNotifier;
 import com.mateusz.stockassistant.logic.DynamicAlert;
 import com.mateusz.stockassistant.logic.HeatMapScrapper;
 import com.mateusz.stockassistant.logic.TrendNotifier;
-import com.mateusz.stockassistant.service.YahooFinanceAnalystInsightsService;
+import com.mateusz.stockassistant.service.yahoofinance.frontend.StockType;
+import com.mateusz.stockassistant.service.yahoofinance.frontend.YahooFinanceAnalystInsightsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.mateusz.stockassistant.controller.yahoofinance.SymbolMapper.USDPLN;
@@ -65,6 +67,6 @@ public class TasksScheduler {
 
     @Scheduled(cron = "${scheduler.analyst-insights}")
     public void scheduleAnalystInsightsCheck() {
-        yahooFinanceAnalystInsightsService.checkAnalystInsightsOfStocks();
+        Arrays.stream(StockType.values()).toList().forEach(yahooFinanceAnalystInsightsService::checkAnalystInsightsOfStocks);
     }
 }

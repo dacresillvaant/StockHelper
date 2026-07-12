@@ -1,9 +1,11 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.report;
 
 import com.mateusz.stockassistant.controller.nbp.dto.NbpCurrencyRateDto;
 import com.mateusz.stockassistant.controller.report.dto.ProfitReportDto;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;
 import com.mateusz.stockassistant.repository.OwnedStockRepository;
+import com.mateusz.stockassistant.service.nbp.NbpService;
+import com.mateusz.stockassistant.service.yahoofinance.backend.YahooFinanceService;
 import com.mateusz.stockassistant.tools.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

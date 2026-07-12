@@ -2,7 +2,7 @@ package com.mateusz.stockassistant.controller.stock;
 
 import com.mateusz.stockassistant.controller.stock.dto.NewStockDto;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;
-import com.mateusz.stockassistant.service.StockService;
+import com.mateusz.stockassistant.service.stock.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

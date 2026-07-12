@@ -2,9 +2,9 @@ package com.mateusz.stockassistant.logic;
 
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.AlertConfigEntity;
-import com.mateusz.stockassistant.service.AlertConfigService;
-import com.mateusz.stockassistant.service.MailgunEmailService;
-import com.mateusz.stockassistant.service.YahooFinanceService;
+import com.mateusz.stockassistant.service.alertconfig.AlertConfigService;
+import com.mateusz.stockassistant.service.mailgunemail.MailgunEmailService;
+import com.mateusz.stockassistant.service.yahoofinance.backend.YahooFinanceService;
 import com.mateusz.stockassistant.tools.mail.MailTemplate;
 import com.mateusz.stockassistant.utils.TestListener;
 import org.mockito.InjectMocks;

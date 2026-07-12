@@ -1,4 +1,4 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.alphavantage;
 
 import com.mateusz.stockassistant.config.WebClientLoggingUtil;
 import lombok.extern.slf4j.Slf4j;

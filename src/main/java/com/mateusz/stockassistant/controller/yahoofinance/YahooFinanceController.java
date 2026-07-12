@@ -2,7 +2,7 @@ package com.mateusz.stockassistant.controller.yahoofinance;
 
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooDetailedChartResponseDto;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
-import com.mateusz.stockassistant.service.YahooFinanceService;
+import com.mateusz.stockassistant.service.yahoofinance.backend.YahooFinanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,6 +1,6 @@
 package com.mateusz.stockassistant.controller.alphavantage;
 
-import com.mateusz.stockassistant.service.AlphaVantageService;
+import com.mateusz.stockassistant.service.alphavantage.AlphaVantageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,7 +1,7 @@
 package com.mateusz.stockassistant.controller.report;
 
 import com.mateusz.stockassistant.controller.report.dto.ProfitReportDto;
-import com.mateusz.stockassistant.service.ReportService;
+import com.mateusz.stockassistant.service.report.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

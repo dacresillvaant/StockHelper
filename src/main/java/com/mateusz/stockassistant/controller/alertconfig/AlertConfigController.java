@@ -2,7 +2,7 @@ package com.mateusz.stockassistant.controller.alertconfig;
 
 import com.mateusz.stockassistant.controller.alertconfig.dto.AlertConfigDto;
 import com.mateusz.stockassistant.entity.AlertConfigEntity;
-import com.mateusz.stockassistant.service.AlertConfigService;
+import com.mateusz.stockassistant.service.alertconfig.AlertConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

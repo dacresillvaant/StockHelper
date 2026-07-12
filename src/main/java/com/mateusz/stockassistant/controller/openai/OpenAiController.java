@@ -1,6 +1,6 @@
 package com.mateusz.stockassistant.controller.openai;
 
-import com.mateusz.stockassistant.service.OpenAiService;
+import com.mateusz.stockassistant.service.openai.OpenAiService;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

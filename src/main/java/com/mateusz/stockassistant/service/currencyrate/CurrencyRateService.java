@@ -1,4 +1,4 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.currencyrate;
 
 import com.mateusz.stockassistant.controller.twelvedata.dto.CurrencyRateInternalDto;
 import com.mateusz.stockassistant.repository.CurrencyRateRepository;

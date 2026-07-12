@@ -41,7 +41,7 @@ public class MailTemplateFactory {
     public static MailTemplate lowPriceAlertTemplate(String symbol, int percentChange, YahooTruncatedChartResponseDto quote,
                                                      BigDecimal lastClose, BigDecimal yearHigh, BigDecimal alertThreshold) {
         String symbolFullName = quote.getMeta().getLongName();
-        String mailSubject = ALERT + "Watched stock" + symbolFullName + " fallen below threshold price";
+        String mailSubject = ALERT + "Watched stock " + symbolFullName + " fallen below threshold price";
         String mailBody = String.format("""
                 Latest price of %s %s is: %s
                 Year high is: %s

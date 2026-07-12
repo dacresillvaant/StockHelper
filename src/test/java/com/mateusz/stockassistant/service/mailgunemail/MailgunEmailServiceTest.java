@@ -1,4 +1,4 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.mailgunemail;
 
 import com.mailgun.api.v3.MailgunMessagesApi;
 import com.mateusz.stockassistant.utils.TestListener;
@@ -38,8 +38,8 @@ public class MailgunEmailServiceTest {
 
         mailgunEmailService = spy(new MailgunEmailService(mailgunMessagesApi, environment));
 
-        ReflectionTestUtils.setField(mailgunEmailService, "mailgunFrom","sender@test.com");
-        ReflectionTestUtils.setField(mailgunEmailService, "defaultMailReceiver","receiver@test.com");
+        ReflectionTestUtils.setField(mailgunEmailService, "mailgunFrom", "sender@test.com");
+        ReflectionTestUtils.setField(mailgunEmailService, "defaultMailReceiver", "receiver@test.com");
     }
 
     @AfterMethod

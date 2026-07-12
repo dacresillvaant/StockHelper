@@ -1,4 +1,4 @@
-package com.mateusz.stockassistant.service;
+package com.mateusz.stockassistant.service.nbp;
 
 import com.mateusz.stockassistant.config.WebClientLoggingUtil;
 import com.mateusz.stockassistant.controller.nbp.dto.NbpCurrencyRateDto;
