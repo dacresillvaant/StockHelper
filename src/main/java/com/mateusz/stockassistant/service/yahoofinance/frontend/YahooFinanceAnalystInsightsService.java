@@ -27,6 +27,7 @@ public class YahooFinanceAnalystInsightsService {
 
     private static final String REJECT_COOKIES = "button[type='submit'][name='reject']";
 
+    private static final String ANALYST_PRICE_TARGET_HEADER = "h3:has-text('Analyst Price Targets')";
     private static final String CURRENT_PRICE = "div:has(> span:text('Current')) > span.price";
     private static final String AVERAGE_PRICE = "div[class*='label'][class*='average'] > span";
     private static final String HIGH_PRICE = "div[class*='priceContainer'][class*='high'] span";
@@ -100,19 +101,24 @@ public class YahooFinanceAnalystInsightsService {
         page.waitForLoadState();
         rejectCookies(page);
 
-        String current = page.locator(CURRENT_PRICE).first().textContent();
-        String average = page.locator(AVERAGE_PRICE).first().textContent();
-        String high = page.locator(HIGH_PRICE).first().textContent();
-        String low = page.locator(LOW_PRICE).first().textContent();
+        if (page.locator(ANALYST_PRICE_TARGET_HEADER).isVisible()) {
+            String current = page.locator(CURRENT_PRICE).first().textContent();
+            String average = page.locator(AVERAGE_PRICE).first().textContent();
+            String high = page.locator(HIGH_PRICE).first().textContent();
+            String low = page.locator(LOW_PRICE).first().textContent();
 
-        log.info("Ticker: {} price -> Low: {} | Current: {} | Average: {} | High: {}", ticker, low, current, average, high);
+            log.info("Ticker: {} price -> Low: {} | Current: {} | Average: {} | High: {}", ticker, low, current, average, high);
 
-        BigDecimal currentPrice = new BigDecimal(current);
-        BigDecimal lowPrice = new BigDecimal(low);
+            BigDecimal currentPrice = new BigDecimal(current);
+            BigDecimal lowPrice = new BigDecimal(low);
 
-        if (currentPrice.compareTo(lowPrice) < 0) {
-            MailTemplate mailTemplate = MailTemplateFactory.analystInsightsTemplate(ticker, currentPrice, lowPrice);
-            mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
+            if (currentPrice.compareTo(lowPrice) < 0) {
+                MailTemplate mailTemplate = MailTemplateFactory.analystInsightsTemplate(ticker, currentPrice, lowPrice);
+                mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
+            }
+
+        } else {
+            log.info("No Analyst Insights found for: {}, skipping.", ticker);
         }
     }
 
