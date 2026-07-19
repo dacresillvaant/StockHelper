@@ -96,7 +96,7 @@ public class YahooFinanceAnalystInsightsService {
         });
     }
 
-    private void checkSingleStockAnalystInsights(Page page, String ticker) {
+    private void checkSingleStockAnalystInsights(Page page, String ticker, StockType stockType) {
         playwrightHandler.navigate(page, BASE_TICKER_URL.replace("$ticker", ticker));
         page.waitForLoadState();
         rejectCookies(page);
@@ -112,8 +112,9 @@ public class YahooFinanceAnalystInsightsService {
             BigDecimal currentPrice = new BigDecimal(current);
             BigDecimal lowPrice = new BigDecimal(low);
 
-            if (currentPrice.compareTo(lowPrice) < 0) {
-                MailTemplate mailTemplate = MailTemplateFactory.analystInsightsTemplate(ticker, currentPrice, lowPrice);
+            if (currentPrice.compareTo(lowPrice) < 0 && Utils.calculatePercentChange(currentPrice, lowPrice).compareTo(BigDecimal.valueOf(20)) >= 1) {
+                log.info("Ticker: {} current price {} is significantly lower than analyst predicted low price {}, sending email notification.", ticker, currentPrice, lowPrice);
+                MailTemplate mailTemplate = MailTemplateFactory.analystInsightsTemplate(ticker, stockType, currentPrice, lowPrice);
                 mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
             }
 
@@ -128,7 +129,7 @@ public class YahooFinanceAnalystInsightsService {
         playwrightResourceManager.executeInBrowser(page -> {
             tickers.forEach(ticker -> {
                 try {
-                    checkSingleStockAnalystInsights(page, ticker);
+                    checkSingleStockAnalystInsights(page, ticker, stockType);
                     Utils.sleep(500); //to avoid spamming yahoo finance too much
                 } catch (Exception e) {
                     log.error("Error checking stock analysis for ticker: {}", ticker, e);

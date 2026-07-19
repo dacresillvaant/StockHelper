@@ -9,17 +9,17 @@ import java.math.RoundingMode;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utils {
 
-    public static BigDecimal calculatePercentChange(BigDecimal oldPrice, BigDecimal newPrice) {
-        if (oldPrice == null || newPrice == null) {
+    public static BigDecimal calculatePercentChange(BigDecimal baseValue, BigDecimal comparableValue) {
+        if (baseValue == null || comparableValue == null) {
             throw new IllegalArgumentException("Prices cannot be null");
         }
 
-        if (oldPrice.compareTo(BigDecimal.ZERO) == 0) {
-            throw new ArithmeticException("Cannot calculate percentage change from zero oldPrice");
+        if (baseValue.compareTo(BigDecimal.ZERO) == 0) {
+            throw new ArithmeticException("Cannot calculate percentage change from zero baseValue");
         }
 
-        BigDecimal change = newPrice.subtract(oldPrice);
-        return change.divide(oldPrice, 10, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal change = comparableValue.subtract(baseValue);
+        return change.divide(baseValue, 10, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_UP);
     }
 
     public static void sleep(long millis) {
