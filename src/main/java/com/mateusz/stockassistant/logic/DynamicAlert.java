@@ -108,6 +108,7 @@ public class DynamicAlert {
         compareOwnedStocksPrice(ownedStocks, ownedStocksCurrentData, percentChangeThreshold);
     }
 
+    //    TODO - Finish index volatility alert
     public void indexVolatilityAlert() {
         List<AlertConfigEntity> listOfAlertConfig = alertConfigService.getAlertConfigurationsByAlertType(INDEX_ALERT);
 

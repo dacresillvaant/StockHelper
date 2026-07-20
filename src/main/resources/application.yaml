@@ -9,9 +9,7 @@ spring:
     user:
       name: ${STOCK_ASSISTANT_USERNAME}
       password: ${STOCK_ASSISTANT_PASSWORD}
-  ai:
-    openai:
-      api-key: ${OPEN_AI_API_KEY}
+
   flyway:
     enabled: true
     locations: classpath:db/migration
