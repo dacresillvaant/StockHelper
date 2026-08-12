@@ -40,6 +40,8 @@ public class YahooFinanceAnalystInsightsService {
     private final PlaywrightHandler playwrightHandler;
     private final MailgunEmailService mailgunEmailService;
 
+    private final List<MailTemplateData> mailTemplateDataList = new ArrayList<>();
+
     @Autowired
     public YahooFinanceAnalystInsightsService(PlaywrightResourceManager playwrightResourceManager,
                                               PlaywrightHandler playwrightHandler, MailgunEmailService mailgunEmailService) {
@@ -113,13 +115,22 @@ public class YahooFinanceAnalystInsightsService {
             BigDecimal lowPrice = new BigDecimal(low);
 
             if (currentPrice.compareTo(lowPrice) < 0 && Utils.calculatePercentChange(currentPrice, lowPrice).compareTo(BigDecimal.valueOf(20)) >= 1) {
-                log.info("Ticker: {} current price {} is significantly lower than analyst predicted low price {}, sending email notification.", ticker, currentPrice, lowPrice);
-                MailTemplate mailTemplate = MailTemplateFactory.analystInsightsTemplate(ticker, stockType, currentPrice, lowPrice);
-                mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
+                log.info("Ticker: {} current price {} is significantly lower than analyst predicted low price {}, adding ticker to mail list.", ticker, currentPrice, lowPrice);
+                mailTemplateDataList.add(new MailTemplateData(ticker, stockType, currentPrice, lowPrice));
             }
 
         } else {
             log.info("No Analyst Insights found for: {}, skipping.", ticker);
+        }
+    }
+
+    private void sendEmailNotification(List<MailTemplateData> mailTemplateDataList) {
+        if (!mailTemplateDataList.isEmpty()) {
+            MailTemplate mailTemplate = MailTemplateFactory.analystInsightsTemplate(mailTemplateDataList);
+            log.info("Sending email notification for {} tickers with significant analyst insights.", mailTemplateDataList.size());
+            mailgunEmailService.sendEmail(mailgunEmailService.getDefaultMailReceiver(), mailTemplate);
+        } else {
+            log.info("No significant analyst insights found, no email sent.");
         }
     }
 
@@ -136,5 +147,7 @@ public class YahooFinanceAnalystInsightsService {
                 }
             });
         });
+
+        sendEmailNotification(mailTemplateDataList);
     }
 }

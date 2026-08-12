@@ -4,7 +4,7 @@ import com.mateusz.stockassistant.controller.trend.GeoScope;
 import com.mateusz.stockassistant.controller.yahoofinance.dto.YahooTruncatedChartResponseDto;
 import com.mateusz.stockassistant.entity.OwnedStockEntity;
 import com.mateusz.stockassistant.logic.TrendNotifier;
-import com.mateusz.stockassistant.service.yahoofinance.frontend.StockType;
+import com.mateusz.stockassistant.service.yahoofinance.frontend.MailTemplateData;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -79,13 +79,19 @@ public class MailTemplateFactory {
         return new MailTemplate(mailSubject, mailBody);
     }
 
-    public static MailTemplate analystInsightsTemplate(String ticker, StockType stockType, BigDecimal currentPrice, BigDecimal lowPrice) {
-        String mailSubject = NOTIFICATION + "Analyst insights for " + ticker;
-        String mailBody = String.format("""
+    public static MailTemplate analystInsightsTemplate(List<MailTemplateData> mailTemplateDataList) {
+        String mailSubject = NOTIFICATION + "Analyst insights for " + mailTemplateDataList.get(0).stockType() + " stocks";
+
+        String rowDataTemplate = """
                 Analyst insights for: %s, stock type: %s
                 Current price: %s
                 Analyst predicted low price: %s
-                """, ticker, stockType, currentPrice, lowPrice);
+                
+                """;
+
+        String mailBody = mailTemplateDataList.stream()
+                .map(data -> String.format(rowDataTemplate, data.ticker(), data.stockType(), data.currentPrice(), data.lowPrice()))
+                .reduce("Analyst insights report - ".concat(LocalDateTime.now().format(DATE_FORMATTER)).concat("\n \n"), String::concat);
 
         return new MailTemplate(mailSubject, mailBody);
     }
