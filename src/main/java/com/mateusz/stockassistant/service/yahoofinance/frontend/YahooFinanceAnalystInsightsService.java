@@ -40,8 +40,6 @@ public class YahooFinanceAnalystInsightsService {
     private final PlaywrightHandler playwrightHandler;
     private final MailgunEmailService mailgunEmailService;
 
-    private final List<MailTemplateData> mailTemplateDataList = new ArrayList<>();
-
     @Autowired
     public YahooFinanceAnalystInsightsService(PlaywrightResourceManager playwrightResourceManager,
                                               PlaywrightHandler playwrightHandler, MailgunEmailService mailgunEmailService) {
@@ -98,7 +96,7 @@ public class YahooFinanceAnalystInsightsService {
         });
     }
 
-    private void checkSingleStockAnalystInsights(Page page, String ticker, StockType stockType) {
+    private void checkSingleStockAnalystInsights(Page page, String ticker, StockType stockType, List<MailTemplateData> mailTemplateDataList) {
         playwrightHandler.navigate(page, BASE_TICKER_URL.replace("$ticker", ticker));
         page.waitForLoadState();
         rejectCookies(page);
@@ -135,12 +133,13 @@ public class YahooFinanceAnalystInsightsService {
     }
 
     public void checkAnalystInsightsOfStocks(StockType stockType) {
+        List<MailTemplateData> mailTemplateDataList = new ArrayList<>();
         List<String> tickers = getStocksOfInterest(stockType);
 
         playwrightResourceManager.executeInBrowser(page -> {
             tickers.forEach(ticker -> {
                 try {
-                    checkSingleStockAnalystInsights(page, ticker, stockType);
+                    checkSingleStockAnalystInsights(page, ticker, stockType, mailTemplateDataList);
                     Utils.sleep(500); //to avoid spamming yahoo finance too much
                 } catch (Exception e) {
                     log.error("Error checking stock analysis for ticker: {}", ticker, e);
