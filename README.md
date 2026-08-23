@@ -15,11 +15,10 @@ I do not have rigidly set goals for this application, as the functionality chang
 
 ## Features
 
-- 📊 **Automated Heatmap Scraping**: Scheduled web scraping using Playwright to capture and analyze market heatmaps - right now app only saves the data, I migh use it later for trend analysis
 - 📧 **Email Notifications**: Automated alerts for low prices, owned stock updates, and currency rate changes via Mailgun which is configured for my own domain
 - 🔒 **Secure API**: Protected endpoints with Spring Security Basic Authentication
 - 📈 **Data Providers**: Real-time data from Yahoo Finance for stock prices
-- ⏰ **Scheduling**: Parallel execution of scheduled tasks for heatmap scraping, price alerts, and currency monitoring
+- ⏰ **Scheduling**: Parallel execution of scheduled tasks
 - 🗄️ **Persistent Storage**: PostgreSQL database for reliable data management
 - 🌐 **RESTful API**: Clean, well-structured endpoints to access app functionality and data
 
@@ -72,20 +71,25 @@ I do not have rigidly set goals for this application, as the functionality chang
 
 The application runs several automated and on demand tasks:
 
-- **Heatmap Scraping**: Every 5 minutes (`0 */5 * * * *`)
-  - Captures market heatmap data for trend analysis - each screenshot is analyzed based od red/green pixel count in order to give it a ratio (0.01 - 1.00), which tells if heatmap data is bullish or bearish
+- **Low Price Alerts**
+    - Monitors configured watched stocks
+    - Mail notification alerts when prices drop below threshold percentages
   
-- **Currency Rate Processing**: Daily at 8 AM and 4 PM (`0 0 8,16 * * *`)
+- **Owned Stock Alerts**
+    - Biweekly check of owned stock performance
+    - Mail notification only when price changes more than 30% from purchase value
+
+- **Currency Rate Processing**
   - Monitors USD/PLN currency rate - can be easily modified to track more currency pairs
   - Sends daily mail notifications
 
-- **Low Price Alerts**: 9:15 PM, Monday-Saturday (`0 15 21 ? * MON-SAT`)
-  - Monitors configured stocks
-  - Mail notification alerts when prices drop below threshold percentages
+- **Trend checker**
+    - Monitors Google Trends data for configured countries
+    - Sends weekly mail notifications
 
-- **Owned Stock Alerts**: Saturdays at 8:15 AM (`0 15 8 ? * SAT`)
-  - Weekly check of owned stock performance
-  - Mail notification only when price changes more than 30% from purchase value
+- **Analyst Insights check**
+    - Monitors Yahoo Finance Analyst Insights for stocks with configured watchlist
+    - Sends mail notification when current price is below analyst target price
 
 - **Profit report**: on demand via API
     - Compares purchase price and last price of owned stocks, takes purchase and latest currency rate into account and then calculates profit/loss.

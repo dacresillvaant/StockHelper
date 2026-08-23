@@ -4,7 +4,6 @@ import com.mateusz.stockassistant.controller.trend.GeoScope;
 import com.mateusz.stockassistant.controller.yahoofinance.SymbolMapper;
 import com.mateusz.stockassistant.logic.CurrencyRateNotifier;
 import com.mateusz.stockassistant.logic.DynamicAlert;
-import com.mateusz.stockassistant.logic.HeatMapScrapper;
 import com.mateusz.stockassistant.logic.TrendNotifier;
 import com.mateusz.stockassistant.service.yahoofinance.frontend.StockType;
 import com.mateusz.stockassistant.service.yahoofinance.frontend.YahooFinanceAnalystInsightsService;
@@ -20,26 +19,18 @@ import static com.mateusz.stockassistant.controller.yahoofinance.SymbolMapper.US
 @Component
 public class TasksScheduler {
 
-    private final HeatMapScrapper heatMapScrapper;
     private final DynamicAlert dynamicAlert;
     private final CurrencyRateNotifier currencyRateNotifier;
     private final TrendNotifier trendNotifier;
     private final YahooFinanceAnalystInsightsService yahooFinanceAnalystInsightsService;
 
     @Autowired
-    public TasksScheduler(HeatMapScrapper heatMapScrapper, DynamicAlert dynamicAlert,
-                          CurrencyRateNotifier currencyRateNotifier, TrendNotifier trendNotifier,
+    public TasksScheduler(DynamicAlert dynamicAlert, CurrencyRateNotifier currencyRateNotifier, TrendNotifier trendNotifier,
                           YahooFinanceAnalystInsightsService yahooFinanceAnalystInsightsService) {
-        this.heatMapScrapper = heatMapScrapper;
         this.dynamicAlert = dynamicAlert;
         this.currencyRateNotifier = currencyRateNotifier;
         this.trendNotifier = trendNotifier;
         this.yahooFinanceAnalystInsightsService = yahooFinanceAnalystInsightsService;
-    }
-
-    @Scheduled(cron = "${scheduler.heatmap.cron}")
-    public void scheduleScrapHeatMap() {
-        heatMapScrapper.scrapHeatMap();
     }
 
     @Scheduled(cron = "${scheduler.low-price-alert}")

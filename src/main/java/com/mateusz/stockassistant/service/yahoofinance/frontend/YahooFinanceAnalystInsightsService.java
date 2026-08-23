@@ -133,8 +133,8 @@ public class YahooFinanceAnalystInsightsService {
     }
 
     public void checkAnalystInsightsOfStocks(StockType stockType) {
-        List<MailTemplateData> mailTemplateDataList = new ArrayList<>();
         List<String> tickers = getStocksOfInterest(stockType);
+        List<MailTemplateData> mailTemplateDataList = new ArrayList<>();
 
         playwrightResourceManager.executeInBrowser(page -> {
             tickers.forEach(ticker -> {
