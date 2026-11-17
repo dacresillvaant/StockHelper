@@ -37,4 +37,6 @@ public class OwnedStockEntity {
     private String currency;
 
     boolean paysDividend;
+
+    private String note;
 }

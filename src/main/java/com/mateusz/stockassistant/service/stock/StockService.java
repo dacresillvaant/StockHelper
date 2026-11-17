@@ -38,7 +38,9 @@ public class StockService {
                 .position(newStockDto.getPosition())
                 .purchasePrice(newStockDto.getPurchasePrice())
                 .currency(newStockDto.getCurrency())
-                .paysDividend(newStockDto.isPaysDividend()).build();
+                .paysDividend(newStockDto.isPaysDividend())
+                .note(newStockDto.getNote())
+                .build();
 
         return ownedStockRepository.save(newStock);
     }
